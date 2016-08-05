@@ -8,3 +8,5 @@ Let it go !s
 	③ 选择UML目录下的database.xml文件
 	④ 导出修改后的数据库设计图： file -> export as -> Image  -> open in new Windown -> save
 	⑤ 覆盖UML目录下的database_export.png文件
+	
+test!
