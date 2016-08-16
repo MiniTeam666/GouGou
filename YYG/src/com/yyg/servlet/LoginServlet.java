@@ -15,7 +15,7 @@ import com.yyg.ServiceManager;
 import com.yyg.model.User;
 import com.yyg.service.UserService;
 
-@WebServlet("/login.do")
+@WebServlet(urlPatterns="/auth/*.do")
 public class LoginServlet extends HttpServlet{
 
 	@Override
@@ -27,20 +27,31 @@ public class LoginServlet extends HttpServlet{
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String userName = req.getParameter(AppConstant.LOGIN_USER_NAME);
-		String password = req.getParameter(AppConstant.LOGIN_USER_PASSWORD);
-		UserService userService = (UserService)ServiceManager.getInstance().getManager(ServiceManager.USER_MANAGER);
-		User user = userService.userIsExist(userName, password);
-		if(user != null){
-			HttpSession session = req.getSession();
-			session.setAttribute(AppConstant.LOGIN_COOKIE_NAME,true);
-			resp.sendRedirect("user.htm");
-		}else{
-			PrintWriter out = resp.getWriter();
-			out.write("<h1>login fail , password error !</h1>");
-			out.flush();
-			out.close();
+		
+		String uri = req.getRequestURI();
+		String action = uri.split("/")[3];
+		switch(action){
+			case "login.do":{
+				String userName = req.getParameter(AppConstant.LOGIN_USER_NAME);
+				String password = req.getParameter(AppConstant.LOGIN_USER_PASSWORD);
+				UserService userService = (UserService)ServiceManager.getInstance().getManager(ServiceManager.USER_MANAGER);
+				User user = userService.userIsExist(userName, password);
+				if(user != null){
+					HttpSession session = req.getSession();
+					session.setAttribute(AppConstant.LOGIN_COOKIE_NAME,true);
+					resp.sendRedirect("user.htm");
+				}else{
+					PrintWriter out = resp.getWriter();
+					out.write("<h1>login fail , password error !</h1>");
+					out.flush();
+					out.close();
+				}
+			}
+			break;
+			
 		}
+		
+		
 	}
 	
 	

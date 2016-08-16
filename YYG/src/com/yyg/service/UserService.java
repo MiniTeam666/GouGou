@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import com.j256.ormlite.dao.Dao;
 import com.yyg.DatabaseManager;
 import com.yyg.model.User;
+import com.yyg.utils.CommomUtils;
 
 public class UserService implements Manager{
 	
@@ -25,8 +26,10 @@ public class UserService implements Manager{
 	 */
 	public User userIsExist(String name,String password){
 		
-		if(userDao == null)
+		if(userDao == null || CommomUtils.isEmpty(name) || CommomUtils.isEmpty(password)){
+			LogManager.getLogger().warn("userDao is null,or args empty!");
 			return null;
+		}
 		
 		User user = new User();
 		user.name = name;
@@ -44,5 +47,48 @@ public class UserService implements Manager{
 			user = null;
 		}
 		return user;
+	}
+	
+	public User userIsExist(String name){
+		return userIsExist(name,"");
+	}
+	
+	public boolean userIsExist(User user){
+		
+		if(user == null){
+			return false;
+		}
+		
+		try{
+			List results = userDao.queryForMatchingArgs(user);
+			if(results != null && results.size() == 1)
+				return true;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean addUser(String name,String password,String address,String phone){
+		User user = userIsExist(name);
+		
+		if(user != null){
+			LogManager.getLogger().info("addUser fail, the user is exist!");
+			return false;
+		}
+		
+		user = new User();
+		user.name = name;
+		user.password = password;
+		user.address = address;
+		user.phone = phone;
+		
+		try{
+			int ret = userDao.create(user);
+			return ret == 1;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
