@@ -1,5 +1,5 @@
 package com.yyg.service;
 
-public interface Manager {
+public interface Service {
 
 }

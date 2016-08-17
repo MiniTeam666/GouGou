@@ -31,5 +31,12 @@ public class User {
 	public User(){
 		
 	}
+	
+	public User(String name,String password,String phone,String address){
+		this.name = name;
+		this.password = password;
+		this.phone = phone;
+		this.address = address;
+	}
 
 }

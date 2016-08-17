@@ -33,7 +33,7 @@ public class LoginStatusCheckFilter implements Filter{
 		HttpSession session = httpReq.getSession(false);
 		boolean isLogin = false;
 		if(session != null){
-			Object value = session.getAttribute(AppConstant.LOGIN_COOKIE_NAME);
+			Object value = session.getAttribute(AppConstant.LOGIN_STATUS);
 			if(value != null){
 				isLogin = (boolean)value;
 			}

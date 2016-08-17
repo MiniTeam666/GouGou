@@ -1,6 +1,8 @@
 package com.yyg.model;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
@@ -13,6 +15,9 @@ public class Commodity {
 	public String name;
 	
 	@DatabaseField
+	public String coverUrl;
+	
+	@DatabaseField
 	public String describes;
 	
 	@DatabaseField
@@ -20,5 +25,11 @@ public class Commodity {
 	
 	@DatabaseField
 	public long time;
+	
+	@DatabaseField(foreign=true)
+	public Category category;
+	
+	@ForeignCollectionField(eager=false)
+	public ForeignCollection<Lottery> lotterys;
 	
 }

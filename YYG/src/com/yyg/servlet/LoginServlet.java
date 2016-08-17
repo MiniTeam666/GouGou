@@ -14,8 +14,9 @@ import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
 import com.yyg.model.User;
 import com.yyg.service.UserService;
+import com.yyg.utils.CommomUtils;
 
-@WebServlet(urlPatterns="/auth/*.do")
+@WebServlet(urlPatterns="/auth/*")
 public class LoginServlet extends HttpServlet{
 
 	@Override
@@ -30,27 +31,70 @@ public class LoginServlet extends HttpServlet{
 		
 		String uri = req.getRequestURI();
 		String action = uri.split("/")[3];
+		
+		UserService userService = (UserService)ServiceManager.getInstance().getService(ServiceManager.User_Service);
+		PrintWriter out = resp.getWriter();
+		
 		switch(action){
-			case "login.do":{
-				String userName = req.getParameter(AppConstant.LOGIN_USER_NAME);
-				String password = req.getParameter(AppConstant.LOGIN_USER_PASSWORD);
-				UserService userService = (UserService)ServiceManager.getInstance().getManager(ServiceManager.USER_MANAGER);
+			case "login":{
+				String userName = req.getParameter(AppConstant.USER_NAME);
+				String password = req.getParameter(AppConstant.USER_PASSWORD);
 				User user = userService.userIsExist(userName, password);
 				if(user != null){
 					HttpSession session = req.getSession();
-					session.setAttribute(AppConstant.LOGIN_COOKIE_NAME,true);
+					session.setAttribute(AppConstant.LOGIN_STATUS,true);
+					session.setAttribute(AppConstant.USER,user);
 					resp.sendRedirect("user.htm");
 				}else{
-					PrintWriter out = resp.getWriter();
 					out.write("<h1>login fail , password error !</h1>");
 					out.flush();
 					out.close();
 				}
 			}
-			break;
+			case "register":{
+				String userName = req.getParameter(AppConstant.USER_NAME);
+				String password = req.getParameter(AppConstant.USER_PASSWORD);
+				String phone = req.getParameter(AppConstant.USER_PHONE);
+				String address = req.getParameter(AppConstant.USER_ADDRESS);
+				boolean ret = userService.addUser(userName, password, address, phone);
 			
+				if(ret){
+					//register successful , set login status!
+					HttpSession session = req.getSession();
+					session.setAttribute(AppConstant.LOGIN_STATUS,true);
+					session.setAttribute(AppConstant.USER,new User(userName,password,phone,address));
+					
+					out.write("<h1>register user successful !</h1>");
+					out.flush();
+					out.close();
+				}else{
+					out.write("<h1>register user fail !</h1>");
+					out.flush();
+					out.close();
+				}
+			}
+			break;
+			case "checkArgs":{
+				String userName = req.getParameter(AppConstant.USER_NAME);
+				String phone = req.getParameter(AppConstant.USER_PHONE);
+				User user = new User();
+				
+				if(CommomUtils.isEmpty(userName))
+					user.name = userName;
+				
+				if(CommomUtils.isEmpty(phone))
+					user.phone = phone;
+				
+				if(userService.userIsExist(user)){
+					out.write("ret : 1");
+				}else{
+					out.write("ret : 0");
+				}
+				out.flush();
+				out.close();
+			}
+			break;
 		}
-		
 		
 	}
 	

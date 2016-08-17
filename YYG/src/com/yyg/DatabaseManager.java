@@ -7,10 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.yyg.model.Commodity;
-import com.yyg.model.CommodityCategory;
+import com.yyg.model.Category;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.model.OrderShow;
@@ -67,7 +68,8 @@ public class DatabaseManager extends DaoManager{
 		
 		try{
 			//get conn
-			ConnectionSource conn = new JdbcConnectionSource(connUrl);
+			JdbcPooledConnectionSource conn = new JdbcPooledConnectionSource(connUrl);
+			conn.setMaxConnectionAgeMillis(15 * 60 * 1000);
 			this.conn = conn;
 			
 			//check 
@@ -96,7 +98,7 @@ public class DatabaseManager extends DaoManager{
 	}
 	
 	private void createDatabaseTables() throws SQLException{
-		Class[] tables = new Class[]{Commodity.class,CommodityCategory.class,Lottery.class
+		Class[] tables = new Class[]{Commodity.class,Category.class,Lottery.class
 				,Order.class,OrderShow.class,User.class,UserLotteryMappingTable.class};
 		boolean ret = true;
 		int i = 0;

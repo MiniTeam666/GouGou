@@ -1,25 +1,25 @@
 package com.yyg;
 
-import com.yyg.service.Manager;
+import com.yyg.service.Service;
 import com.yyg.service.UserService;
 
 public class ServiceManager {
 	
-	public static final int USER_MANAGER = 0;
+	public static final int User_Service = 0;
 	
-	public static final int MANAGER_COUNT = USER_MANAGER + 1;
+	public static final int Service_Count = User_Service + 1;
 	
 	private static ServiceManager instance;
 	
-	private Manager[] managers;
+	private Service[] services;
 	
-	private Object[] mgsLocks;
+	private Object[] serviceLocks;
 	
 	private ServiceManager(){
-		managers = new Manager[MANAGER_COUNT];
-		mgsLocks = new Object[MANAGER_COUNT];
-		for(int i = 0; i < MANAGER_COUNT; i++){
-			mgsLocks[i] = new Object();
+		services = new Service[Service_Count];
+		serviceLocks = new Object[Service_Count];
+		for(int i = 0; i < Service_Count; i++){
+			serviceLocks[i] = new Object();
 		}
 	}
 	
@@ -30,28 +30,28 @@ public class ServiceManager {
 		return instance;
 	}
 	
-	public Manager getManager(int name){
-		Manager manager = managers[name];
-		if(manager == null){
+	public Service getService(int name){
+		Service service = services[name];
+		if(service == null){
 			//lock
-			synchronized(mgsLocks[name]){
+			synchronized(serviceLocks[name]){
 				
 				//double check
-				manager = managers[name];
-				if(manager != null)
-					return manager;
+				service = services[name];
+				if(service != null)
+					return service;
 				
 				//create
 				switch(name){
-					case USER_MANAGER:
-						manager = new UserService();
+					case User_Service:
+						service = new UserService();
 				}
 				
 				//add to cache
-				managers[name] = manager;
+				services[name] = service;
 			}
 		}
-		return manager;
+		return service;
 	}
 
 }

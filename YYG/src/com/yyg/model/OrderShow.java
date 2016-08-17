@@ -21,6 +21,9 @@ public class OrderShow {
 	@DatabaseField(foreignAutoRefresh=true,foreign=true)
 	public User user;
 	
+	@DatabaseField(foreign=true)
+	public Lottery lottery;
+	
 	public OrderShow(){
 		
 	}

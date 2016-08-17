@@ -18,5 +18,14 @@ public class Order {
 	@DatabaseField(foreign=true,foreignAutoRefresh=true)
 	public User user;
 	
-
+	@DatabaseField
+	public String postCompany;
+	
+	@DatabaseField
+	public String postCode;
+	
+	//购买次数
+	@DatabaseField
+	public int joinTime;
+	
 }

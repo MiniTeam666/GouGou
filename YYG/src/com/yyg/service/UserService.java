@@ -10,7 +10,7 @@ import com.yyg.DatabaseManager;
 import com.yyg.model.User;
 import com.yyg.utils.CommomUtils;
 
-public class UserService implements Manager{
+public class UserService implements Service{
 	
 	public Dao<User,String> userDao;
 	
@@ -26,8 +26,8 @@ public class UserService implements Manager{
 	 */
 	public User userIsExist(String name,String password){
 		
-		if(userDao == null || CommomUtils.isEmpty(name) || CommomUtils.isEmpty(password)){
-			LogManager.getLogger().warn("userDao is null,or args empty!");
+		if(userDao == null){
+			LogManager.getLogger().warn("userDao is null");
 			return null;
 		}
 		
@@ -36,7 +36,7 @@ public class UserService implements Manager{
 		user.password = password;
 		try{
 			List<User> results = userDao.queryForMatchingArgs(user);
-			if(results != null && results.size() == 1){
+			if(results != null && results.size() != 0){
 				user = results.get(0);
 			}else{
 				user = null;
@@ -50,7 +50,7 @@ public class UserService implements Manager{
 	}
 	
 	public User userIsExist(String name){
-		return userIsExist(name,"");
+		return userIsExist(name,null);
 	}
 	
 	public boolean userIsExist(User user){
