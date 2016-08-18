@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import com.j256.ormlite.dao.Dao;
 import com.yyg.DatabaseManager;
 import com.yyg.model.User;
-import com.yyg.utils.CommomUtils;
+import com.yyg.utils.TextUtils;
 
 public class UserService implements Service{
 	

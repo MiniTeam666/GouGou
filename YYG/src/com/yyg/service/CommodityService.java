@@ -1,16 +1,19 @@
 package com.yyg.service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.yyg.DatabaseManager;
 import com.yyg.model.Category;
 import com.yyg.model.Commodity;
 import com.yyg.model.Lottery;
 import com.yyg.model.Lottery.LotteryStatu;
+import com.yyg.model.vo.LotteryVo;
 
 public class CommodityService implements Service{
 	
@@ -34,6 +37,7 @@ public class CommodityService implements Service{
 			commodity.coverUrl = coverUrl;
 			commodity.describes = describes;
 			commodity.category = categoryDao.queryForId(String.valueOf(categoryID));
+			commodity.creatTime = System.currentTimeMillis();
 			
 			if(commodityDao.create(commodity) == 1)
 				return true;
@@ -93,6 +97,22 @@ public class CommodityService implements Service{
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public List<LotteryVo> getLotterys(long start,long count,int orderBy,boolean ascending){
+		try{
+			
+			QueryBuilder builder = lotteryDao.queryBuilder().offset(start).limit(count).orderBy("", ascending);
+			List<Lottery> lotterys = lotteryDao.query(builder.prepare());
+			List<LotteryVo> result = new ArrayList<LotteryVo>();
+			for(int i = 0; i < lotterys.size(); i++){
+				result.add(LotteryVo.getVo(lotterys.get(i),null));
+			}
+			return result;
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

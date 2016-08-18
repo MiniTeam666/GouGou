@@ -1,5 +1,6 @@
 package com.yyg;
 
+import com.yyg.service.CommodityService;
 import com.yyg.service.Service;
 import com.yyg.service.UserService;
 
@@ -7,7 +8,11 @@ public class ServiceManager {
 	
 	public static final int User_Service = 0;
 	
-	public static final int Service_Count = User_Service + 1;
+	public static final int Commodity_Service = User_Service + 1;
+	
+	public static final int Service_Count = Commodity_Service + 1;
+	
+	
 	
 	private static ServiceManager instance;
 	
@@ -45,6 +50,10 @@ public class ServiceManager {
 				switch(name){
 					case User_Service:
 						service = new UserService();
+						break;
+					case Commodity_Service:
+						service = new CommodityService();
+						break;
 				}
 				
 				//add to cache

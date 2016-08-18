@@ -24,7 +24,7 @@ public class Commodity {
 	public int price;
 	
 	@DatabaseField
-	public long time;
+	public long creatTime;
 	
 	@DatabaseField(foreign=true)
 	public Category category;
