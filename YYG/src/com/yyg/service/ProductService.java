@@ -10,28 +10,28 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.yyg.DatabaseManager;
 import com.yyg.model.Category;
-import com.yyg.model.Commodity;
+import com.yyg.model.Product;
 import com.yyg.model.Lottery;
 import com.yyg.model.Lottery.LotteryStatu;
 import com.yyg.model.vo.LotteryVo;
 
-public class CommodityService implements Service{
+public class ProductService implements Service{
 	
-	private Dao<Commodity,String> commodityDao;
+	private Dao<Product,String> commodityDao;
 	
 	private Dao<Lottery,String> lotteryDao;
 	
 	private Dao<Category,String> categoryDao;
 	
-	public CommodityService(){
-		commodityDao = DatabaseManager.getInstance().createDao(Commodity.class);
+	public ProductService(){
+		commodityDao = DatabaseManager.getInstance().createDao(Product.class);
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 	}
 	
 	public boolean addCommodity(String name,String describes,String coverUrl,int price,int categoryID){
 		try{
-			Commodity commodity = new Commodity();
+			Product commodity = new Product();
 			commodity.name = name;
 			commodity.price = price;
 			commodity.coverUrl = coverUrl;
@@ -49,7 +49,7 @@ public class CommodityService implements Service{
 		return false;
 	}
 	
-	public boolean updateCommodity(Commodity commodity){
+	public boolean updateCommodity(Product commodity){
 		try{
 			if(commodityDao.update(commodity) == 1)
 				return true;
@@ -79,10 +79,20 @@ public class CommodityService implements Service{
 		return false;
 	}
 	
+	public List<Category> getAllCategory(){
+		try{
+			return categoryDao.queryForAll();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	public boolean createLottery(int commodityID,String remark){
 		try{
 			
-			Commodity commodity = commodityDao.queryForId(String.valueOf(commodityID));
+			Product commodity = commodityDao.queryForId(String.valueOf(commodityID));
 			if(commodity == null)
 				return false;
 			
@@ -90,7 +100,7 @@ public class CommodityService implements Service{
 			lottery.createTime = System.currentTimeMillis();
 			lottery.commodity = commodity;
 			lottery.remark = remark;
-			lottery.state = LotteryStatu.waiting.getStatus();
+			lottery.status = LotteryStatu.waiting.getStatus();
 			lottery.remainCountOfQulification = commodity.price;
 			lottery.rank = (int)lottery.createTime;
 		}catch(SQLException e){
@@ -101,12 +111,11 @@ public class CommodityService implements Service{
 	
 	public List<LotteryVo> getLotterys(long start,long count,int orderBy,boolean ascending){
 		try{
-			
 			QueryBuilder builder = lotteryDao.queryBuilder().offset(start).limit(count).orderBy("", ascending);
 			List<Lottery> lotterys = lotteryDao.query(builder.prepare());
 			List<LotteryVo> result = new ArrayList<LotteryVo>();
 			for(int i = 0; i < lotterys.size(); i++){
-				result.add(LotteryVo.getVo(lotterys.get(i),null));
+				result.add(LotteryVo.getVo(lotterys.get(i)));
 			}
 			return result;
 		}catch(SQLException e){

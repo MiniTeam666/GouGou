@@ -12,7 +12,7 @@ public class Lottery {
 	public int id;
 	
 	@DatabaseField
-	public int state;
+	public int status;
 	
 	@DatabaseField
 	public int rank;
@@ -30,16 +30,22 @@ public class Lottery {
 	public long createTime;
 	
 	@DatabaseField
+	public long lastJoinTime;
+	
+	@DatabaseField
 	public long lotteryTime;
 	
+	@DatabaseField
+	public long luckyNum;
+	
 	@DatabaseField(foreign=true)
-	public Commodity commodity;
+	public Product commodity;
 	
 	@ForeignCollectionField(eager=false)
 	public ForeignCollection<OrderShow> orderShows;
 	
 	public static enum LotteryStatu{
-		waiting(1),open(2),close(3);
+		waiting(0),open(1),close(2);
 		private int status;
 		LotteryStatu(int status){
 			this.status = status;

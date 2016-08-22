@@ -16,10 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Position;
-import net.coobird.thumbnailator.geometry.Positions;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -28,11 +25,13 @@ import org.apache.logging.log4j.LogManager;
 
 import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
-import com.yyg.service.CommodityService;
+import com.yyg.service.ProductService;
 import com.yyg.utils.TextUtils;
 
-@WebServlet("/manager/addCommodity")
-public class CommodityServlet extends HttpServlet{
+@WebServlet("/products/manager")
+public class ProductManagerServlet extends HttpServlet{
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -40,63 +39,15 @@ public class CommodityServlet extends HttpServlet{
 		
 		LogManager.getLogger().entry();
 		
-		CommodityService service = (CommodityService)ServiceManager.getInstance().getService(ServiceManager.Commodity_Service);
+		ProductService service = (ProductService)ServiceManager.getInstance().getService(ServiceManager.Commodity_Service);
 		
-		String describes = "";
-		String name = "";
-		String coverUrl = "";
-		int price = 0,categoryID = 0;
+		String action = req.getParameter("action");
 		
 		try{
-			DiskFileItemFactory factory = new DiskFileItemFactory();
-	
-			ServletContext servletContext = this.getServletConfig().getServletContext();
-			File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-			factory.setRepository(repository);
-	
-			ServletFileUpload upload = new ServletFileUpload(factory);
-	
-			List<FileItem> items = upload.parseRequest(req);
-			
-			LogManager.getLogger().warn("item.size()" + items.size());
-			
-			Iterator<FileItem> it = items.iterator();
-			while(it.hasNext()){
-				FileItem item = it.next();
-				if(item.isFormField()){
-					String key = item.getFieldName();
-					String value = item.getString();
-					if("name".equals(key)){
-						name = value;
-					}else if("describes".equals(key)){
-						describes = value;
-					}else if("price".equals(key)){
-						price = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
-					}else if("categoryID".equals(key)){
-						categoryID = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
-					}
-					LogManager.getLogger().info("key : " + key + " - > value : " + value);
-				}else{
-					String fieldName = item.getFieldName();
-					String fileName = item.getName();
-					String suffix = fileName.substring(fileName.lastIndexOf("."),fileName.length());
-					String contentType = item.getContentType();
-					long size = item.getSize();
-					coverUrl = handleCoverUpload(item.getInputStream(),servletContext.getRealPath(""),suffix);
-					LogManager.getLogger().info("fieldName:" + fieldName + ",fileName: " + fileName + ",size : " + size + ",type:" + contentType + ",url " + coverUrl);
-				}
-			}
-			
-			if(TextUtils.isEmpty(name) || price <= 0 || categoryID <= 0 || TextUtils.isEmpty(coverUrl)){
-				onRespAddCommodityFail(resp,1);
-				return ;
-			}
-			
-			boolean ret = service.addCommodity(name, describes, coverUrl, price, categoryID);
-			if(ret){
-				onRespAddCommoditySuccess(resp);
-			}else{
-				onRespAddCommodityFail(resp,2);
+			switch(action){
+			case "add":
+				add(req,resp,service);
+				break;
 			}
 		
 		}catch(Exception e){
@@ -104,6 +55,72 @@ public class CommodityServlet extends HttpServlet{
 			onRespAddCommodityFail(resp, 3);
 		}
 
+	}
+	
+	public void add(HttpServletRequest req,HttpServletResponse resp,ProductService service)
+			throws Exception{
+		
+		String describes = "";
+		String name = "";
+		String coverUrl = "";
+		int price = 0,categoryID = 0;
+		
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		
+		ServletContext servletContext = this.getServletConfig().getServletContext();
+		File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
+		factory.setRepository(repository);
+
+		ServletFileUpload upload = new ServletFileUpload(factory);
+
+		List<FileItem> items = upload.parseRequest(req);
+		
+		LogManager.getLogger().warn("item.size()" + items.size());
+		
+		Iterator<FileItem> it = items.iterator();
+		while(it.hasNext()){
+			FileItem item = it.next();
+			if(item.isFormField()){
+				String key = item.getFieldName();
+				String value = item.getString();
+				if("name".equals(key)){
+					name = value;
+				}else if("describes".equals(key)){
+					describes = value;
+				}else if("price".equals(key)){
+					price = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
+				}else if("categoryID".equals(key)){
+					categoryID = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
+				}
+				LogManager.getLogger().info("key : " + key + " - > value : " + value);
+			}else{
+				String fieldName = item.getFieldName();
+				String fileName = item.getName();
+				String suffix = ".jpg";
+				if(!TextUtils.isEmpty(fileName))
+					suffix = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+				String contentType = item.getContentType();
+				long size = item.getSize();
+				if(size <= 0){
+					LogManager.getLogger().warn("cover file size is zero !");
+				}else{
+					coverUrl = handleCoverUpload(item.getInputStream(),servletContext.getRealPath(""),suffix);
+				}
+				LogManager.getLogger().info("fieldName:" + fieldName + ",fileName: " + fileName + ",size : " + size + ",type:" + contentType + ",url " + coverUrl);
+			}
+		}
+		
+		if(TextUtils.isEmpty(name) || price <= 0 || categoryID <= 0 || TextUtils.isEmpty(coverUrl)){
+			onRespAddCommodityFail(resp,1);
+			return ;
+		}
+		
+		boolean ret = service.addCommodity(name, describes, coverUrl, price, categoryID);
+		if(ret){
+			onRespAddCommoditySuccess(resp);
+		}else{
+			onRespAddCommodityFail(resp,2);
+		}
 	}
 	
 	public String handleCoverUpload(InputStream input,String servletContextPath,String suffix) throws Exception {

@@ -10,6 +10,9 @@ public class Order {
 	public int id;
 	
 	@DatabaseField
+	public String luckNum;
+	
+	@DatabaseField
 	public int state;
 	
 	@DatabaseField

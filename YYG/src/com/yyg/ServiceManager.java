@@ -1,6 +1,6 @@
 package com.yyg;
 
-import com.yyg.service.CommodityService;
+import com.yyg.service.ProductService;
 import com.yyg.service.Service;
 import com.yyg.service.UserService;
 
@@ -52,7 +52,7 @@ public class ServiceManager {
 						service = new UserService();
 						break;
 					case Commodity_Service:
-						service = new CommodityService();
+						service = new ProductService();
 						break;
 				}
 				

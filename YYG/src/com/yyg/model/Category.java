@@ -15,6 +15,6 @@ public class Category {
 	public String name; 
 	
 	@ForeignCollectionField(eager=false)
-	public ForeignCollection<Commodity> commoditys;
+	public ForeignCollection<Product> commoditys;
 
 }

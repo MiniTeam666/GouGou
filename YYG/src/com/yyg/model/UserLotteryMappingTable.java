@@ -15,5 +15,11 @@ public class UserLotteryMappingTable {
 	
 	@DatabaseField(foreign=true)
 	public Lottery lottery;
+
+	@DatabaseField(foreign=true)
+	public Order order; 
+	
+	@DatabaseField
+	public long joinTime;
 	
 }

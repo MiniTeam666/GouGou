@@ -10,7 +10,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import com.yyg.model.Commodity;
+import com.yyg.model.Product;
 import com.yyg.model.Category;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
@@ -98,7 +98,7 @@ public class DatabaseManager extends DaoManager{
 	}
 	
 	private void createDatabaseTables() throws SQLException{
-		Class[] tables = new Class[]{Commodity.class,Category.class,Lottery.class
+		Class[] tables = new Class[]{Product.class,Category.class,Lottery.class
 				,Order.class,OrderShow.class,User.class,UserLotteryMappingTable.class};
 		boolean ret = true;
 		int i = 0;
