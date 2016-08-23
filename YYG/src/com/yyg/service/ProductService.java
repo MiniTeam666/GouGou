@@ -14,6 +14,7 @@ import com.yyg.model.Product;
 import com.yyg.model.Lottery;
 import com.yyg.model.Lottery.LotteryStatu;
 import com.yyg.model.vo.LotteryVo;
+import com.yyg.utils.ProductSortUtils.LotterySortType;
 
 public class ProductService implements Service{
 	
@@ -109,8 +110,14 @@ public class ProductService implements Service{
 		return false;
 	}
 	
-	public List<LotteryVo> getLotterys(long start,long count,int orderBy,boolean ascending){
+	public List<LotteryVo> getLotterys(long start,long count,int type,int direction){
 		try{
+			
+			if(direction == 1 && type == LotterySortType.RemainCnt.getInt()){
+				direction = 0;
+			}
+			
+			
 			QueryBuilder builder = lotteryDao.queryBuilder().offset(start).limit(count).orderBy("", ascending);
 			List<Lottery> lotterys = lotteryDao.query(builder.prepare());
 			List<LotteryVo> result = new ArrayList<LotteryVo>();

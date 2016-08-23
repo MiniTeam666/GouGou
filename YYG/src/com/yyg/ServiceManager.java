@@ -8,9 +8,9 @@ public class ServiceManager {
 	
 	public static final int User_Service = 0;
 	
-	public static final int Commodity_Service = User_Service + 1;
+	public static final int Product_Service = User_Service + 1;
 	
-	public static final int Service_Count = Commodity_Service + 1;
+	public static final int Service_Count = Product_Service + 1;
 	
 	
 	
@@ -51,7 +51,7 @@ public class ServiceManager {
 					case User_Service:
 						service = new UserService();
 						break;
-					case Commodity_Service:
+					case Product_Service:
 						service = new ProductService();
 						break;
 				}
