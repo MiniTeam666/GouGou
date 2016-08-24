@@ -52,7 +52,7 @@ public class ProductManagerServlet extends HttpServlet{
 		
 		}catch(Exception e){
 			e.printStackTrace();
-			onRespAddCommodityFail(resp, 3);
+			onRespAddProductFail(resp, 3);
 		}
 
 	}
@@ -111,15 +111,15 @@ public class ProductManagerServlet extends HttpServlet{
 		}
 		
 		if(TextUtils.isEmpty(name) || price <= 0 || categoryID <= 0 || TextUtils.isEmpty(coverUrl)){
-			onRespAddCommodityFail(resp,1);
+			onRespAddProductFail(resp,1);
 			return ;
 		}
 		
-		boolean ret = service.addCommodity(name, describes, coverUrl, price, categoryID);
+		boolean ret = service.addProduct(name, describes, coverUrl, price, categoryID);
 		if(ret){
-			onRespAddCommoditySuccess(resp);
+			onRespAddProductSuccess(resp);
 		}else{
-			onRespAddCommodityFail(resp,2);
+			onRespAddProductFail(resp,2);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class ProductManagerServlet extends HttpServlet{
 		return AppConstant.COMMODITY_COVER_URL_SUFFIX + outFile.getName();
 	}
 	
-	public void onRespAddCommoditySuccess(HttpServletResponse resp){
+	public void onRespAddProductSuccess(HttpServletResponse resp){
 		try{
 			resp.getWriter().write("<h1>Successful ! reas");
 		
@@ -165,7 +165,7 @@ public class ProductManagerServlet extends HttpServlet{
 		}
 	}
 	
-	public void onRespAddCommodityFail(HttpServletResponse resp,int reason){
+	public void onRespAddProductFail(HttpServletResponse resp,int reason){
 		try{
 			resp.getWriter().write("<h1>Fail ! reason : " + reason + "</h1>" );
 		}catch(Exception e){

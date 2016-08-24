@@ -8,7 +8,7 @@ public class ProductSortUtils {
 	
 	public static enum LotterySortType{
 		
-		Hot(0),Lastest(1),RemainCnt(2),values(3);
+		Hot(0),Lastest(1),RemainCnt(2),Values(3);
 		
 		private int type;
 		
@@ -18,6 +18,21 @@ public class ProductSortUtils {
 		
 		public int getInt(){
 			return type;
+		}
+		
+		public static LotterySortType valueOf(int type){
+			switch(type){
+			case 0 :
+				return Hot;
+			case 1 :
+				return Lastest;
+			case 2 :
+				return RemainCnt;
+			case 3 :
+				return Values;
+			default :
+				return null; 
+			}
 		}
 	}
 	

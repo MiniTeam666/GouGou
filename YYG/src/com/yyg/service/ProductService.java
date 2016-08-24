@@ -2,45 +2,50 @@ package com.yyg.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.jasper.tagplugins.jstl.core.When;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.yyg.DatabaseManager;
 import com.yyg.model.Category;
 import com.yyg.model.Product;
 import com.yyg.model.Lottery;
 import com.yyg.model.Lottery.LotteryStatu;
 import com.yyg.model.vo.LotteryVo;
+import com.yyg.utils.ProductSortUtils;
 import com.yyg.utils.ProductSortUtils.LotterySortType;
 
 public class ProductService implements Service{
 	
-	private Dao<Product,String> commodityDao;
+	private Dao<Product,String> productDao;
 	
 	private Dao<Lottery,String> lotteryDao;
 	
 	private Dao<Category,String> categoryDao;
 	
 	public ProductService(){
-		commodityDao = DatabaseManager.getInstance().createDao(Product.class);
+		productDao = DatabaseManager.getInstance().createDao(Product.class);
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 	}
 	
-	public boolean addCommodity(String name,String describes,String coverUrl,int price,int categoryID){
+	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
 		try{
-			Product commodity = new Product();
-			commodity.name = name;
-			commodity.price = price;
-			commodity.coverUrl = coverUrl;
-			commodity.describes = describes;
-			commodity.category = categoryDao.queryForId(String.valueOf(categoryID));
-			commodity.creatTime = System.currentTimeMillis();
+			Product product = new Product();
+			product.name = name;
+			product.price = price;
+			product.coverUrl = coverUrl;
+			product.describes = describes;
+			product.category = categoryDao.queryForId(String.valueOf(categoryID));
+			product.creatTime = System.currentTimeMillis();
 			
-			if(commodityDao.create(commodity) == 1)
+			if(productDao.create(product) == 1)
 				return true;
 			
 		}catch(SQLException e){
@@ -50,9 +55,9 @@ public class ProductService implements Service{
 		return false;
 	}
 	
-	public boolean updateCommodity(Product commodity){
+	public boolean updateProduct(Product product){
 		try{
-			if(commodityDao.update(commodity) == 1)
+			if(productDao.update(product) == 1)
 				return true;
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -90,19 +95,19 @@ public class ProductService implements Service{
 	}
 	
 	
-	public boolean createLottery(int commodityID,String remark){
+	public boolean createLottery(int productID,String remark){
 		try{
 			
-			Product commodity = commodityDao.queryForId(String.valueOf(commodityID));
-			if(commodity == null)
+			Product product = productDao.queryForId(String.valueOf(productID));
+			if(product == null)
 				return false;
 			
 			Lottery lottery = new Lottery();
 			lottery.createTime = System.currentTimeMillis();
-			lottery.commodity = commodity;
+			lottery.product = product;
 			lottery.remark = remark;
 			lottery.status = LotteryStatu.waiting.getStatus();
-			lottery.remainCountOfQulification = commodity.price;
+			lottery.remainCountOfQulification = product.price;
 			lottery.rank = (int)lottery.createTime;
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -110,22 +115,52 @@ public class ProductService implements Service{
 		return false;
 	}
 	
-	public List<LotteryVo> getLotterys(long start,long count,int type,int direction){
+	public List<LotteryVo> getLotterys(int startRow,int count,int categoryID,int type,int direction){
 		try{
 			
 			if(direction == 1 && type == LotterySortType.RemainCnt.getInt()){
 				direction = 0;
 			}
 			
+			List<Lottery> lotterys;
+			if(categoryID != -1){
+				lotterys = lotteryDao.queryBuilder().where()
+						.eq("category_id",categoryID)
+						.eq("status",LotteryStatu.waiting.getStatus()).query();
+			}else{
+				lotterys = lotteryDao.queryBuilder().where()
+						.eq("status",LotteryStatu.waiting.getStatus()).query();
+			}
 			
-			QueryBuilder builder = lotteryDao.queryBuilder().offset(start).limit(count).orderBy("", ascending);
-			List<Lottery> lotterys = lotteryDao.query(builder.prepare());
+			//排序
+			switch(LotterySortType.valueOf(type)){
+				case RemainCnt:
+					Collections.sort(lotterys,new ProductSortUtils.ProductRemainCntComparator());
+					break;
+				case Lastest:
+					Collections.sort(lotterys,new ProductSortUtils.ProductLastestComparator());
+					break;
+			}
+			
+			//取对于数量
+			int start,end;
+			if(direction == 1){
+				start = startRow;
+				end = start + count <= lotterys.size() ? start + count : lotterys.size();
+			}else{
+				end = lotterys.size() - startRow;
+				start = end - count;
+			}
+			
+			//转换为VO
+			List<Lottery> tmp = lotterys.subList(start, end);
 			List<LotteryVo> result = new ArrayList<LotteryVo>();
-			for(int i = 0; i < lotterys.size(); i++){
+			for(int i = 0; i < tmp.size(); i++){
 				result.add(LotteryVo.getVo(lotterys.get(i)));
 			}
+			
 			return result;
-		}catch(SQLException e){
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return null;

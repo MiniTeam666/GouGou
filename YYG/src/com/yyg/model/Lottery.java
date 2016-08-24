@@ -39,7 +39,7 @@ public class Lottery {
 	public long luckyNum;
 	
 	@DatabaseField(foreign=true)
-	public Product commodity;
+	public Product product;
 	
 	@ForeignCollectionField(eager=false)
 	public ForeignCollection<OrderShow> orderShows;

@@ -40,11 +40,11 @@ public class LotteryVo {
 		LotteryVo vo = new LotteryVo();
 		vo.id = lottery.id;
 		vo.status = lottery.status;
-		vo.name = lottery.commodity.name;
-		vo.price = lottery.commodity.price;
+		vo.name = lottery.product.name;
+		vo.price = lottery.product.price;
 		vo.remainCount = lottery.remainCountOfQulification;
-		vo.describes = lottery.commodity.describes;
-		vo.coverUrl = lottery.commodity.coverUrl;
+		vo.describes = lottery.product.describes;
+		vo.coverUrl = lottery.product.coverUrl;
 		vo.remark = lottery.remark;
 		vo.luckyUser = luckyUser;
 		vo.lotteryTime = lottery.lotteryTime;
