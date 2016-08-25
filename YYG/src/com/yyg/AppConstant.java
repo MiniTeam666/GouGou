@@ -22,7 +22,10 @@ public class AppConstant {
 	
 	public static final String TEMP_FILE_DIR = "\\temp\\";
 	
-	public static final String COMMODITY_COVER_URL_SUFFIX = "http://" + HOST + "/" + APP_NAME + "/upload/image/"; 
+	public static final String COMMODITY_COVER_URL_SUFFIX = "http://" + HOST + "/" + APP_NAME + "/upload/image/";
+	
+	
+	public static final int DEFAULT_PAGE_COUNT = 10;
 	
 
 }

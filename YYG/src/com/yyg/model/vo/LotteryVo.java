@@ -57,7 +57,7 @@ public class LotteryVo {
 		return getVo(lottery,null);
 	}
 	
-	public String getListPageData(int joinCount){
+	public JSONObject getProductDetailData(int joinCount){
 		JSONObject data = new JSONObject();
 		try{
 			data.put("status",status);
@@ -101,10 +101,10 @@ public class LotteryVo {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return data.toString();
+		return data;
 	}
 	
-	public String getDetailPageData(){
+	public JSONObject getProductsPageData(){
 		JSONObject data = new JSONObject();
 		try{
 			data.put("id",id);
@@ -127,7 +127,7 @@ public class LotteryVo {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return data.toString();
+		return data;
 	}
 	
 }

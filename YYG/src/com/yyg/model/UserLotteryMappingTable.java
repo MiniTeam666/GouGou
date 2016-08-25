@@ -20,6 +20,6 @@ public class UserLotteryMappingTable {
 	public Order order; 
 	
 	@DatabaseField
-	public long joinTime;
+	public int joinTime;
 	
 }

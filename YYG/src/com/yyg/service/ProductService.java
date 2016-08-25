@@ -16,6 +16,7 @@ import com.yyg.DatabaseManager;
 import com.yyg.model.Category;
 import com.yyg.model.Product;
 import com.yyg.model.Lottery;
+import com.yyg.model.UserLotteryMappingTable;
 import com.yyg.model.Lottery.LotteryStatu;
 import com.yyg.model.vo.LotteryVo;
 import com.yyg.utils.ProductSortUtils;
@@ -29,10 +30,13 @@ public class ProductService implements Service{
 	
 	private Dao<Category,String> categoryDao;
 	
+	private Dao<UserLotteryMappingTable,String> lumDao;
+	
 	public ProductService(){
 		productDao = DatabaseManager.getInstance().createDao(Product.class);
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
+		lumDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
 	}
 	
 	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
@@ -165,5 +169,41 @@ public class ProductService implements Service{
 		}
 		return null;
 	}
+	
+	public LotteryVo getLottery(int id){
+		LotteryVo ret = null;
+		try{
+			
+			Lottery lottery = lotteryDao.queryForId(String.valueOf(id));
+			if(lottery == null)
+				return ret;
+			
+			return LotteryVo.getVo(lottery);
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public int getJoinTimeForLottery(int lotteryID,int userID){
+		try{
+			
+			List<UserLotteryMappingTable> records =lumDao.queryBuilder().where()
+					.eq("lottery_id",lotteryID)
+					.eq("user_id",userID)
+					.query();
+			if(records == null || records.size() != 1){
+				return -1;
+			}
+			
+			return records.get(0).joinTime;
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 	
 }
