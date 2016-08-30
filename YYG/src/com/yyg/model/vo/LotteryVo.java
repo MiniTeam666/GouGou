@@ -5,8 +5,7 @@ import org.json.JSONObject;
 
 import com.yyg.model.Lottery;
 import com.yyg.model.User;
-import com.yyg.utils.TextUtils;
-import com.yyg.utils.TimeUtils;
+import com.yyg.utils.YYGUtils;
 
 public class LotteryVo {
 	
@@ -66,7 +65,7 @@ public class LotteryVo {
 			data.put("name",name);
 			data.put("describe",describes);
 			data.put("detail",remark);
-			if(!TextUtils.isEmpty(coverUrl)){
+			if(!YYGUtils.isEmptyText(coverUrl)){
 				JSONArray imgsObj = new JSONArray();
 				String[] imgs = coverUrl.split("`");
 				for(String img : imgs){
@@ -85,7 +84,7 @@ public class LotteryVo {
 					obj.put("id",luckyUser.id);
 					obj.put("name",luckyUser.name);
 					obj.put("luckyNum",luckyNum);
-					obj.put("revealed_time",TimeUtils.getTimeStr(lotteryTime));
+					obj.put("revealed_time",YYGUtils.getTimeStr(lotteryTime));
 					data.put("lucky_man",obj);
 				}
 				

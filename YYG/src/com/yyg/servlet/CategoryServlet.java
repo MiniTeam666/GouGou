@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import com.yyg.ServiceManager;
 import com.yyg.model.Category;
 import com.yyg.service.ProductService;
-import com.yyg.utils.TextUtils;
+import com.yyg.utils.YYGUtils;
 
 @WebServlet("/category/*")
 public class CategoryServlet extends HttpServlet{
@@ -39,7 +39,7 @@ public class CategoryServlet extends HttpServlet{
 		switch(action){
 			case "add":
 				String categoryName = req.getParameter("categoryName");
-				if(TextUtils.isEmpty(categoryName)){
+				if(YYGUtils.isEmptyText(categoryName)){
 					
 				}else{
 					if(service.addCategory(categoryName)){

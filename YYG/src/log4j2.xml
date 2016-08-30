@@ -20,6 +20,6 @@
     <root level="trace"> 
       <appender-ref ref="Console"/> 
       <appender-ref ref="RollingFile"/>
-    </root> 
-  </loggers> 
+    </root>
+  </loggers>
 </configuration> 

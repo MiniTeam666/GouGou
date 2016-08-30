@@ -25,7 +25,7 @@ public class Product {
 	
 	@DatabaseField
 	public long creatTime;
-	
+
 	@DatabaseField(foreign=true)
 	public Category category;
 	

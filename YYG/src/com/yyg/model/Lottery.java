@@ -14,9 +14,6 @@ public class Lottery {
 	@DatabaseField
 	public int status;
 	
-	@DatabaseField
-	public int rank;
-	
 	@DatabaseField(foreign=true)
 	public User luckUser;
 	
@@ -37,7 +34,10 @@ public class Lottery {
 	
 	@DatabaseField
 	public long luckyNum;
-	
+
+	@DatabaseField
+	public String buyRecord; //计算热度用
+
 	@DatabaseField(foreign=true)
 	public Product product;
 	

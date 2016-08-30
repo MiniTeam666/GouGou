@@ -38,9 +38,10 @@ public class ProductServlet extends HttpServlet{
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		doGet(req,resp);
 	}
 	
-	private void handleGetProducts(HttpServletRequest req,HttpServletResponse resp){
+	public void handleGetProducts(HttpServletRequest req,HttpServletResponse resp){
 		try{
 			int categoryID = Integer.valueOf(req.getParameter("categery"));
 			int type = Integer.valueOf(req.getParameter("type"));

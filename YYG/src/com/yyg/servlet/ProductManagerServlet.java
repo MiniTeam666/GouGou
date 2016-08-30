@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
 import com.yyg.service.ProductService;
-import com.yyg.utils.TextUtils;
+import com.yyg.utils.YYGUtils;
 
 @WebServlet("/products/manager")
 public class ProductManagerServlet extends HttpServlet{
@@ -88,16 +88,16 @@ public class ProductManagerServlet extends HttpServlet{
 				}else if("describes".equals(key)){
 					describes = value;
 				}else if("price".equals(key)){
-					price = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
+					price = YYGUtils.isEmptyText(value) ? -1 : Integer.valueOf(value);
 				}else if("categoryID".equals(key)){
-					categoryID = TextUtils.isEmpty(value) ? -1 : Integer.valueOf(value);
+					categoryID = YYGUtils.isEmptyText(value) ? -1 : Integer.valueOf(value);
 				}
 				LogManager.getLogger().info("key : " + key + " - > value : " + value);
 			}else{
 				String fieldName = item.getFieldName();
 				String fileName = item.getName();
 				String suffix = ".jpg";
-				if(!TextUtils.isEmpty(fileName))
+				if(!YYGUtils.isEmptyText(fileName))
 					suffix = fileName.substring(fileName.lastIndexOf("."),fileName.length());
 				String contentType = item.getContentType();
 				long size = item.getSize();
@@ -110,7 +110,7 @@ public class ProductManagerServlet extends HttpServlet{
 			}
 		}
 		
-		if(TextUtils.isEmpty(name) || price <= 0 || categoryID <= 0 || TextUtils.isEmpty(coverUrl)){
+		if(YYGUtils.isEmptyText(name) || price <= 0 || categoryID <= 0 || YYGUtils.isEmptyText(coverUrl)){
 			onRespAddProductFail(resp,1);
 			return ;
 		}

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.jasper.tagplugins.jstl.core.When;
+import com.yyg.AppConstant;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
@@ -57,6 +57,16 @@ public class ProductService implements Service{
 		}
 	
 		return false;
+	}
+
+	public List<Product> getAllProduct(){
+		ArrayList<Product> list = new ArrayList<Product>();
+		try{
+			return productDao.queryForAll();
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 	public boolean updateProduct(Product product){
@@ -112,7 +122,9 @@ public class ProductService implements Service{
 			lottery.remark = remark;
 			lottery.status = LotteryStatu.waiting.getStatus();
 			lottery.remainCountOfQulification = product.price;
-			lottery.rank = (int)lottery.createTime;
+			lottery.buyRecord = "";
+			if(lotteryDao.create(lottery) == 1)
+				return true;
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
@@ -144,6 +156,11 @@ public class ProductService implements Service{
 				case Lastest:
 					Collections.sort(lotterys,new ProductSortUtils.ProductLastestComparator());
 					break;
+				case Values:
+					Collections.sort(lotterys,new ProductSortUtils.ProductValueComparator());
+					break;
+				case Hot:
+					Collections.sort(lotterys,new ProductSortUtils.ProductHotComparator());
 			}
 			
 			//取对于数量
@@ -204,6 +221,21 @@ public class ProductService implements Service{
 		}
 		return -1;
 	}
-	
-	
+
+	public boolean createLottery(int productID){
+		try{
+			Product product = productDao.queryForId(String.valueOf(productID));
+			Lottery lottery = new Lottery();
+			lottery.createTime = System.currentTimeMillis();
+			lottery.product = product;
+			lottery.remainCountOfQulification = product.price;
+			lottery.status = LotteryStatu.waiting.getStatus();
+
+			boolean ret =  lotteryDao.create(lottery) == 1;
+			return ret;
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

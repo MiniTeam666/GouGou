@@ -14,7 +14,7 @@ import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
 import com.yyg.model.User;
 import com.yyg.service.UserService;
-import com.yyg.utils.TextUtils;
+import com.yyg.utils.YYGUtils;
 
 @WebServlet(urlPatterns="/auth/*")
 public class LoginServlet extends HttpServlet{
@@ -79,10 +79,10 @@ public class LoginServlet extends HttpServlet{
 				String phone = req.getParameter(AppConstant.USER_PHONE);
 				User user = new User();
 				
-				if(TextUtils.isEmpty(userName))
+				if(YYGUtils.isEmptyText(userName))
 					user.name = userName;
 				
-				if(TextUtils.isEmpty(phone))
+				if(YYGUtils.isEmptyText(phone))
 					user.phone = phone;
 				
 				if(userService.userIsExist(user)){
