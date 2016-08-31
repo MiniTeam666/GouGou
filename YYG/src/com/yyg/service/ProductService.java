@@ -147,7 +147,9 @@ public class ProductService implements Service{
 				lotterys = lotteryDao.queryBuilder().where()
 						.eq("status",LotteryStatu.waiting.getStatus()).query();
 			}
-			
+
+			LogManager.getLogger().info("lottery name : " + lotterys.get(0).product.name);
+
 			//排序
 			switch(LotterySortType.valueOf(type)){
 				case RemainCnt:
@@ -162,6 +164,8 @@ public class ProductService implements Service{
 				case Hot:
 					Collections.sort(lotterys,new ProductSortUtils.ProductHotComparator());
 			}
+
+			LogManager.getLogger().info("lottery name : " + lotterys.get(0).product.name);
 			
 			//取对于数量
 			int start,end;
@@ -172,12 +176,16 @@ public class ProductService implements Service{
 				end = lotterys.size() - startRow;
 				start = end - count;
 			}
+			LogManager.getLogger().info("start : " + start + ", end : " + end);
 			
 			//转换为VO
 			List<Lottery> tmp = lotterys.subList(start, end);
+
+			LogManager.getLogger().info("lottery name : " + tmp.get(0).product.name);
+
 			List<LotteryVo> result = new ArrayList<LotteryVo>();
 			for(int i = 0; i < tmp.size(); i++){
-				result.add(LotteryVo.getVo(lotterys.get(i)));
+				result.add(LotteryVo.getVo(tmp.get(i)));
 			}
 			
 			return result;

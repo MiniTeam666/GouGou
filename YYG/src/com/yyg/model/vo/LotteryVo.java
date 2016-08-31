@@ -1,5 +1,6 @@
 package com.yyg.model.vo;
 
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -123,6 +124,7 @@ public class LotteryVo {
 //				}
 //				data.put("users",array);
 //			}
+			LogManager.getLogger().info("get vo page data ! price : " + price);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

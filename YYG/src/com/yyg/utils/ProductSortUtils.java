@@ -5,6 +5,7 @@ import java.util.Comparator;
 import com.yyg.AppConstant;
 import com.yyg.model.Lottery;
 import com.yyg.model.Product;
+import org.apache.logging.log4j.LogManager;
 
 public class ProductSortUtils {
 	
@@ -42,7 +43,7 @@ public class ProductSortUtils {
 
 		@Override
 		public int compare(Lottery a, Lottery b) {
-			int ret = a.createTime > b.createTime ? 1 : -1;
+			int ret = a.createTime > b.createTime ? -1 : 1;
 			if(a.createTime == b.createTime)
 				ret = 0;
 			return ret;
@@ -54,7 +55,7 @@ public class ProductSortUtils {
 
 		@Override
 		public int compare(Lottery a, Lottery b) {
-			int ret = a.remainCountOfQulification > b.remainCountOfQulification ? 1 : -1;
+			int ret = a.remainCountOfQulification > b.remainCountOfQulification ? -1 : 1;
 			if(a.remainCountOfQulification == b.remainCountOfQulification)
 				ret = 0;
 			return ret;
@@ -66,7 +67,7 @@ public class ProductSortUtils {
 
 		@Override
 		public int compare(Lottery o1, Lottery o2) {
-			return o1.product.price >= o2.product.price ? 1 : -1;
+			return o1.product.price >= o2.product.price ? -1 : 1;
 		}
 	}
 
@@ -78,7 +79,7 @@ public class ProductSortUtils {
 			String[] records2 = o2.buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
 			int o1Value = getRecordValue(records1);
 			int o2Value = getRecordValue(records2);
-			return o1Value >= o2Value ? 1 : -1;
+			return o1Value >= o2Value ? -1 : 1;
 		}
 
 		public int getRecordValue(String[] record){

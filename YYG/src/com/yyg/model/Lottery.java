@@ -14,7 +14,7 @@ public class Lottery {
 	@DatabaseField
 	public int status;
 	
-	@DatabaseField(foreign=true)
+	@DatabaseField(foreign=true,foreignAutoRefresh=true)
 	public User luckUser;
 	
 	@DatabaseField
@@ -38,7 +38,7 @@ public class Lottery {
 	@DatabaseField
 	public String buyRecord; //计算热度用
 
-	@DatabaseField(foreign=true)
+	@DatabaseField(foreign=true,foreignAutoRefresh = true)
 	public Product product;
 	
 	@ForeignCollectionField(eager=false)
