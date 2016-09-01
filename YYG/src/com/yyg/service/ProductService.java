@@ -148,7 +148,8 @@ public class ProductService implements Service{
 						.eq("status",LotteryStatu.waiting.getStatus()).query();
 			}
 
-			LogManager.getLogger().info("lottery name : " + lotterys.get(0).product.name);
+			if(startRow >= lotterys.size())
+			    return null;
 
 			//排序
 			switch(LotterySortType.valueOf(type)){
@@ -165,8 +166,6 @@ public class ProductService implements Service{
 					Collections.sort(lotterys,new ProductSortUtils.ProductHotComparator());
 			}
 
-			LogManager.getLogger().info("lottery name : " + lotterys.get(0).product.name);
-			
 			//取对于数量
 			int start,end;
 			if(direction == 1){
@@ -174,19 +173,24 @@ public class ProductService implements Service{
 				end = start + count <= lotterys.size() ? start + count : lotterys.size();
 			}else{
 				end = lotterys.size() - startRow;
-				start = end - count;
+				start = end - count >= 0 ? end - count : 0;
 			}
-			LogManager.getLogger().info("start : " + start + ", end : " + end);
-			
+
+			LogManager.getLogger().info("get page data : start : " + start + ",end : " + end);
+
 			//转换为VO
 			List<Lottery> tmp = lotterys.subList(start, end);
 
-			LogManager.getLogger().info("lottery name : " + tmp.get(0).product.name);
-
 			List<LotteryVo> result = new ArrayList<LotteryVo>();
-			for(int i = 0; i < tmp.size(); i++){
-				result.add(LotteryVo.getVo(tmp.get(i)));
-			}
+            if(direction == 1) {
+                for (int i = 0; i < tmp.size(); i++) {
+                    result.add(LotteryVo.getVo(tmp.get(i)));
+                }
+            }else{
+                for (int i = tmp.size() - 1; i >= 0; i--) {
+                    result.add(LotteryVo.getVo(tmp.get(i)));
+                }
+            }
 			
 			return result;
 		}catch(Exception e){

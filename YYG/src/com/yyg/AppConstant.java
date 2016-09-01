@@ -38,4 +38,7 @@ public class AppConstant {
 
 	public static final int DEFAULT_PRODUCT_HOT_CYCLE = 7 * 3600 * 1000; //一周
 
+	/**-----------------------------缓存配置-------------------*/
+	public static int CACHE_THREAD_NUM = 5;
+
 }

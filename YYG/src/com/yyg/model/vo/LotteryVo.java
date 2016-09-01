@@ -124,7 +124,6 @@ public class LotteryVo {
 //				}
 //				data.put("users",array);
 //			}
-			LogManager.getLogger().info("get vo page data ! price : " + price);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

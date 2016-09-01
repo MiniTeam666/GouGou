@@ -48,7 +48,6 @@ public class ProductSortUtils {
 				ret = 0;
 			return ret;
 		}
-
 	}
 	
 	public static class ProductRemainCntComparator implements Comparator<Lottery>{
