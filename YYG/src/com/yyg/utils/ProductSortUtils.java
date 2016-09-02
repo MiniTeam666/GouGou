@@ -34,7 +34,7 @@ public class ProductSortUtils {
 			case 3 :
 				return Values;
 			default :
-				return null; 
+				return Hot;
 			}
 		}
 	}

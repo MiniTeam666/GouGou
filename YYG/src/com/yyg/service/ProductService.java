@@ -1,12 +1,10 @@
 package com.yyg.service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.yyg.AppConstant;
+import com.yyg.CacheManager;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
@@ -137,15 +135,24 @@ public class ProductService implements Service{
 			if(direction == 1 && type == LotterySortType.RemainCnt.getInt()){
 				direction = 0;
 			}
-			
-			List<Lottery> lotterys;
+
+			//get all lottery
+			List<Lottery> lotterys = CacheManager.getInstance().getLotteries();
+			if(lotterys == null || lotterys.size() <= 0) {
+				lotterys = lotteryDao.queryBuilder().where()
+						.eq("status", LotteryStatu.waiting.getStatus()).query();
+                CacheManager.getInstance().cacheLotteries(lotterys);
+			}
+
+			//filter category
 			if(categoryID != -1){
-				lotterys = lotteryDao.queryBuilder().where()
-						.eq("category_id",categoryID)
-						.eq("status",LotteryStatu.waiting.getStatus()).query();
-			}else{
-				lotterys = lotteryDao.queryBuilder().where()
-						.eq("status",LotteryStatu.waiting.getStatus()).query();
+				Iterator<Lottery> it = lotterys.iterator();
+				while(it.hasNext()){
+					Lottery temp = it.next();
+					if(temp.product.category.id != categoryID){
+						lotterys.remove(temp);
+					}
+				}
 			}
 
 			if(startRow >= lotterys.size())
@@ -198,21 +205,32 @@ public class ProductService implements Service{
 		}
 		return null;
 	}
+
+	public List<Lottery> getLotteriesWithoutCache(){
+		try{
+			return lotteryDao.queryBuilder().where().eq("status", LotteryStatu.waiting.getStatus())
+					.query();
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public LotteryVo getLottery(int id){
-		LotteryVo ret = null;
 		try{
-			
-			Lottery lottery = lotteryDao.queryForId(String.valueOf(id));
-			if(lottery == null)
-				return ret;
-			
-			return LotteryVo.getVo(lottery);
-			
+			Lottery lottery = CacheManager.getInstance().getLottery(id);
+			if(lottery == null) {
+                lottery = lotteryDao.queryForId(String.valueOf(id));
+                CacheManager.getInstance().cacheLottery(lottery);
+            }
+
+            if(lottery != null)
+                return LotteryVo.getVo(lottery);
+
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
-		return ret;
+		return null;
 	}
 	
 	public int getJoinTimeForLottery(int lotteryID,int userID){
