@@ -1,0 +1,58 @@
+.detail{.pro_foot {
+    clear: both;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #dedede;
+    padding: 6px 0;
+    position: absolute;
+    position: fixed;
+    bottom: 0;
+    z-index: 20;
+}
+.pro_foot i {
+    width: 26px;
+    height: 23px;
+    display: block;
+    background-position: 0 -47px;
+    margin-right: 20px;
+    margin-top: 8px;
+    position: relative;
+}
+.pro_foot .btn {
+    padding: 0 53px 0 36px;
+}
+ol, ul {
+    list-style: none;
+}
+.pro_foot .btn li {
+    float: left;
+    width: 50%;
+}
+.pro_foot .btn a {
+    display: block;
+    margin-left: 15px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 16px;
+}
+.orangeBtn {
+    background: #f60;
+    color: #fff;
+}
+.pro_foot .btn a {
+    display: block;
+    margin-left: 15px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 16px;
+}
+.blueBtn {
+    background: #2af;
+}
+}

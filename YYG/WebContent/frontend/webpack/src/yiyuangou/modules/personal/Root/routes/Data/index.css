@@ -1,0 +1,47 @@
+.m-user-addrAdd .m-user-bar, .m-user-info .m-user-bar {
+    margin-top: 0;
+}
+.w-bar {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    padding: 0 14px;
+    line-height: 45px;
+    color: #525252;
+    margin-bottom: -1px;
+    border: solid #d5d5d5;
+    border-width: 1px 0;
+    background: #fff;
+}
+.m-user-bar .w-bar {
+    color: #656565;
+    font-size: 14px;
+    border-color: #DCDCDC;
+    border-width: 0 0 1px 0;
+    margin-bottom: 0;
+}
+.m-user-bar-avatar {
+    line-height: 69px;
+}
+.m-user-bar .w-bar-ext {
+    color: #A9A9A9;
+}
+.w-bar-ext {
+    float: right;
+    color: #a9a9a9;
+}
+.m-user-link {
+    color: #0079fe!important;
+}
+.m-user-bar-avatar .m-user-avatar img {
+    border-width: 0;
+}
+
+.m-user-avatar img {
+    border: 2px solid #FFF;
+    border-radius: 2px;
+    margin-top: 12px;
+}
+img {
+    display: block;
+}

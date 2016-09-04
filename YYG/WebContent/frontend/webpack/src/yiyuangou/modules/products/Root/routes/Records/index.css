@@ -1,0 +1,115 @@
+.records{ol, ul {
+    list-style: none;
+}
+p{
+	margin:0;
+}
+.buy_records li {
+    border-bottom: 1px solid #dedede;
+    padding: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.buy_records i {
+    width: 7px;
+    height: 13px;
+    display: block;
+    background-position: 0 -182px;
+    position: relative;
+    top: 19px;
+}
+dl dd{
+
+}
+.buy_records p {
+    width: 50px;
+    height: 50px;
+    float: left;
+    display: inline;
+    position: relative;
+}
+.buy_records p img {
+    width: 50px;
+    height: 50px;
+    border-radius: 51px;
+}
+fieldset, img {
+    border: 0;
+}
+
+.buy_records dl {
+    margin-left: 61px;
+    line-height: 20px;
+}
+
+.buy_records dt {
+    height: 20px;
+    padding-top: 5px;
+    font-size: 14px;
+    overflow: hidden;
+}
+.buy_records dt span {
+    display: block;
+    height: 20px;
+    overflow: hidden;
+    word-break: break-all;
+}
+.fl {
+    float: left;
+}
+.buy_records dt a {
+    white-space: nowrap;
+}
+.blue {
+    color: #2af;
+}
+.buy_records dt cite {
+    display: block;
+    padding-left: 5px;
+    color: #666;
+}
+.fl {
+    float: left;
+}
+address, em, i, cite, s {
+    font-style: normal;
+}
+
+.buy_records dt cite b {
+    margin: 0 3px;
+}
+.orange {
+    color: #f60;
+}
+
+
+.buy_records dd {
+    font-size: 10px;
+}
+.gray9 {
+    color: #999;
+}
+dl{
+	margin:0;
+}
+body, button, dd, dl, dt, fieldset, form, h1, h2, h3, h4, h5, h6, input, legend, li, ol, p, select, table, td, textarea, th, ul {
+    margin: 0;
+    padding: 0;
+}
+.buy_records i{
+     background: url(../Detail/img/share.png);
+    background-size: 35px auto;
+}
+.buy_records i {
+    width: 7px;
+    height: 13px;
+    display: block;
+    background-position: 0 -182px;
+    position: relative;
+    top: 19px;
+}
+.fr {
+    float: right;
+}
+}

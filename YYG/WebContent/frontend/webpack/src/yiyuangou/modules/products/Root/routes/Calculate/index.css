@@ -1,0 +1,120 @@
+.calculate{
+
+.g-formula {
+    background: #fffddd;
+    padding: 10px 0;
+}
+.g-formula .for-con1 {
+    height: 38px;
+    margin: 0 80px;
+    border: 2px solid #f60;
+}
+.g-formula .z-oval {
+    background: #fff;
+    border-radius: 15px;
+    text-align: center;
+}
+.g-formula .for-con1 em {
+    font-size: 14px;
+    margin-top: 8px;
+}
+.g-formula .z-oval em, .g-formula .z-oval i {
+    display: block;
+}
+.orange {
+    color: #f60;
+}
+address, em, i, cite, s {
+    font-style: normal;
+}
+.g-formula .for-con1 i {
+    font-size: 12px;
+}
+.g-formula .z-oval em, .g-formula .z-oval i {
+    display: block;
+}
+.colorbbb {
+    color: #bbb;
+}
+
+.g-formula .for-con2 {
+    height: 32px;
+    text-align: center;
+}
+.g-formula .for-con2 cite {
+    position: relative;
+    top: -7px;
+    margin: 0 3px;
+}
+.g-formula .for-con2 cite, .g-formula .for-con2 .z-oval {
+    display: inline-block;
+    color: #ffc163;
+}
+address, em, i, cite, s {
+    font-style: normal;
+}
+.g-formula .for-con2 .z-oval {
+    height: 28px;
+    padding: 2px 6px 0;
+    border: 1px solid #ffc185;
+}
+.g-formula .for-con2 cite, .g-formula .for-con2 .z-oval {
+    display: inline-block;
+    color: #ffc163;
+}
+.g-formula .z-oval {
+    background: #fff;
+    border-radius: 15px;
+    text-align: center;
+}
+.g-formula .for-con2 em {
+    font-size: 12px;
+}
+
+.g-formula .for-con2 em, .g-formula .for-con2 i {
+    line-height: 13px;
+}
+.g-formula .z-oval em, .g-formula .z-oval i {
+    display: block;
+}
+.orange {
+    color: #f60;
+}
+.g-formula .for-con2 i {
+    font-size: 10px;
+}
+
+.g-formula .for-con2 em, .g-formula .for-con2 i {
+    line-height: 13px;
+}
+.g-formula .z-oval em, .g-formula .z-oval i {
+    display: block;
+}
+.colorbbb {
+    color: #bbb;
+}
+.clearfix:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+}
+.g-formula .z-and {
+    padding-top: 5px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 20px;
+}
+.g-formula .z-and a {
+    text-decoration: underline;
+    margin-left: 5px;
+}
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    outline: none 0;
+}
+em{
+	margin-top: 3px;
+}
+
+}

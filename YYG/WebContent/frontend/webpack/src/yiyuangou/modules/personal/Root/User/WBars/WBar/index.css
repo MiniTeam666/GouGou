@@ -1,0 +1,51 @@
+.WBars{
+    html,body{
+    padding: 0;
+    margin:0;
+    background: #F5F5F5;
+}
+.w-bar {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    padding: 0 14px;
+    line-height: 45px;
+    color: #525252;
+    margin-bottom: -1px;
+    border: solid #d5d5d5;
+    border-width: 1px 0;
+    background: #fff;
+}
+ .w-bar {
+    color: #656565;
+    font-size: 14px;
+    border-color: #DCDCDC;
+    border-width: 0 0 1px 0;
+    margin-bottom: 0;
+}
+a {
+    color: #0079fe;
+    text-decoration: none;
+    outline: none;
+}
+.w-bar-ext {
+    float: right;
+    color: #a9a9a9;
+}
+
+.ico-back, .ico-prev, .ico-next, .ico-fold, .ico-unfold {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border: 2px solid;
+    background: none;
+}
+.ico-next {
+    border-width: 0 2px 2px 0;
+    /* transform: rotate(-45deg); */
+    -webkit-transform: rotate(-45deg);
+}
+.m-user-bar .w-bar-ext {
+    color: #A9A9A9;
+}
+}

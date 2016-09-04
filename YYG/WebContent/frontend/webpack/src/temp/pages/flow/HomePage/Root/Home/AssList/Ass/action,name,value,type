@@ -1,0 +1,22 @@
+action,name,value,type
+
+type:暂时分为4种
+1 代表服务
+2 代表应用
+3 代表自定义url
+4 代表只展示，没有跳转功能
+
+action
+type=1 时, action="[BingoTouch]\nurl=http://wechat.gzmpc.com/purchase/output-test-min/"
+
+type=2 时,action="com.edi.pak.home"
+
+type=3 时,action="http://www.gzmpc.com/gzmpcscm3/"
+
+type=4 时,action=""
+
+name 代表应用的名称
+
+value 当前的待办事项值
+
+  

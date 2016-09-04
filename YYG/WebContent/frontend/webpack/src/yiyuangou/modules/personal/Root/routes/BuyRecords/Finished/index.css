@@ -1,0 +1,49 @@
+.finished{
+.tab_item {
+    padding: 0.8rem 0.5rem;
+    overflow: hidden;
+    font-size:12px;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+}
+.prize_icon_container {
+    float: left;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+.prize_icon_container img {
+    width: 6rem;
+    height: 6rem;
+}
+
+img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    border: 0;
+}
+
+.prize_content_container {
+    padding: 0.3rem 0.2rem;
+    color: #868686;
+}
+
+
+.color_black {
+    color: #323232;
+}
+
+#view_number {
+    cursor: pointer;
+}
+
+.color_blue {
+    color: #2a99e0;
+}
+.color_black {
+    color: #323232;
+}
+.color_red {
+    color: #db3652;
+}
+}

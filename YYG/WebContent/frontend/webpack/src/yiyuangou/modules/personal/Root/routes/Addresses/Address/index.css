@@ -1,0 +1,40 @@
+:local{
+ .item {
+    background-color: #fff;
+    border-bottom: 1px solid #DCDCDC;
+    position: relative;
+    line-height: normal;
+    color: #666;
+    font-size: 14px;
+}
+ 
+ .item .name {
+    left: 15px;
+}
+
+ .item .name,  .item .mobile {
+    position: absolute;
+    top: 15px;
+}
+ .item .mobile {
+    right: 15px;
+}
+
+ .item .name,  .item .mobile {
+    position: absolute;
+    top: 15px;
+}
+ .item .detail {
+    padding-top: 40px;
+    padding-bottom: 12px;
+    padding-left: 15px;
+    padding-right: 15px;
+    line-height: 1.66;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.m-user-link {
+    color: #0079fe!important;
+}
+}

@@ -1,0 +1,71 @@
+.count-my{
+	margin-top: 20px;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	margin-left: 10px;
+	.g-Countdown {
+    height: 74px;
+    background: #fff;
+    border: 1px solid #ffc8a3;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+.g-Countdown p {
+    height: 28px;
+    line-height: 28px;
+    border-radius: 5px;
+    border: 1px solid #ffbf94;
+    background: #fffbe7;
+    font-size: 18px;
+    margin-top: -23px;
+}
+
+.orange {
+    color: #f60;
+}
+body, button, dd, dl, dt, fieldset, form, h1, h2, h3, h4, h5, h6, input, legend, li, ol, p, select, table, td, textarea, th, ul {
+    margin: 0;
+    padding: 0;
+}
+
+.g-Countdown cite {
+    display: block;
+    width: 265px;
+    margin: 17px auto 0;
+}
+address, em, i, cite, s {
+    font-style: normal;
+}
+
+.g-Countdown cite span {
+    width: 79px;
+    line-height: 42px;
+    background: #f60;
+    color: #fff;
+    font-size: 30px;
+    border-radius: 5px;
+}
+.g-Countdown cite span, .g-Countdown cite em {
+    float: left;
+    height: 42px;
+    text-align: center;
+    overflow: hidden;
+    display: block;
+}
+
+.g-Countdown cite em {
+    display: block;
+    width: 14px;
+    line-height: 38px;
+    color: #f60;
+    font-size: 20px;
+}
+.g-Countdown cite span, .g-Countdown cite em {
+    float: left;
+    height: 42px;
+    text-align: center;
+    overflow: hidden;
+    display: block;
+}
+}

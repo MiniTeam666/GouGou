@@ -1,0 +1,68 @@
+.show-list{ol, ul {
+    list-style: none;
+}
+.g-goods-single li {
+    width: 100%;
+    padding: 15px 0;
+    border-bottom: 1px solid #dedede;
+    display: inline-block;
+    background: #fff;
+}
+.g-goods-single p {
+    margin: 0 10px;
+}
+
+.fl {
+    float: left;
+}
+.g-goods-single p img {
+    display: block;
+    width: 91px;
+    height: 91px;
+    border: 1px solid #e5e5e5;
+}
+fieldset, img {
+    border: 0;
+}
+
+.g-goods-single dl {
+    margin-left: 113px;
+    padding-right: 10px;
+    font-size: 12px;
+}
+body, button, dd, dl, dt, fieldset, form, h1, h2, h3, h4, h5, h6, input, legend, li, ol, p, select, table, td, textarea, th, ul {
+    margin: 0;
+    padding: 0;
+}
+.blue {
+    color: #2af;
+}
+.g-goods-single dd.gray6 {
+    font-size: 16px;
+    height: 18px;
+    line-height: 18px;
+    overflow: hidden;
+}
+
+.g-goods-single dd {
+    margin-top: 3px;
+}
+.gray6 {
+    color: #666;
+}
+.g-goods-single dd.gray9 {
+    max-height: 35px;
+    line-height: 16px;
+    word-wrap: break-word;
+    word-break: normal;
+}
+.g-goods-single dd {
+    margin-top: 3px;
+}
+.gray9 {
+    color: #999;
+}
+.colorbbb {
+    color: #bbb;
+}
+}

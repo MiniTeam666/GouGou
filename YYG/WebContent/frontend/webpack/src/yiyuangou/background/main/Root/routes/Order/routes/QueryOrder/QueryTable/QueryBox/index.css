@@ -1,0 +1,103 @@
+.fix-modal{
+	/*display:none;*/
+	/*margin-left:256px;*/
+	font-size: 14px;
+	background-color: white;
+	position: fixed;
+	width: 50rem;
+	height: 40rem;
+	top:50%;
+	left:50%;
+	margin-left: -25rem;
+	margin-top: -20rem;
+	border-radius:1rem; 
+	z-index: 9999;
+	color:#555;
+	.fix-body{
+		padding:0.5rem;
+		height: 32rem;
+		text-align: center;
+		/*background: blue;*/
+		overflow: scroll;
+		border-top:1px solid #DDD ;
+		border-bottom:1px solid #DDD ;
+
+	}
+	.fix-footer{
+		height: 8rem;
+		padding: 0.5rem;
+		.buttons{
+			display: flex;
+			align-content:flex-end ;
+			flex-direction: row;
+			justify-content: flex-end ;
+		}
+	}
+	button.close {
+	    -webkit-appearance: none;
+	    padding: 0;
+	    cursor: pointer;
+	    background: 0 0;
+	    border: 0;
+	    margin-top: 0.5rem;
+	}
+	.close {
+	    float: right;
+	    font-size: 21px;
+	    font-weight: 700;
+	    line-height: 1;
+	    color: #000;
+	    text-shadow: 0 1px 0 #fff;
+	    filter: alpha(opacity=20);
+	    opacity: .2;
+	}
+	button, input, select, textarea {
+	    font-family: inherit;
+	    font-size: inherit;
+	    line-height: inherit;
+	}
+	button, html input[type=button], input[type=reset], input[type=submit] {
+	    -webkit-appearance: button;
+	    cursor: pointer;
+	}
+	button, select {
+	    text-transform: none;
+	}
+	button {
+	    overflow: visible;
+	}
+	button, input, optgroup, select, textarea {
+	    margin: 0;
+	    font: inherit;
+	    color: inherit;
+	}
+
+	
+}
+.my-fade{
+		position:fixed;
+		width:100%;
+		height:100%;
+		opacity: 0.5;
+		background: #000;
+		z-index: 9998;
+		top:0;
+		left:0;
+	}
+.menu-btn{
+	margin-right: 0.3rem;
+}
+.fix-header{
+	height: 3rem;
+	line-height: 3rem;
+	padding: 0;
+	span{
+		margin-top:0.5rem;
+		margin-left:1.2rem;
+		
+	}
+	.close{
+		margin-top: 0.1rem;
+		margin-right: 0.6rem;
+	}
+}

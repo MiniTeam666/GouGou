@@ -1,0 +1,6 @@
+:local(.asslist){
+	display:flex;
+	display:-webkit-flex;
+	flex-direction: row;
+   
+}

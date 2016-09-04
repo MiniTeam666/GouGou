@@ -1,0 +1,32 @@
+data:{
+	columns :[{col:'credate',name:'创建日期',type:'date'}
+				,{col:'date',name:'测试日期',type:'date'}
+				,{col:'print',name:'打印',type:'list'}
+				,{col:'medicine',name:'药品',type:'string'}
+				,{col:'chanjian',name:'厂家',type:'string'}	
+			   ],
+	 list:[{
+			id:'1',
+			title:{key:'title',value:'金骨连片'},
+			tabs:[{value:'处方药',color:'red'},{value:'OTC',color:'green'}],
+			list:[
+				 {id:'1',name:{key:'factory',value:'规格'},detail:{key:'guige',value:'0.24*18粒'}}
+				,{id:'2',name:{key:'factory',value:'厂家'},detail:{key:'guige',value:'河南省新四方'}}
+				,{id:'3',name:{key:'factory',value:'优势'},detail:{key:'guige',value:'全国独家，国家医保，医院产品'}}
+			]
+		},{
+			id:'2',
+			title:{key:'title',value:'金骨连片'},
+			tabs:[{value:'处方药',color:'red'},{value:'OTC',color:'green'}],
+			list:[
+				 {id:'1',name:{key:'factory',value:'规格'},detail:{key:'guige',value:'0.24*18粒'}}
+				,{id:'2',name:{key:'factory',value:'厂家'},detail:{key:'guige',value:'河南省新四方'}}
+				,{id:'3',name:{key:'factory',value:'优势'},detail:{key:'guige',value:'全国独家，国家医保，医院产品'}}
+			]
+		}],
+		companys:[
+			{key:'gy',value:'广药'}
+			,{key:'gyjm',value:'广药健民'}
+		]
+}
+data:返回的字段名称 包含三个子字段 data

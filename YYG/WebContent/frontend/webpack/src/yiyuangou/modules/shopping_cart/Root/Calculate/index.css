@@ -1,0 +1,161 @@
+.shopping_cart{
+    #mycartpay{
+    margin-bottom: 8px;
+}
+.g-Total-bt {
+    clear: both;
+    width: 100%;
+    line-height: 30px;
+    font-size: 14px;
+    background: #f7f7f7;
+    position: absolute;
+    position: fixed;
+    bottom: 0;
+    display: inline-block;
+    z-index: 12;
+}
+.g-car-new {
+    bottom: 49px;
+    line-height: 20px;
+    background: #fff;
+}
+
+.g-auto-next {
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    border-top: 1px solid #dedede;
+    background-color: #fff;
+    position: relative;
+}
+
+.g-auto-next .auto-next-inner {
+    padding: 0 10px;
+    color: #666;
+    position: relative;
+}
+
+.g-auto-next .circle {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: rgb(240,240,240);
+    margin-right: 6px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+}
+.g-auto-next .circle.checked {
+    background-color: #f60;
+}
+
+.g-auto-next .circle:after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 4px;
+    border: 2px solid transparent;
+    border-left-color: #fff;
+    border-bottom-color: #fff;
+    transform: rotateZ(-45deg) translateY(4px) scale(.9);
+    -webkit-transform: rotateZ(-45deg) translateY(4px) scale(.9);
+}
+.g-Total-bt span {
+    margin-right: 10px;
+}
+.g-Total-bt.g-car-new a {
+    margin: 0;
+}
+
+
+.g-auto-next .ques-btn {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    top: 0;
+    right: 0;
+}
+.g-Total-bt.g-car-new a {
+    font-size: 16px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 4px;
+}
+.g-auto-next .ques {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 9px;
+    right: 10px;
+    background: url(../img/help_bg.png) no-repeat;
+    background-size: 41px auto;
+    background-position: 0 -99px;
+}
+.g-Total-bt.g-car-new dl {
+    border-top: 1px solid #dedede;
+    background: #fff;
+}
+.g-Total-bt.g-car-new dt {
+    padding: 4px 10px;
+    box-sizing: border-box;
+    width: 62%;
+    float: left;
+    border: none;
+    background: #fff;
+}
+.g-Total-bt.g-car-new dt .money-total {
+    font-size: 12px;
+}
+.g-Total-bt.g-car-new dt .money-total em {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.orange {
+    color: #f60;
+}
+.g-Total-bt em span {
+    margin: 0;
+    font-family: "微软雅黑";
+}
+.g-Total-bt.g-car-new dt .pro-total {
+    font-size: 12px;
+    color: #999;
+}
+.g-Total-bt.g-car-new dd {
+    float: right;
+    width: 112px;
+    height: 35px;
+    padding: 6px 6px 6px 0;
+    border: none;
+    background: #fff;
+}
+
+.orangeBtn {
+    background: #f60;
+    color: #fff;
+}
+.g-Total-bt.g-car-new a {
+    font-size: 16px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 4px;
+}
+.g-Total-bt.g-car-new a {
+    margin: 0;
+}
+.g-Total-bt a.w_account {
+    display: block;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+}
+.g-Total-bt.g-car-new dd a.w_account {
+    height: 38px;
+    line-height: 38px;
+}
+}

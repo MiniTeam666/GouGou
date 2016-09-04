@@ -1,0 +1,216 @@
+.products{
+.w-product-goods {
+    overflow: hidden;
+    background-color: #fff;
+    color: #999;
+    font-size: 13px;
+    position: relative;
+}
+.w-product-goods-l {
+    padding: 12px 10px 12px 10px;
+}
+.w-product-goods-l .w-product-goods-pic {
+    float: left;
+    margin: 0;
+    width: 90px;
+    height: 90px;
+}
+.w-product-goods-pic {
+    position: relative;
+}
+ a{
+    color: #0079fe;
+    text-decoration: none;
+    outline: none;
+}
+.w-product-goods-pic img {
+    width: 100%;
+}
+img {
+    display: block;
+}
+
+.w-product-goods-l .w-product-goods-info {
+    margin-left: 100px;
+    margin-top: -15px;
+}
+.w-product-goods-l .w-product-goods-title {
+    height: 30px;
+    margin-bottom: 0;
+}
+.w-product-goods-l .w-product-goods-title {
+    max-height: 40px;
+    white-space: normal;
+    text-overflow: initial;
+}
+.w-product-goods-ing .w-product-goods-title {
+    margin-bottom: 5px;
+    width: 100%;
+}
+.w-product-goods p {
+    line-height: 18px;
+}
+.f-breakword {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.f-txtabb {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.w-product-goods-l .w-product-goods-title a {
+    line-height: 20px;
+}
+.w-product-goods-title a {
+    color: #666;
+    line-height: 18px;
+}
+.w-product-goods-l .w-product-progressBar {
+    margin: 10px 60px 0 0;
+}
+.w-product-progressBar {
+    font-size: 12px;
+}
+.w-product-progressBar .wrap {
+    position: relative;
+    margin-bottom: 10px;
+    height: 5px;
+    border-radius: 5px;
+    background-color: #efeeee;
+    overflow: hidden;
+}
+.w-product-goods p {
+    line-height: 18px;
+}
+.w-product-progressBar .bar {
+    overflow: hidden;
+}
+.w-product-progressBar .bar, .w-product-progressBar .color {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+}
+.w-product-progressBar .color {
+    width: 100%;
+    background: #FFA538;
+    background: -webkit-gradient(linear,left top,right top,from(#FFCB3D),to(#FF8533));
+    background: -moz-linear-gradient(left,#FFCB3D,#FF8533);
+    background: -o-linear-gradient(left,#FFCB3D,#FF8533);
+    background: -ms-linear-gradient(left,#FFCB3D,#FF8533);
+}
+.w-product-progressBar .bar, .w-product-progressBar .color {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+}
+.w-product-progressBar .txt {
+    overflow: hidden;
+    margin:0;
+}
+.w-product-progressBar li {
+    float: left;
+    line-height: 18px;
+}
+.w-product-progressBar .txt p {
+    display: block;
+    color: #999;
+}
+.w-product-goods p {
+    line-height: 18px;
+}
+.w-product-progressBar .txt-r {
+    float: right;
+    border: 0;
+    text-align: right;
+}
+.w-product-progressBar li {
+    float: left;
+    line-height: 18px;
+}
+.w-product-progressBar .txt p {
+    display: block;
+    color: #999;
+}
+.w-product-goods p {
+    line-height: 18px;
+}
+.w-product-progressBar .txt b {
+    font-weight: normal;
+}
+.txt-blue {
+    color: #0079fe;
+}
+
+.w-product-goods-l .w-product-goods-shortFunc {
+    position: absolute;
+    right: 18px;
+    top: 40px;
+}
+.w-product-button {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: middle;
+    color: #fff;
+    background: #3399FE;
+    border-width: 0;
+    border-style: solid;
+    border-color: #1B7DE0;
+    padding: 0 15px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none!important;
+    outline: none;
+}
+.w-product-button-round {
+    display: block;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    background: #db3652;
+    border: 0;
+    border-radius: 50%;
+    text-indent: -999em;
+    overflow: hidden;
+    position: relative;
+}
+.w-product-button-addToCart:before {
+    top: 15px;
+    left: 8px;
+    height: 0;
+    border-top: 2px solid #fff;
+}
+.w-product-button-addToCart:before, .w-product-button-addToCart:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    overflow: hidden;
+}
+.w-product-button-addToCart:after {
+    top: 8px;
+    left: 15px;
+    width: 0;
+    border-left: 2px solid #fff;
+}
+.w-product-button-addToCart:before, .w-product-button-addToCart:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    overflow: hidden;
+}
+ul, ol ,li{
+    list-style: none;
+    padding: 0;
+}
+}

@@ -1,0 +1,23 @@
+:local(.icon){
+	width:25%;
+	margin:0;
+	display:flex;
+	display:-webkit-flex;
+	flex-direction: row;
+    align-items:center;
+    -webkit-align-items: center;
+    justify-content:center;
+    -webkit-justify-content: center;
+}
+:local(.text){
+	width:100%;
+	margin:0;
+	margin-bottom: 10px;
+	display:flex;
+	display:-webkit-flex;
+	flex-direction: column;
+    align-items:center;
+    -webkit-align-items: center;
+    justify-content:center;
+    -webkit-justify-content: center;
+}

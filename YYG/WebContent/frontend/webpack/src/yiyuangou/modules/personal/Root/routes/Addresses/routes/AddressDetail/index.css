@@ -1,0 +1,160 @@
+.m-simpleHeader, .m-simpleFooter {
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    height: 38px;
+    line-height: 38px;
+    border: 1px solid #D4D4D4;
+    background: rgba(240,240,240,.8);
+}
+
+ .m-simpleHeader {
+    border-width: 0;
+    box-shadow: 0 1px 3px RGBA(0,0,0,.2);
+}
+
+.m-simpleHeader {
+    z-index: 10;
+}
+.m-user {
+    padding-top: 39px;
+}
+
+
+
+.m-simpleHeader-back {
+    position: absolute;
+    left: 0;
+    padding: 0 15px;
+    overflow: hidden;
+}
+a {
+    color: #0079fe;
+    text-decoration: none;
+    outline: none;
+}
+.m-simpleHeader-ok {
+    right: 0;
+}
+.m-simpleHeader-ok, .m-simpleHeader-cancel {
+    position: absolute;
+    padding: 0 14px;
+}
+
+.m-simpleHeader h1 {
+    font-size: 16px;
+    color: #222;
+    text-align: center;
+}
+h1, h2, h3, h4, h5, h6, th {
+    font-size: 100%;
+    font-weight: normal;
+}
+.m-user-addrAdd {
+    padding-bottom: 10px;
+}
+.m-user-addrAdd .m-user-bar, .m-user-info .m-user-bar {
+    margin-top: 0;
+}
+.m-user-bar {
+    margin-top: 10px;
+}
+.m-user-bar .w-bar {
+    color: #656565;
+    font-size: 14px;
+    border-color: #DCDCDC;
+    border-width: 0 0 1px 0;
+    margin-bottom: 0;
+}
+.w-bar {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    padding: 0 14px;
+    line-height: 45px;
+    color: #525252;
+    margin-bottom: -1px;
+    border: solid #d5d5d5;
+    border-width: 1px 0;
+    background: #fff;
+}
+.m-user-bar .w-bar-label {
+    color: #CCC;
+}
+.w-bar-label {
+    width: 6em;
+    float: left;
+}
+.w-bar-control {
+    overflow: hidden;
+    position: relative;
+}
+.w-bar-input {
+    width: 100%;
+    height: 38px;
+    background: none;
+    border: none;
+    color: #333;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+input {
+    -webkit-appearance: none;
+}
+textarea.w-bar-input {
+    display: block;
+    margin: 14px 0;
+    resize: none;
+}
+.m-user-addrAdd .w-checkBar {
+    color: #CBCBCB;
+}
+
+.w-bar-ext {
+    float: right;
+    color: #a9a9a9;
+}
+.m-user-bar .w-bar-ext {
+    color: #A9A9A9;
+}
+
+
+.w-switcher {
+    position: relative;
+    user-select: none;
+    display: inline-block;
+    vertical-align: middle;
+    width: 60px;
+    height: 32px;
+    background: #F4F4F4;
+    border: 1px solid #D5D5D5;
+    border-radius: 32px;
+}
+.w-switcher, .w-switcher:after {
+    -webkit-transition: all .2s;
+}
+strong, b {
+    font-weight: bold;
+}
+
+.w-checkBar input, .w-radioBar input {
+    display: none;
+}
+.w-switcher:after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+    border-radius: 100%;
+    content: "";
+}
+.w-switcher, .w-switcher:after {
+    -webkit-transition: all .2s;
+}
+

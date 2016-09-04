@@ -1,0 +1,102 @@
+.user{
+    .m-user-summary {
+    height: 100px;
+    overflow: hidden;
+    background-color: #D83652;
+    position: relative;
+    font-size: 12px;
+}
+.m-user-summary .bg {
+    min-width: 320px;
+}
+
+img {
+    display: block;
+}
+.m-user-summary .info {
+    position: absolute;
+    left: 15px;
+    top: 23px;
+    line-height: normal;
+    color: #fff;
+}
+.m-user-avatar img {
+    border: 2px solid #FFF;
+    border-radius: 2px;
+}
+.m-user-summary .txt {
+    position: absolute;
+    left: 66px;
+    top: 5px;
+    white-space: nowrap;
+}
+.m-user-summary .txt .name {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: normal;
+    margin-top: 0px;
+}
+.m-user-summary .txt .money {
+    padding-top: 10px;
+}
+.w-button {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: middle;
+    color: #fff;
+    background: #3399FE;
+    border-width: 0;
+    border-style: solid;
+    border-color: #1B7DE0;
+    padding: 0 15px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none!important;
+    outline: none;
+}
+.m-user-summary-btn-normal {
+    background-color: #fff;
+    border-width: 0;
+    color: #D9304D;
+    box-shadow: 1px 1px 1px RGBA(0,0,0,0);
+    margin-left: 20px;
+    vertical-align: top;
+    position: relative;
+    top: -4px;
+}
+.w-button-s {
+    padding: 0 10px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+.m-user-summary .aside {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #fff;
+    height: 100px;
+    padding-right: 15px;
+    padding-left: 40px;
+    line-height: 100px;
+}
+
+.ico-back, .ico-prev, .ico-next, .ico-fold, .ico-unfold {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border: 2px solid;
+    background: none;
+}
+.ico-next {
+    border-width: 0 2px 2px 0;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+}

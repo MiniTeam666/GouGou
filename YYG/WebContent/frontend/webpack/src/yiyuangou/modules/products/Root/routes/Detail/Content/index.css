@@ -1,0 +1,186 @@
+.detail{
+.pro_info {
+    padding: 10px 15px;
+    border-bottom: 1px solid #dedede;
+    background: #fff;
+    margin-bottom: 15px;
+}
+.pro_info h2 {
+    display: block;
+    font-size: 16px;
+    line-height: 20px;
+    word-break: break-all;
+}
+.gray6 {
+    color: #666;
+}
+h1, h2, h3, h4, h5, b {
+    font-weight: normal;
+}
+.pro_info h2 span {
+    color: #e80000;
+}
+p{
+	margin:5px;
+}
+span.purchase-icon {
+    display: inline-block;
+    background-color: #24cba8;
+    color: #fff!important;
+    font-size: 14px;
+    padding: 0 4px;
+    line-height: 20px;
+}
+.pro_info .purchase-txt {
+    display: block;
+    padding: 8px 0 1px;
+}
+.gray9 {
+    color: #999;
+}
+
+.pro_info .purchase-txt span {
+    color: #f60;
+    font-size: 12px;
+    line-height: 16px;
+    float: right;
+    padding-right: 50px;
+}
+.g-goods-share {
+    padding-left: 10px;
+    border-left: 1px solid #ddd;
+    text-align: center;
+    line-height: 20px;
+    height: 39px;
+}
+.fr {
+    float: right;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+.g-goods-share a {
+    color: #bbb;
+}
+
+.g-goods-share p {
+    display: block;
+    width: 15px;
+    height: 16px;
+    background-position: 0 -217px;
+    margin: 2px auto 3px;
+}
+
+.pro_info .gRate {
+    padding-right: 50px;
+    margin-top: 5px;
+}
+
+.Progress-bar {
+    zoom: 1;
+}
+.pro_info p.u-progress {
+    height: 7px;
+}
+.u-progress {
+    height: 5px;
+    background: #e7e7e7;
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.u-progress .pgbar, .u-progress .pging {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+}
+.u-progress .pging {
+    background: #f60;
+}
+.u-progress .pgbar, .u-progress .pging {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+}
+.clearfix:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+}
+ol, ul {
+    list-style: none;
+}
+.Progress-bar .Pro-bar-li li.P-bar01 {
+    width: 30%;
+    text-align: left;
+}
+
+.pro_info .Pro-bar-li li, .pro_info .Pro-bar-li li em {
+    font-size: 12px;
+}
+.Progress-bar .Pro-bar-li li {
+    float: left;
+    color: #ccc;
+    border: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+.Progress-bar .Pro-bar-li li em {
+    display: block;
+    font-size: 10px;
+    font-family: arial;
+    height: 14px;
+    padding: 2px 0 0 0;
+    font-style: normal;
+}
+address, em, i, cite, s {
+    font-style: normal;
+}
+.Progress-bar .Pro-bar-li li.P-bar02 {
+    width: 40%;
+    text-align: center;
+}
+.Progress-bar .Pro-bar-li li.P-bar02 em {
+    color: #999;
+}
+.Progress-bar .Pro-bar-li li.P-bar03 {
+    width: 30%;
+    float: right;
+    text-align: right;
+}
+.Progress-bar .Pro-bar-li li.P-bar03 em {
+    color: #2af;
+}
+.Progress-bar:after {
+    content: "\0020";
+    display: block;
+    height: 0;
+    clear: both;
+}
+.g-goods-share {
+	font-size:10px;
+    padding-left: 10px;
+    border-left: 1px solid #ddd;
+    text-align: center;
+    line-height: 20px;
+    height: 39px;
+}
+.g-goods-share p {
+    display: block;
+    width: 15px;
+    height: 16px;
+    background-position: 0 -217px;
+    margin: 2px auto 3px;
+}
+p,i{
+     background: url(../img/share.png);
+    background-size: 35px auto;
+}
+}

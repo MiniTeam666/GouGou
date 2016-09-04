@@ -1,0 +1,7 @@
+:local(.card){
+	overflow: hidden;
+};
+:local(.cardSubtitle){
+	/*height: 30px;*/
+	padding: 8px;
+};

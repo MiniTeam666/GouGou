@@ -1,0 +1,11 @@
+.shopping_cart{
+	.g-Cart-list {
+	    width: 100%;
+	    margin-bottom: 135px;
+	}
+	ol, ul {
+		padding: 0;
+		margin:0;
+	    list-style: none;
+	}
+}
