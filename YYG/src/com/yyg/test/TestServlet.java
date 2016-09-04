@@ -45,6 +45,18 @@ public class TestServlet extends HttpServlet{
             handleTestCreateLottery(req,resp);
         }else if("getLotterys".equals(action)){
             handleTestGetLotteries(req,resp);
+        }else if("getLottery".equals(action)){
+            handleTestGetLottery(req,resp);
+        }
+    }
+
+    private void handleTestGetLottery(HttpServletRequest req,HttpServletResponse resp){
+        try{
+            ProductServlet productServlet = new ProductServlet();
+            productServlet.init();
+            productServlet.handleGetProductDetail(req,resp);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

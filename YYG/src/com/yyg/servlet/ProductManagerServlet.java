@@ -82,7 +82,7 @@ public class ProductManagerServlet extends HttpServlet{
 			FileItem item = it.next();
 			if(item.isFormField()){
 				String key = item.getFieldName();
-				String value = item.getString();
+				String value = item.getString("UTF-8");
 				if("name".equals(key)){
 					name = value;
 				}else if("describes".equals(key)){
@@ -158,8 +158,7 @@ public class ProductManagerServlet extends HttpServlet{
 	
 	public void onRespAddProductSuccess(HttpServletResponse resp){
 		try{
-			resp.getWriter().write("<h1>Successful ! reas");
-		
+			resp.getWriter().write("<h1>Successful !</h1>");
 		}catch(Exception e){
 			e.printStackTrace();
 		}

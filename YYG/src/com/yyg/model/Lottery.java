@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.yyg.utils.LotteryInfo;
 
 @DatabaseTable
 public class Lottery {
@@ -43,6 +44,8 @@ public class Lottery {
 	
 	@ForeignCollectionField(eager=false)
 	public ForeignCollection<OrderShow> orderShows;
+
+	public LotteryInfo lotteryInfo;
 	
 	public static enum LotteryStatu{
 		waiting(0),open(1),close(2);

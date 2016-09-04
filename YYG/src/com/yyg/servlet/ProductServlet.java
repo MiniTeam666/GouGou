@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yyg.utils.YYGUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,7 +19,9 @@ import com.yyg.model.User;
 import com.yyg.model.vo.LotteryVo;
 import com.yyg.service.ProductService;
 
-@WebServlet("/products/product/")
+@WebServlet(urlPatterns = {
+			AppConstant.REQUEST_PRODUCT_DETAIL_PATH,
+			AppConstant.REQUEST_PRODUCT_RECORDS_PATH})
 public class ProductServlet extends HttpServlet{
 	
 	private ProductService service;
@@ -31,8 +34,12 @@ public class ProductServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		
+        String uri = req.getRequestURI();
+        if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_DETAIL_PATH).equals(uri)){
+            handleGetProductDetail(req,resp);
+        }else if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_RECORDS_PATH).equals(uri)){
+            handleGetProducts(req,resp);
+        }
 	}
 
 	@Override
@@ -43,7 +50,7 @@ public class ProductServlet extends HttpServlet{
 	
 	public void handleGetProducts(HttpServletRequest req,HttpServletResponse resp){
 		try{
-			int categoryID = Integer.valueOf(req.getParameter("categery"));
+			int categoryID = Integer.valueOf(req.getParameter("category"));
 			int type = Integer.valueOf(req.getParameter("type"));
 			int direction = Integer.valueOf(req.getParameter("direction"));
 			int page = Integer.valueOf(req.getParameter("page"));
@@ -78,8 +85,8 @@ public class ProductServlet extends HttpServlet{
 		try{
 			int id = Integer.valueOf(req.getParameter("id"));
 			User user = (User)req.getSession().getAttribute(AppConstant.USER);
-			LotteryVo ret = service.getLottery(id);
-			int joinTime = service.getJoinTimeForLottery(id,user.id);
+			LotteryVo ret = service.getLotteryVo(id);
+			int joinTime = user != null ? service.getJoinTimeForLottery(id,user.id) : -1;
 			
 			if(ret != null){
 				resp.getWriter().write(ret.getProductDetailData(joinTime).toString());

@@ -2,39 +2,51 @@ package com.yyg.service;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 import com.yyg.AppConstant;
 import com.yyg.CacheManager;
+import com.yyg.model.*;
+import com.yyg.utils.Message;
+import com.yyg.utils.OrderTimeoutRunnable;
+import com.yyg.ThreadManager;
+import com.yyg.utils.YYGUtils;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 import com.yyg.DatabaseManager;
-import com.yyg.model.Category;
-import com.yyg.model.Product;
-import com.yyg.model.Lottery;
-import com.yyg.model.UserLotteryMappingTable;
 import com.yyg.model.Lottery.LotteryStatu;
 import com.yyg.model.vo.LotteryVo;
 import com.yyg.utils.ProductSortUtils;
 import com.yyg.utils.ProductSortUtils.LotterySortType;
 
-public class ProductService implements Service{
+public class ProductService extends Observable implements Service{
 	
 	private Dao<Product,String> productDao;
 	
 	private Dao<Lottery,String> lotteryDao;
-	
+
 	private Dao<Category,String> categoryDao;
+
+    private Dao<Order,String> orderDao;
 	
 	private Dao<UserLotteryMappingTable,String> lumDao;
+
+    private ConcurrentHashMap<Integer,List<Integer>> mUpdateLotteryStockTaskList;
+
+    private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
+
+    private ExecutorService mTimeoutThread;
 	
 	public ProductService(){
 		productDao = DatabaseManager.getInstance().createDao(Product.class);
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 		lumDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
+        orderDao = DatabaseManager.getInstance().createDao(Order.class);
+        mUpdateLotteryStockTaskList = new ConcurrentHashMap<Integer, List<Integer>>();
+        mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
 	}
 	
 	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
@@ -47,8 +59,11 @@ public class ProductService implements Service{
 			product.category = categoryDao.queryForId(String.valueOf(categoryID));
 			product.creatTime = System.currentTimeMillis();
 			
-			if(productDao.create(product) == 1)
-				return true;
+			if(productDao.create(product) == 1) {
+			    //AUTO
+			    createLottery(product.id);
+                return true;
+            }
 			
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -215,27 +230,77 @@ public class ProductService implements Service{
 		}
 		return null;
 	}
-	
-	public LotteryVo getLottery(int id){
-		try{
-			Lottery lottery = CacheManager.getInstance().getLottery(id);
-			if(lottery == null) {
+
+	public Lottery getLottery(int id){
+        try{
+            Lottery lottery = CacheManager.getInstance().getLottery(id);
+            if(lottery == null) {
                 lottery = lotteryDao.queryForId(String.valueOf(id));
                 CacheManager.getInstance().cacheLottery(lottery);
             }
-
-            if(lottery != null)
-                return LotteryVo.getVo(lottery);
-
-		}catch(SQLException e){
-			e.printStackTrace();
-		}
-		return null;
+            return lottery;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+	
+	public LotteryVo getLotteryVo(int id){
+		Lottery lottery = getLottery(id);
+        if(lottery == null)
+            return null;
+        return LotteryVo.getVo(lottery);
 	}
+
+	public void updateLotteryStock(Lottery lottery){
+        int id = lottery.id;
+        List<Integer> targetList = mUpdateLotteryStockTaskList.get(id);
+        if(targetList == null){
+            targetList = new ArrayList<Integer>();
+            mUpdateLotteryStockTaskList.put(id, Collections.synchronizedList(targetList));
+        }
+        //必须重新获取，因为赋值可能重入.
+        targetList = mUpdateLotteryStockTaskList.get(id);
+        targetList.add(lottery.remainCountOfQulification);
+        LogManager.getLogger().warn("updateStock id " + id + ",taskList : " + targetList.toString());
+        CacheManager.getInstance().cacheLottery(lottery);
+    }
+
+    public synchronized void updateStockTask(){
+        String sql = "update lottery set remainCountOfQulification = remainCountOfQulification - ? where remainCountOfQulification - ? >= 0 and id = ? ";
+        for(Integer id : mUpdateLotteryStockTaskList.keySet()){
+            List<Integer> list = mUpdateLotteryStockTaskList.get(id);
+            int size = list.size();
+            int n = size;
+            while(n > 0 && list.size() > 0){
+                n--;
+                list.remove(0);
+            }
+            int offset = size - n;
+            try {
+                int ret = lotteryDao.updateRaw(sql, offset + "", offset + "", id + "");
+                if(ret != 0){
+                    throw new SQLException("affect line is  : " + ret);
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+                LogManager.getLogger().error("update lottery stock to db fail , id : " + id + ", offset : " + offset + ",error : " + e.toString());
+            }
+        }
+    }
+
+	public boolean updateLottery(Lottery lottery){
+	    try{
+	        if( lotteryDao.update(lottery) == 1)
+	            return true;
+        }catch (SQLException e){
+            e.getErrorCode();
+        }
+        return false;
+    }
 	
 	public int getJoinTimeForLottery(int lotteryID,int userID){
 		try{
-			
 			List<UserLotteryMappingTable> records =lumDao.queryBuilder().where()
 					.eq("lottery_id",lotteryID)
 					.eq("user_id",userID)
@@ -268,4 +333,58 @@ public class ProductService implements Service{
 		}
 		return false;
 	}
+
+	public int createOrder(User user,int lotteryID,int count){
+	    try{
+	    	Lottery lottery = getLottery(lotteryID);
+			int stockStatus = lottery.lotteryInfo.decrementStock(count);
+			if(stockStatus != 0) {
+				LogManager.getLogger().warn("create order fail , lottery stock not permit " + stockStatus);
+				return -1;
+			}
+
+            final Order order = new Order();
+            order.user = user;
+            order.time = System.currentTimeMillis();
+            order.state = Order.OrderStatu.waitpay.getStatus();
+            order.joinTime = count;
+            order.lottery = lottery;
+            boolean createOrder = orderDao.create(order) == 1;
+			if(createOrder){
+				//TODO 生成支付接口,超时时间要大于支付接口超时时间
+                LogManager.getLogger().error("create order successful ! id : " + order.id + " time : "  + YYGUtils.getTimeStr(order.time));
+                OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(order,AppConstant.ORDER_PAY_TIMEOUT,this);
+                mOrderTimeoutMap.put(order.id,runnable);
+                ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
+			}else{
+			    LogManager.getLogger().error("create order fail ! user : " + user.id + ", buyCount : " + count);
+			    order.state = Order.OrderStatu.createFail.getStatus();
+                ThreadManager.executeOnNormalThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyOrderPayResult(order,false);
+                    }
+                });
+			}
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void notifyOrderPayResult(Order order,boolean success){
+        int id = order.id;
+        OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
+        if(runnable != null){
+            boolean cancelRet = runnable.cancel();
+            if(!cancelRet && success){
+                //TODO 回滚timeout操作
+            }
+        }
+        Message msg = Message.getUpdateStockMsg(order.lottery.id,success ? AppConstant.OK : AppConstant.FAIL,order);
+        notifyObservers(msg);
+        setChanged();
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.yyg.utils;
 
+import com.yyg.AppConstant;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,5 +17,15 @@ public class YYGUtils {
 		Date date = new Date(time);
 		return sdf.format(date);
 	}
+
+	public static String getBuyRecord(String src,int count,long time){
+		src += AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR;
+		src += time + AppConstant.PRODUCT_LOTTERY_RECORD_SPLIT_CHAR + count;
+		return src;
+	}
+
+	public static String getProjectURI(String reqPath){
+	    return "/" + AppConstant.APP_NAME + reqPath;
+    }
 
 }

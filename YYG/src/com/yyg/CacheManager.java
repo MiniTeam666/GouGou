@@ -1,8 +1,9 @@
 package com.yyg;
 
-import com.j256.ormlite.stmt.query.In;
 import com.yyg.model.Lottery;
+import com.yyg.model.Order;
 import com.yyg.service.ProductService;
+import com.yyg.utils.LotteryInfo;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
@@ -15,15 +16,14 @@ import java.util.concurrent.*;
  */
 public class CacheManager {
 
-    public static ScheduledExecutorService mExecutor =  Executors.newScheduledThreadPool(AppConstant.CACHE_THREAD_NUM);
-
-    private ConcurrentHashMap<String,CacheField> mCache = new ConcurrentHashMap<String,CacheField>();
-
     private CacheField<ConcurrentHashMap<Integer,Lottery>> mLotteriesCache;
+
+    private ConcurrentHashMap<Integer,Order> mOrderCache;
 
     private static volatile CacheManager instance;
 
     private CacheManager(){
+        mOrderCache = new ConcurrentHashMap<>();
     }
 
     public static CacheManager getInstance(){
@@ -37,13 +37,21 @@ public class CacheManager {
         return instance;
     }
 
+    public Order getOrder(int orderID){
+        return mOrderCache.get(orderID);
+    }
+
+    public void cacheOrder(Order order){
+        mOrderCache.put(order.id,order);
+    }
+
     public Lottery getLottery(int lotteryID){
         if(mLotteriesCache == null)
             return null;
         return mLotteriesCache.getData().get(lotteryID);
     }
 
-    public void cacheLottery(Lottery lottery){
+    public synchronized void cacheLottery(Lottery lottery){
         if(lottery == null)
             return;
 
@@ -54,33 +62,34 @@ public class CacheManager {
         }else{
             ConcurrentHashMap<Integer,Lottery> data = mLotteriesCache.getData();
             Lottery old = data.get(lottery.id);
-            if(old != null && old.lastJoinTime <= lottery.lastJoinTime){
+            if(old == null || old.lastJoinTime <= lottery.lastJoinTime){
+                lottery.lotteryInfo = old == null ? new LotteryInfo(lottery) : old.lotteryInfo;
                 data.put(lottery.id,lottery);
             }
         }
     }
 
-    private void createLotteryCacheField(List<Lottery> list){
+    private synchronized void createLotteryCacheField(List<Lottery> list){
 
         ConcurrentHashMap<Integer,Lottery> tmp = new ConcurrentHashMap<Integer,Lottery>();
         int n = list.size();
         for(int i = 0; i < n ; i++){
-            tmp.put(list.get(i).id,list.get(i));
+            Lottery lottery = list.get(i);
+            lottery.lotteryInfo = new LotteryInfo(lottery);
+            tmp.put(lottery.id,lottery);
         }
 
-        synchronized (mLotteriesCache){
-            mLotteriesCache = new CacheField<ConcurrentHashMap<Integer, Lottery>>(tmp){
-                @Override
-                public void update(){
-                    ProductService productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
-                    List<Lottery> result = productService.getLotteriesWithoutCache();
-                    cacheLotteries(result);
-                }
-            };
-        }
+        mLotteriesCache = new CacheField<ConcurrentHashMap<Integer, Lottery>>(tmp){
+            @Override
+            public void update(){
+                ProductService productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+                List<Lottery> result = productService.getLotteriesWithoutCache();
+                cacheLotteries(result);
+            }
+        };
     }
 
-    public void cacheLotteries(List<Lottery> list){
+    public synchronized void cacheLotteries(List<Lottery> list){
 
         if(list == null || list.size() < 0)
             return;
@@ -94,6 +103,7 @@ public class CacheManager {
                 Lottery newValue = list.get(i);
                 Lottery oldValue = data.get(newValue.id);
                 if(oldValue == null || oldValue.lastJoinTime <= newValue.lastJoinTime){
+                    newValue.lotteryInfo = oldValue == null ? new LotteryInfo(newValue) : oldValue.lotteryInfo;
                     data.put(newValue.id,newValue);
                 }
             }
@@ -111,7 +121,7 @@ public class CacheManager {
     }
 
 
-    public static class CacheField<T>{
+    public static class CacheField<T> implements Runnable{
 
         private long mLastUpdateTime;
 
@@ -121,34 +131,24 @@ public class CacheManager {
 
         private T data;
 
-        public CacheField(T data,int duration,boolean autoUpdate){
+        public CacheField(T data, int duration, final boolean autoUpdate){
             mLastUpdateTime = -1;
             mDuration = duration;
             mAutoUpdate = autoUpdate;
             this.data = data;
             if(autoUpdate){
-                CacheManager.mExecutor.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateInnner();
-                    }
-                },duration,TimeUnit.MILLISECONDS);
+                ThreadManager.executeOnUpdateThread(this,duration);
             }
         }
 
         public CacheField(T data){
-            this(data,1000,false);
+            this(data,AppConstant.DEFAULT_REFRESH_DURATION,false);
         }
 
         public void updateInnner(){
             LogManager.getLogger().info("update cache field ! ");
-            CacheManager.mExecutor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    update();
-                    mLastUpdateTime = System.currentTimeMillis();
-                }
-            },0, TimeUnit.SECONDS);
+            update();
+            mLastUpdateTime = System.currentTimeMillis();
         }
 
         public void update(){
@@ -157,12 +157,25 @@ public class CacheManager {
 
         public T getData(){
             long now = System.currentTimeMillis();
-            if(!mAutoUpdate && now - mLastUpdateTime >= mDuration){
-                updateInnner();
+            if(!mAutoUpdate && now - mLastUpdateTime >= mDuration) {
+                //每次取得数据检查下是否要更新缓存
+                ThreadManager.executeOnUpdateThread(this);
             }
             return data;
         }
 
+        @Override
+        public void run() {
+            long now = System.currentTimeMillis();
+            if(now - mLastUpdateTime >= mDuration) {
+                updateInnner();
+                mLastUpdateTime = System.currentTimeMillis();
+            }
+
+            if(mAutoUpdate){
+                ThreadManager.executeOnUpdateThread(this,mDuration);
+            }
+        }
     }
 
 }

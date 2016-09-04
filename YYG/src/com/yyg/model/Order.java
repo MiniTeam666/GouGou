@@ -8,6 +8,9 @@ public class Order {
 	
 	@DatabaseField(generatedId=true)
 	public int id;
+
+    @DatabaseField(foreign = true)
+    public Lottery lottery;
 	
 	@DatabaseField
 	public String luckNum;
@@ -30,5 +33,16 @@ public class Order {
 	//购买次数
 	@DatabaseField
 	public int joinTime;
-	
+
+	public static enum OrderStatu{
+		waitpay(0),successful(1),fail(2),timeout(3),createFail(4);
+		private int status;
+		OrderStatu(int status){
+			this.status = status;
+		}
+
+		public int getStatus(){
+			return status;
+		}
+	}
 }
