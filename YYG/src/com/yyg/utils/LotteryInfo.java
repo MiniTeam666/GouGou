@@ -1,6 +1,7 @@
 package com.yyg.utils;
 
 import com.yyg.AppConstant;
+import com.yyg.CacheManager;
 import com.yyg.ServiceManager;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
@@ -18,30 +19,57 @@ public class LotteryInfo implements Observer{
 
     private Lottery lottery;
 
-    private AtomicInteger realStock;
+    private volatile int realStock;
 
-    private AtomicInteger copyStock;
+    private volatile int copyStock;
 
     private int id;
 
     public LotteryInfo(Lottery lottery){
         this.lottery = lottery;
         this.id = lottery.id;
-        realStock = new AtomicInteger(lottery.remainCountOfQulification);
-        copyStock = new AtomicInteger(lottery.remainCountOfQulification);
+        realStock = lottery.remainCountOfQulification;
+        copyStock = lottery.remainCountOfQulification;
     }
 
-    public synchronized  int decrementStock(int count){
-        int oldValue = copyStock.get();
-        int newValue = oldValue - count;
-        if(newValue < 0){
-            if(realStock.get() == 0)
+    private synchronized boolean incremeCopyStock(int delta){
+        if(copyStock + delta < 0 || copyStock + delta > realStock)
+            return false;
+        copyStock += delta;
+        return true;
+    }
+
+    private synchronized boolean incrementRealStock(int delta){
+        if(realStock + delta < 0)
+            return false;
+        realStock += delta;
+
+        return true;
+    }
+
+    private synchronized boolean updateStockInfo(int delta){
+        if(!incrementRealStock(delta))
+            return false;
+        lottery.remainCountOfQulification = realStock;
+        lottery.lastJoinTime = System.currentTimeMillis();
+        lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,delta,lottery.lastJoinTime);
+        if(lottery.remainCountOfQulification == 0){
+            lottery.status = Lottery.LotteryStatu.inLottery.getStatus();
+            lottery.lotteryTime = lottery.lastJoinTime - AppConstant.LOTTERY_DELAY_TIME_MILL;
+        }
+        CacheManager.getInstance().cacheLottery(lottery);
+
+        //TODO 定时刷新数据库
+
+        return true;
+    }
+
+    public int decrementStock(int count){
+        boolean ret = incremeCopyStock(-count);
+        if(!ret){
+            if(realStock == 0)
                 return 1;
             return 2;
-        }
-
-        if(!copyStock.compareAndSet(oldValue,newValue)){
-            return 3;
         }
         return 0;
     }
@@ -53,56 +81,47 @@ public class LotteryInfo implements Observer{
             if(msg.event != AppConstant.EVENT_UPDATE_STOCK || msg.what != id)
                 return;
 
+            ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
             Order order = (Order) msg.obj;
             int value = order.joinTime;
             if(AppConstant.OK == msg.result){
-                int oldValue = realStock.get();
-                int newValue = realStock.get() - value;
+                int oldValue = realStock;
+                int newValue = realStock - value;
                 if(newValue < 0){
                     LogManager.getLogger().error("id : " + id + " has appear positive stock . now : " + oldValue + ", newValue : " + newValue + " , offset : " + value);
                     return;
                 }
 
-                boolean ret = realStock.compareAndSet(oldValue,newValue);
+                boolean ret = updateStockInfo(-value);
                 if(!ret){
-                    while (value > 0){
-                        value--;
-                        newValue = realStock.decrementAndGet();
-                    }
-                }
-
-                if(newValue < 0){
                     LogManager.getLogger().error("id : " + id + " has appear positive stock . now : " + oldValue + ", newValue : " + newValue + " , offset : " + value);
                     return;
+                }else {
+                    order.state = Order.OrderStatu.paySuccess.getStatus();
                 }
 
-                ProductService productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
-                lottery = productService.getLottery(id);
-                lottery.remainCountOfQulification = realStock.get();
-                lottery.lastJoinTime = System.currentTimeMillis();
-                lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,value,lottery.lastJoinTime);
-                productService.updateLotteryStock(lottery);
             }else{
-                int oldValue = copyStock.get();
-                int newValue = copyStock.get() + value;
-                if(newValue > realStock.get()){
+
+                order.state = Order.OrderStatu.payFail.getStatus();
+
+
+                int oldValue = copyStock;
+                int newValue = copyStock + value;
+                if(newValue > realStock){
                     LogManager.getLogger().error("id : " + id + " has appear positive stock . now : " + oldValue + ", newValue : " + newValue + " , offset : " + value);
                     return;
                 }
 
-                boolean ret = copyStock.compareAndSet(oldValue,newValue);
+                boolean ret = incremeCopyStock(value);
                 if(!ret){
-                    while (value > 0){
-                        value--;
-                        newValue = copyStock.incrementAndGet();
-                    }
-                }
-
-                if(newValue > realStock.get()){
                     LogManager.getLogger().error("id : " + id + " has appear unnormal copyStock . now : " + oldValue + ", newValue : " + newValue + " , offset : " + value);
                     return;
                 }
+
             }
+
+            if(msg.result != Message.ERROR_CODE_ORDERE_CREATE_FAIL)
+                service.updateOrder(order);
         }
     }
 }

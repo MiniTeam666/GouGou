@@ -19,7 +19,7 @@ public class ProductSortUtils {
 			this.type = type;
 		}
 		
-		public int getInt(){
+		public int getType(){
 			return type;
 		}
 		

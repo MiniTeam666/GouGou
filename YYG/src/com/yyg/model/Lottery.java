@@ -42,13 +42,13 @@ public class Lottery {
 	@DatabaseField(foreign=true,foreignAutoRefresh = true)
 	public Product product;
 	
-	@ForeignCollectionField(eager=false)
+	@ForeignCollectionField
 	public ForeignCollection<OrderShow> orderShows;
 
 	public LotteryInfo lotteryInfo;
 	
 	public static enum LotteryStatu{
-		waiting(0),open(1),close(2);
+		waiting(0), inLottery(1),close(2);
 		private int status;
 		LotteryStatu(int status){
 			this.status = status;

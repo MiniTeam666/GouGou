@@ -21,7 +21,7 @@ import com.yyg.service.ProductService;
 
 @WebServlet(urlPatterns = {
 			AppConstant.REQUEST_PRODUCT_DETAIL_PATH,
-			AppConstant.REQUEST_PRODUCT_RECORDS_PATH})
+			AppConstant.REQUEST_PRODUCTS_PATH})
 public class ProductServlet extends HttpServlet{
 	
 	private ProductService service;
@@ -37,7 +37,7 @@ public class ProductServlet extends HttpServlet{
         String uri = req.getRequestURI();
         if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_DETAIL_PATH).equals(uri)){
             handleGetProductDetail(req,resp);
-        }else if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_RECORDS_PATH).equals(uri)){
+        }else if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCTS_PATH).equals(uri)){
             handleGetProducts(req,resp);
         }
 	}

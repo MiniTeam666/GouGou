@@ -22,6 +22,7 @@ public class CacheManager {
 
     private static volatile CacheManager instance;
 
+
     private CacheManager(){
         mOrderCache = new ConcurrentHashMap<>();
     }
