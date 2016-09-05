@@ -34,8 +34,9 @@ public class Order {
 	@DatabaseField
 	public int joinTime;
 
+
 	public static enum OrderStatu{
-		waitpay(0),successful(1),fail(2),timeout(3),createFail(4);
+		waitpay(0),paySuccess(1),payFail(2);
 		private int status;
 		OrderStatu(int status){
 			this.status = status;

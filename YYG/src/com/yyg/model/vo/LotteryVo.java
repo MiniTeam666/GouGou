@@ -1,5 +1,6 @@
 package com.yyg.model.vo;
 
+import com.yyg.AppConstant;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -125,6 +126,23 @@ public class LotteryVo {
 //				data.put("users",array);
 //			}
 		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	public JSONObject getHomeData(){
+		JSONObject data = new JSONObject();
+		try{
+
+			data.put("id",id);
+			if(!YYGUtils.isEmptyText(coverUrl)) {
+				data.put("img", coverUrl.split(AppConstant.PRODUCT_COVER_IMG_SPLIT_CHAR)[0]);
+			}
+			data.put("name",name);
+			data.put("value",price);
+			data.put("stock",remainCount);
+		}catch (Exception e){
 			e.printStackTrace();
 		}
 		return data;

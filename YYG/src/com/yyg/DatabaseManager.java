@@ -6,17 +6,9 @@ import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import com.yyg.model.Product;
-import com.yyg.model.Category;
-import com.yyg.model.Lottery;
-import com.yyg.model.Order;
-import com.yyg.model.OrderShow;
-import com.yyg.model.User;
-import com.yyg.model.UserLotteryMappingTable;
 
 public class DatabaseManager extends DaoManager{
 	
@@ -98,8 +90,7 @@ public class DatabaseManager extends DaoManager{
 	}
 	
 	private void createDatabaseTables() throws SQLException{
-		Class[] tables = new Class[]{Product.class,Category.class,Lottery.class
-				,Order.class,OrderShow.class,User.class,UserLotteryMappingTable.class};
+		Class[] tables = AppConstant.TABLES;
 		boolean ret = true;
 		int i = 0;
 		for(int n = tables.length; i < n; i++){

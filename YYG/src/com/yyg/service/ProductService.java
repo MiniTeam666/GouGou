@@ -143,11 +143,23 @@ public class ProductService extends Observable implements Service{
 		}
 		return false;
 	}
+
+
+	public List<Lottery> getAllLotteriesWithoutCache(){
+		try{
+
+			return lotteryDao.queryBuilder().where().eq("status",LotteryStatu.waiting.getStatus()).query();
+
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return new ArrayList<Lottery>();
+	}
 	
 	public List<LotteryVo> getLotterys(int startRow,int count,int categoryID,int type,int direction){
 		try{
 			
-			if(direction == 1 && type == LotterySortType.RemainCnt.getInt()){
+			if(direction == 1 && type == LotterySortType.RemainCnt.getType()){
 				direction = 0;
 			}
 
@@ -358,11 +370,10 @@ public class ProductService extends Observable implements Service{
                 ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
 			}else{
 			    LogManager.getLogger().error("create order fail ! user : " + user.id + ", buyCount : " + count);
-			    order.state = Order.OrderStatu.createFail.getStatus();
                 ThreadManager.executeOnNormalThread(new Runnable() {
                     @Override
                     public void run() {
-                        notifyOrderPayResult(order,false);
+                        notifyOrderPayResult(order,Message.ERROR_CODE_ORDERE_CREATE_FAIL);
                     }
                 });
 			}
@@ -373,16 +384,28 @@ public class ProductService extends Observable implements Service{
         return 0;
     }
 
-    public void notifyOrderPayResult(Order order,boolean success){
+    public boolean updateOrder(Order order){
+		try{
+
+			if(orderDao.update(order) == 1)
+				return true;
+
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+    public void notifyOrderPayResult(Order order,int result){
         int id = order.id;
         OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
         if(runnable != null){
             boolean cancelRet = runnable.cancel();
-            if(!cancelRet && success){
+            if(!cancelRet && result == 0){
                 //TODO 回滚timeout操作
             }
         }
-        Message msg = Message.getUpdateStockMsg(order.lottery.id,success ? AppConstant.OK : AppConstant.FAIL,order);
+        Message msg = Message.getUpdateStockMsg(order.lottery.id,result,order);
         notifyObservers(msg);
         setChanged();
     }

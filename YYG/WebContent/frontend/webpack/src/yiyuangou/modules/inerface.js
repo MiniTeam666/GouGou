@@ -104,5 +104,35 @@ id:商品ID
 	]
 }
 
+#/products/calculate 商品计算详情 返回最后参与的100位用户购买记录 /products/calculate?id='123123'
+id:商品ID
+{
+	data:[
+		{
+			join_time:'2016-08-10 21:46:04.434',//参与购买时间
+			join_man{
+				name:'小明',
+				id:'34234'
+			}
+		}
+	]
+}
+
+获取某个商品幸运者的所有购买号            /personal/getnums?user_id='123'&product_id='23423'
+{
+	data:[
+		'2234243',//购买号
+		'1232445',//购买号
+	]
+}
 
 
+
+#/shopping_cart
+{
+	data:[
+		{
+			
+		}
+	]
+}

@@ -35,8 +35,8 @@ public class OrderTimeoutRunnable implements Runnable{
     public void run() {
         if(!cancel){
             start = true;
-            order.state = Order.OrderStatu.timeout.getStatus();
-            service.notifyOrderPayResult(order,false);
+            order.state = Order.OrderStatu.payFail.getStatus();
+            service.notifyOrderPayResult(order,Message.ERROR_CODE_ORDERE_PAY_TIMEOUT);
         }else {
             start = false;
         }
