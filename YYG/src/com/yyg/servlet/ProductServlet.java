@@ -50,6 +50,7 @@ public class ProductServlet extends HttpServlet{
 	
 	public void handleGetProducts(HttpServletRequest req,HttpServletResponse resp){
 		try{
+			String callback = req.getParameter("callback");
 			int categoryID = Integer.valueOf(req.getParameter("category"));
 			int type = Integer.valueOf(req.getParameter("type"));
 			int direction = Integer.valueOf(req.getParameter("direction"));
@@ -75,7 +76,7 @@ public class ProductServlet extends HttpServlet{
 			
 			ret.put("data", array);
 			
-			resp.getWriter().write(ret.toString());
+			resp.getWriter().write(YYGUtils.getAjaxAcrossCallback(callback,ret.toString()));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -89,7 +90,7 @@ public class ProductServlet extends HttpServlet{
 			int joinTime = user != null ? service.getJoinTimeForLottery(id,user.id) : -1;
 			
 			if(ret != null){
-				resp.getWriter().write(ret.getProductDetailData(joinTime).toString());
+				resp.getWriter().write(YYGUtils.getAjaxAcrossCallback(req.getParameter("callback"),ret.getProductDetailData(joinTime).toString()));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

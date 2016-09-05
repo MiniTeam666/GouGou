@@ -8,6 +8,8 @@ public class AppConstant {
 	
 	public static final String HOST = "localhost:8080";
 
+	public static final boolean NEED_AJAX_CROSS = true;
+
 	public static final int OK = 1;
 	public static final int FAIL = 0;
 

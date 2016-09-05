@@ -24,6 +24,12 @@ public class YYGUtils {
 		return src;
 	}
 
+	public static String getAjaxAcrossCallback(String callback,String result){
+		if(AppConstant.NEED_AJAX_CROSS)
+			return callback + "(" +  result  + ")";
+		return result;
+	}
+
 	public static String getProjectURI(String reqPath){
 	    return "/" + AppConstant.APP_NAME + reqPath;
     }
