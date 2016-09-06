@@ -74,10 +74,12 @@ page:页数
 		name:'平安银行 平安金福金条 Au9999 100g' // status=0,1,2 时需要传回
 		detail:'以“平安”组成“福”字，寓意平安有福，新颖别致，妙思无穷！' //商品详情介绍 status=0,1,2 时需要传回 
 		value:17680,// status=0,1,2 时需要传回
-		stock:9786,// status=0,1,2 时需要传回
+		stock:9786,// status=0,1,2 时需要传回 代表当前该商品剩下的份数
+		describe:"<p>sdfsd</p>",//图文详情HTML status=0,1,2 时需要传回
+
 
 		time:180000 //status=1 需要传回的字段(ms)
-		sys_time:18000//系统时间
+		sys_time:18000//status=1 系统时间
 		joins:1 //status=2 时需要传回的字段 当前用户参与份数
 
 		lucky_man:{
@@ -88,6 +90,7 @@ page:页数
 			revealed_time:'2016-08-12 17:23:07',//揭晓时间
 		}//status=2 时需要传回的字段 中奖用户的个人信息
 
+		nextProduct:17//status=1,2时需要传回 该商品的下一云购号
 
 	},
 	status:0,//状态信息

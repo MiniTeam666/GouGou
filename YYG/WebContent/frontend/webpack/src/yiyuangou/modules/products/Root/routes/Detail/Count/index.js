@@ -20,9 +20,7 @@ export default class Detail extends React.Component{
     if(num<0){
       let event = new Event ;
       event.dispatch('products/Root/routes/Detail/changeDetialState',{
-        content:false,
-        count:false,
-        finished:true,
+        status:2
       })
       return;
     }
