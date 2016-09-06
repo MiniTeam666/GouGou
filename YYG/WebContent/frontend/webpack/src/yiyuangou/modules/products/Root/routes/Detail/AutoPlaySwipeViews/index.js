@@ -29,7 +29,7 @@ const styles = {
   }
 };
 @autobind
-class Demo7 extends Component {
+class MyAutoPlaySwipeableViews extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -48,11 +48,12 @@ class Demo7 extends Component {
     const {
       index,
     } = this.state;
-    let imgList = this.props.imgs.map(function(img){
+    let imgList = this.props.imgs.map(function(img,index){
       return(
          <div style={Object.assign({}, styles.slide, styles.slide1)}>
               <MyCard 
                 img={{path:img.img}} 
+                key={index}
               />
           </div>
         )
@@ -63,6 +64,7 @@ class Demo7 extends Component {
       <div style={styles.root}>
         <AutoPlaySwipeableViews
           index={index}
+          
           onChangeIndex={this.handleChangeIndex}
           containerStyle={styles.slideContainer}
         >
@@ -70,7 +72,7 @@ class Demo7 extends Component {
          
         </AutoPlaySwipeableViews>
         <Pagination
-          dots={3}
+          dots={this.props.imgs.length}
           index={index}
           onChangeIndex={this.handleChangeIndex}
         />
@@ -79,4 +81,4 @@ class Demo7 extends Component {
   }
 }
 
-export default Demo7;
+export default MyAutoPlaySwipeableViews;
