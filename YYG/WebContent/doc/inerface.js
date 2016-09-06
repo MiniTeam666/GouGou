@@ -63,7 +63,7 @@ page:页数
 	stock:9786,// status=0,1,2 时需要传回
 
 	time:180000 //status=1 需要传回的字段(ms)
-	sys_
+	sys_time:18000//系统时间
 	joins:1 //status=2 时需要传回的字段 当前用户参与份数
 
 	lucky_man:{
