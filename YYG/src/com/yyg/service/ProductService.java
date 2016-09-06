@@ -245,7 +245,9 @@ public class ProductService extends Observable implements Service{
             if(lottery == null) {
                 lottery = lotteryDao.queryForId(String.valueOf(id));
                 CacheManager.getInstance().cacheLottery(lottery);
-            }
+            }else{
+            	LogManager.getLogger().info("get lottery id : " + id + ", hit cache !");
+			}
             return lottery;
         }catch(SQLException e){
             e.printStackTrace();

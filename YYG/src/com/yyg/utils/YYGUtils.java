@@ -25,7 +25,7 @@ public class YYGUtils {
 	}
 
 	public static String getAjaxAcrossCallback(String callback,String result){
-		if(AppConstant.NEED_AJAX_CROSS)
+		if(AppConstant.NEED_AJAX_CROSS && isEmptyText(callback))
 			return callback + "(" +  result  + ")";
 		return result;
 	}

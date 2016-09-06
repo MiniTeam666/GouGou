@@ -170,7 +170,6 @@ public class CacheManager {
             long now = System.currentTimeMillis();
             if(now - mLastUpdateTime >= mDuration) {
                 updateInnner();
-                mLastUpdateTime = System.currentTimeMillis();
             }
 
             if(mAutoUpdate){

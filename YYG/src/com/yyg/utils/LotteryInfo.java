@@ -23,6 +23,8 @@ public class LotteryInfo implements Observer{
 
     private volatile int copyStock;
 
+    private volatile int luckyNumBitmap;
+
     private int id;
 
     public LotteryInfo(Lottery lottery){

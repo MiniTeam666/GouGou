@@ -28,18 +28,15 @@ public class OrderService extends Observable implements Service {
 
 	private Dao<Order,String> orderDao;
 
-	private static ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
+	private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
 
 	private ProductService productService;
-
-	static {
-		mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
-	}
 
 	public OrderService(){
 		orderDao = DatabaseManager.getInstance().createDao(Order.class);
 		orderGroupDao = DatabaseManager.getInstance().createDao(OrderGroup.class);
 		productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+		mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
 	}
 
 	public int createOrderGroup(User user, int price, HashMap<Integer,Integer> orders){
