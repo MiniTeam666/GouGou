@@ -6,9 +6,11 @@ import com.yyg.model.vo.LotteryVo;
 import com.yyg.model.vo.ProductVo;
 import com.yyg.service.ProductService;
 import com.yyg.servlet.ProductServlet;
+import com.yyg.utils.YYGUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +49,11 @@ public class TestServlet extends HttpServlet{
             handleTestGetLotteries(req,resp);
         }else if("getLottery".equals(action)){
             handleTestGetLottery(req,resp);
+        }else if(YYGUtils.isEmptyText(action)){
+            Cookie[] cookies = req.getCookies();
+            for(Cookie cookie : cookies){
+                System.out.println("cookie " + cookie.getName() + " : " + cookie.getValue());
+            }
         }
     }
 

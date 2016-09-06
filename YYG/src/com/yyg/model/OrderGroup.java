@@ -21,7 +21,7 @@ public class OrderGroup {
     public int price;
 
     @DatabaseField
-    public int createTime;
+    public long createTime;
 
     @DatabaseField(foreign = true)
     public User user;

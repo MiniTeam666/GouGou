@@ -1,6 +1,7 @@
 package com.yyg.utils;
 
 import com.yyg.model.Order;
+import com.yyg.service.OrderService;
 import com.yyg.service.ProductService;
 
 /**
@@ -16,9 +17,9 @@ public class OrderTimeoutRunnable implements Runnable{
 
     private volatile boolean start;
 
-    private ProductService service;
+    private OrderService service;
 
-    public OrderTimeoutRunnable(Order order, long timeout, ProductService service){
+    public OrderTimeoutRunnable(Order order, long timeout, OrderService service){
         this.service = service;
         this.timeout = timeout;
         this.order = order;

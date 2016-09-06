@@ -1,5 +1,6 @@
 package com.yyg;
 
+import com.yyg.service.OrderService;
 import com.yyg.service.ProductService;
 import com.yyg.service.Service;
 import com.yyg.service.UserService;
@@ -9,12 +10,13 @@ public class ServiceManager {
 	public static final int User_Service = 0;
 	
 	public static final int Product_Service = User_Service + 1;
+
+	public static final int Order_Service = Product_Service + 1;
 	
-	public static final int Service_Count = Product_Service + 1;
-	
-	
-	
-	private static ServiceManager instance;
+	public static final int Service_Count = Order_Service + 1;
+
+
+	private volatile static ServiceManager instance;
 	
 	private Service[] services;
 	
@@ -53,6 +55,11 @@ public class ServiceManager {
 						break;
 					case Product_Service:
 						service = new ProductService();
+						break;
+					case Order_Service:
+						service = new OrderService();
+						break;
+					default:
 						break;
 				}
 				

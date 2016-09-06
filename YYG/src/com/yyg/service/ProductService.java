@@ -1,10 +1,14 @@
 package com.yyg.service;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
+import com.j256.ormlite.dao.CloseableIterator;
+import com.j256.ormlite.dao.CloseableWrappedIterable;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.yyg.AppConstant;
 import com.yyg.CacheManager;
 import com.yyg.model.*;
@@ -29,24 +33,16 @@ public class ProductService extends Observable implements Service{
 
 	private Dao<Category,String> categoryDao;
 
-    private Dao<Order,String> orderDao;
-	
 	private Dao<UserLotteryMappingTable,String> lumDao;
 
     private ConcurrentHashMap<Integer,List<Integer>> mUpdateLotteryStockTaskList;
 
-    private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
-
-    private ExecutorService mTimeoutThread;
-	
 	public ProductService(){
 		productDao = DatabaseManager.getInstance().createDao(Product.class);
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 		lumDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
-        orderDao = DatabaseManager.getInstance().createDao(Order.class);
         mUpdateLotteryStockTaskList = new ConcurrentHashMap<Integer, List<Integer>>();
-        mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
 	}
 	
 	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
@@ -346,68 +342,5 @@ public class ProductService extends Observable implements Service{
 		return false;
 	}
 
-	public int createOrder(User user,int lotteryID,int count){
-	    try{
-	    	Lottery lottery = getLottery(lotteryID);
-			int stockStatus = lottery.lotteryInfo.decrementStock(count);
-			if(stockStatus != 0) {
-				LogManager.getLogger().warn("create order fail , lottery stock not permit " + stockStatus);
-				return -1;
-			}
-
-            final Order order = new Order();
-            order.user = user;
-            order.time = System.currentTimeMillis();
-            order.state = Order.OrderStatu.waitpay.getStatus();
-            order.joinTime = count;
-            order.lottery = lottery;
-            boolean createOrder = orderDao.create(order) == 1;
-			if(createOrder){
-				//TODO 生成支付接口,超时时间要大于支付接口超时时间
-                LogManager.getLogger().error("create order successful ! id : " + order.id + " time : "  + YYGUtils.getTimeStr(order.time));
-                OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(order,AppConstant.ORDER_PAY_TIMEOUT,this);
-                mOrderTimeoutMap.put(order.id,runnable);
-                ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
-			}else{
-			    LogManager.getLogger().error("create order fail ! user : " + user.id + ", buyCount : " + count);
-                ThreadManager.executeOnNormalThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        notifyOrderPayResult(order,Message.ERROR_CODE_ORDERE_CREATE_FAIL);
-                    }
-                });
-			}
-
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public boolean updateOrder(Order order){
-		try{
-
-			if(orderDao.update(order) == 1)
-				return true;
-
-		}catch (SQLException e){
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-    public void notifyOrderPayResult(Order order,int result){
-        int id = order.id;
-        OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
-        if(runnable != null){
-            boolean cancelRet = runnable.cancel();
-            if(!cancelRet && result == 0){
-                //TODO 回滚timeout操作
-            }
-        }
-        Message msg = Message.getUpdateStockMsg(order.lottery.id,result,order);
-        notifyObservers(msg);
-        setChanged();
-    }
 
 }

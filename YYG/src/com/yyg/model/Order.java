@@ -29,10 +29,13 @@ public class Order {
 	
 	@DatabaseField
 	public String postCode;
-	
+
 	//购买次数
 	@DatabaseField
 	public int joinTime;
+
+	@DatabaseField(foreign = true)
+	public OrderGroup orderGroup;
 
 
 	public static enum OrderStatu{

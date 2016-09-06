@@ -5,12 +5,12 @@ import com.yyg.CacheManager;
 import com.yyg.ServiceManager;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
+import com.yyg.service.OrderService;
 import com.yyg.service.ProductService;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by line on 2016/9/3.
@@ -81,7 +81,7 @@ public class LotteryInfo implements Observer{
             if(msg.event != AppConstant.EVENT_UPDATE_STOCK || msg.what != id)
                 return;
 
-            ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+			OrderService orderService = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
             Order order = (Order) msg.obj;
             int value = order.joinTime;
             if(AppConstant.OK == msg.result){
@@ -121,7 +121,7 @@ public class LotteryInfo implements Observer{
             }
 
             if(msg.result != Message.ERROR_CODE_ORDERE_CREATE_FAIL)
-                service.updateOrder(order);
+                orderService.updateOrder(order);
         }
     }
 }
