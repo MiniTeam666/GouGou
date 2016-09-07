@@ -105,16 +105,21 @@ page:页数
 			revealed_time:'2016-08-12 17:23:07',//揭晓时间
 		}//status=2 时需要传回的字段 中奖用户的个人信息
 
-		nextProduct:17//status=1,2时需要传回 该商品的下一云购号
+		nextProductID:17//status=1,2时需要传回 该商品的下一云购号
 
 	},
 	status:0,//状态信息
     errMsg:'超时错误',
 }
 
-#/products/records 参与记录 /products/records?id='23423'&page=1 
-id:商品ID
-page:页数
+#/products/records 参与记录 /products/records?id='23423'&page=1&type=1
+#id:商品ID
+#page:页数
+#type:
+#    缺省 or 0 按分页模式返回对应个数的纪录
+#    1 返回最新的100条纪录
+
+example :
 {
 	data:{
 		data:[
@@ -124,7 +129,6 @@ page:页数
 				joins:123 ,//用户参与次数
 				join_time:'2016-08-10 21:46:04.434', //参与购买时间 注意格式
 				id:'234234',用户ID
-
 			}
 		],
 		has_more:false //是否是末页了
@@ -133,24 +137,6 @@ page:页数
 	status:0,//状态信息
     errMsg:'超时错误',
 
-}
-
-#/products/calculate 商品计算详情 返回最后参与的100位用户购买记录 /products/calculate?id='123123'
-id:商品ID
-{
-	data:{
-		data:[
-			{
-				join_time:'2016-08-10 21:46:04.434',//参与购买时间
-				join_man{
-					name:'小明',
-					id:'34234'
-				}
-			}
-		]
-	},
-	status:0,//状态信息
-    errMsg:'超时错误',
 }
 
 获取某个商品幸运者的所有购买号            /personal/getnums?user_id='123'&product_id='23423'
