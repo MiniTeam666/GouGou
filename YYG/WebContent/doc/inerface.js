@@ -167,16 +167,13 @@ id:商品ID
 
 
 
-#/shopping_cart
+#/shopping_cart 结算页面接口
 {
-	data:{
-		data:[
-			{
-				
-			}
-		]
-	}, 
-	status:0,//状态信息
- 	errMsg:'超时错误',
+	data:[
+		{
+			id:'123123',//商品ID
+			cnt:13,// 购买份数
+		},
+	]
 }
 
