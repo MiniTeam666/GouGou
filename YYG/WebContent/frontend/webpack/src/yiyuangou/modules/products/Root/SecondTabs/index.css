@@ -1,0 +1,18 @@
+:local{
+	.popover{
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		overflow: hidden;
+		/*align-items:center;
+		justify-content: center;*/
+		/*text-align: center;*/
+	}
+	.inner{
+		
+		width: 33.3%;
+		padding:0;
+		overflow: hidden;
+
+	}
+}
