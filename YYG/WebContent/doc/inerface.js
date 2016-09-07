@@ -37,10 +37,10 @@
  errMsg:'超时错误',
 }
 
-#/products/list 商品列表 /products/list
+#/products/category 商品列表 /products/category
 {
 	data:{
-		list:[
+		category:[
 			{
 				name:'手机数码',
 				id:'12',
