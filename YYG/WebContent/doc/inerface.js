@@ -153,13 +153,32 @@ example :
 
 
 
-#/shopping_cart 结算页面接口
-{
-	data:[
-		{
-			id:'123123',//商品ID
-			cnt:13,// 购买份数
-		},
-	]
-}
+#/shopping_cart 结算页面接口 /shopping_cart
+post提交数据 {
+			data:[
+				{
+					id:'123123',//商品ID
+					cnt:13,// 购买份数
+				}
+			]
+		 }
+返回数据 {
+			data:{
+				failList:[
+					{
+						id:'123123',//商品ID
+						stock:12,//当前商品所剩份数
+						nextProductId:'123123'//下一云商品ID
+						nextProductStock:568//下一商品所剩份数
+						nextNum:'1231',//下一云的云号
+					}
+				],
+
+			},
+			status:0,//状态信息
+			errMsg:'超时错误'
+		}
+
+
+
 
