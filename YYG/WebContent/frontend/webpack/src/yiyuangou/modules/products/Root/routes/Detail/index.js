@@ -26,13 +26,11 @@ export default class Detail extends React.Component{
   }
 
   async getData(){
-    const obj = {
-      id:60
-    };
+    const obj = this.props.location.query;
     const url = REQUEST_PRODUCTS_DETAIL_PATH;
     const fetch = new Fetch();
     let json = await fetch.get(url,REQUEST_PRODUCTS_DETAIL_PATH,obj);
-    json.status=1;
+    // json.status=1;
     this.changeDetialState(json);
 
   }

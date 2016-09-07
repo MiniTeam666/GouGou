@@ -38,7 +38,7 @@ export default class Products extends React.Component{
 	render(){
 		var productList = this.state.products.map(function(product){
 			return(
-				<Product />
+				<Product product={product} />
 			)
 		});
 		return(

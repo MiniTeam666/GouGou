@@ -8,9 +8,7 @@ injectTapEventPlugin();
 import { Router,hashHistory } from 'react-router';
 
 import withExampleBasename from './withExampleBasename'
-import  'company/yiyuangou/util/Route';
-import MyRouter from 'company/util/lib/Router';
-window.Router = MyRouter;
+
 const rootRoute = {
   childRoutes: [ {
     path: '/',
