@@ -36,9 +36,24 @@
  status:0,//状态信息
  errMsg:'超时错误',
 }
+
+#/products/list 商品列表 /products/list
+{
+	data:{
+		list:[
+			{
+				name:'手机数码',
+				id:'12',
+			}
+		]
+	},
+	status:0,//状态信息
+	errMsg:'超时错误',
+}
+
 #/products 全部商品接口  /products?category='all'&type='renqi'&direction=1&page=
 category:商品分类(例如: 全部分类 手机数码  电脑办公  家用电器 )
-type: 商品分类 最新  人气  剩余人次 价值 
+type: 商品分类   人气:0  最新:1 剩余人次:2 价值:3 
 direction:剩余人次 价值 那个分类的排序方式 例如 对于剩余人次 1 代表剩余人次最少 0 代表剩余人次最多 
 			对于价值  1代表价值最高  0代表价值最低
 page:页数
