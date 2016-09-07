@@ -107,14 +107,21 @@ page:页数
 
 		next_product_id:17//status=1,2时需要传回 该商品的下一云购号
 
+
 	},
 	status:0,//状态信息
     errMsg:'超时错误',
 }
 
-#/products/records 参与记录&计算详情接口 /products/records?id='23423'&page=1 
-id:商品ID
-page:页数
+
+#/products/records 参与记录 /products/records?id='23423'&page=1&type=1
+#id:商品ID
+#page:页数
+#type:
+#    缺省 or 0 按分页模式返回对应个数的纪录
+#    1 返回最新的100条纪录
+
+example :
 {
 	data:{
 		data:[
@@ -125,7 +132,6 @@ page:页数
 				join_time:'2016-08-10 21:46:04.434', //参与购买时间 注意格式
 				id:'234234',//用户ID
 				record_id:''
-
 			}
 		],
 		has_more:false //是否是末页了
