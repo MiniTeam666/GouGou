@@ -105,12 +105,14 @@ page:页数
 			revealed_time:'2016-08-12 17:23:07',//揭晓时间
 		}//status=2 时需要传回的字段 中奖用户的个人信息
 
-		nextProductID:17//status=1,2时需要传回 该商品的下一云购号
+		next_product_id:17//status=1,2时需要传回 该商品的下一云购号
+
 
 	},
 	status:0,//状态信息
     errMsg:'超时错误',
 }
+
 
 #/products/records 参与记录 /products/records?id='23423'&page=1&type=1
 #id:商品ID
@@ -128,7 +130,8 @@ example :
 				name:'小明',//用户昵称
 				joins:123 ,//用户参与次数
 				join_time:'2016-08-10 21:46:04.434', //参与购买时间 注意格式
-				id:'234234',用户ID
+				id:'234234',//用户ID
+				record_id:''
 			}
 		],
 		has_more:false //是否是末页了
@@ -139,6 +142,8 @@ example :
 
 }
 
+
+
 获取某个商品幸运者的所有购买号            /personal/getnums?user_id='123'&product_id='23423'
 {
 	data:{
@@ -146,6 +151,35 @@ example :
 			'2234243',//购买号
 			'1232445',//购买号
 		]
+	},
+	status:0,//状态信息
+ 	errMsg:'超时错误',
+}
+
+#/show  晒单接口 /show?page=1
+#page:0 页码
+
+{
+	data:{
+		data:[
+			{
+				show:{
+					time:'2016-08-10 21:46:04',
+					img:'https://onegoods.nosdn.127.net/goods/2375/753bb7b8ab06537a6fb6ea432dac7ea3.jpg',
+					title:'金币金币如我心意',
+					id:'123123',//晒单ID
+					content:'一元夺宝是真正的公平公正公开夺宝平台，中了很多东西。',//晒单正文
+
+				},
+				product_id:'123123',
+				lucky_man:{
+					id:'1231'， //中奖用户的Id
+					name:'给我中个充气娃娃也行啊',
+				}
+
+			}
+		],
+		has_more:false,//是否是末页了
 	},
 	status:0,//状态信息
  	errMsg:'超时错误',
@@ -162,15 +196,16 @@ post提交数据 {
 				}
 			]
 		 }
+
 返回数据 {
 			data:{
-				failList:[
+				fail_list:[
 					{
 						id:'123123',//商品ID
 						stock:12,//当前商品所剩份数
-						nextProductId:'123123'//下一云商品ID
-						nextProductStock:568//下一商品所剩份数
-						nextNum:'1231',//下一云的云号
+						next_product_id:'123123'//下一云商品ID
+						next_product_stock:568//下一商品所剩份数
+						next_num:'1231',//下一云的云号
 					}
 				],
 
