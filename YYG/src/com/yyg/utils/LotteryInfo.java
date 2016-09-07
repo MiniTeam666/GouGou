@@ -6,7 +6,6 @@ import com.yyg.ServiceManager;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.service.OrderService;
-import com.yyg.service.ProductService;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.Observable;

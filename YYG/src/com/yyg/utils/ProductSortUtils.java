@@ -74,8 +74,10 @@ public class ProductSortUtils {
 
 		@Override
 		public int compare(Lottery o1, Lottery o2) {
-			String[] records1 = o1.buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
-			String[] records2 = o2.buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
+			String[] records1 = YYGUtils.isEmptyText(o1.buyRecord) ?
+					null : o1.buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
+			String[] records2 = YYGUtils.isEmptyText(o2.buyRecord) ?
+					null : o2.buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
 			int o1Value = getRecordValue(records1);
 			int o2Value = getRecordValue(records2);
 			return o1Value >= o2Value ? -1 : 1;
@@ -89,6 +91,10 @@ public class ProductSortUtils {
 				return ret;
 
 			for(int i = 0 ; i < record.length; i++){
+
+				if(YYGUtils.isEmptyText(record[i]))
+					continue;
+
 				String[] kv = record[i].split(AppConstant.PRODUCT_LOTTERY_RECORD_SPLIT_CHAR);
 				long buyTime = Long.valueOf(kv[0]);
 				int time = Integer.valueOf(kv[1]);

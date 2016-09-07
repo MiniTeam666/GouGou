@@ -1,21 +1,11 @@
 package com.yyg.service;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 
-import com.j256.ormlite.dao.CloseableIterator;
-import com.j256.ormlite.dao.CloseableWrappedIterable;
-import com.j256.ormlite.dao.ForeignCollection;
-import com.yyg.AppConstant;
 import com.yyg.CacheManager;
 import com.yyg.model.*;
-import com.yyg.utils.Message;
-import com.yyg.utils.OrderTimeoutRunnable;
-import com.yyg.ThreadManager;
-import com.yyg.utils.YYGUtils;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
@@ -42,7 +32,12 @@ public class ProductService extends Observable implements Service{
 		lotteryDao = DatabaseManager.getInstance().createDao(Lottery.class);
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 		lumDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
-        mUpdateLotteryStockTaskList = new ConcurrentHashMap<Integer, List<Integer>>();
+        mUpdateLotteryStockTaskList = new ConcurrentHashMap<>();
+
+		//pre build cache
+		long start = System.currentTimeMillis();
+		getLotterys(0,1,-1,0,1,LotteryStatu.waiting.getStatus());
+		LogManager.getLogger().info("build lottery cache ! cost ：" + (System.currentTimeMillis() - start) + "ms");
 	}
 	
 	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
@@ -69,7 +64,7 @@ public class ProductService extends Observable implements Service{
 	}
 
 	public List<Product> getAllProduct(){
-		ArrayList<Product> list = new ArrayList<Product>();
+		ArrayList<Product> list = new ArrayList<>();
 		try{
 			return productDao.queryForAll();
 		}catch (SQLException e){
@@ -140,43 +135,29 @@ public class ProductService extends Observable implements Service{
 		return false;
 	}
 
-
-	public List<Lottery> getAllLotteriesWithoutCache(){
-		try{
-
-			return lotteryDao.queryBuilder().where().eq("status",LotteryStatu.waiting.getStatus()).query();
-
-		}catch (SQLException e){
-			e.printStackTrace();
-		}
-		return new ArrayList<Lottery>();
-	}
-	
-	public List<LotteryVo> getLotterys(int startRow,int count,int categoryID,int type,int direction){
+	public List<LotteryVo> getLotterys(int startRow,int count,int categoryID,int type,int direction,int status){
 		try{
 			
-			if(direction == 1 && type == LotterySortType.RemainCnt.getType()){
-				direction = 0;
-			}
-
 			//get all lottery
 			List<Lottery> lotterys = CacheManager.getInstance().getLotteries();
 			if(lotterys == null || lotterys.size() <= 0) {
-				lotterys = lotteryDao.queryBuilder().where()
-						.eq("status", LotteryStatu.waiting.getStatus()).query();
+//				lotterys = lotteryDao.queryBuilder().where()
+//						.eq("status", LotteryStatu.waiting.getStatus()).query();
+				lotterys = lotteryDao.queryForAll();
                 CacheManager.getInstance().cacheLotteries(lotterys);
 			}
 
 			//filter category
-			if(categoryID != -1){
-				Iterator<Lottery> it = lotterys.iterator();
-				while(it.hasNext()){
-					Lottery temp = it.next();
-					if(temp.product.category.id != categoryID){
-						lotterys.remove(temp);
-					}
+			Iterator<Lottery> it = lotterys.iterator();
+			List<Lottery> tmp = new ArrayList<>();
+			while(it.hasNext()){
+				Lottery temp = it.next();
+				if((status == -1 || temp.status == status ) &&
+						(categoryID == -1 || temp.product.category.id != categoryID)){
+					tmp.add(temp);
 				}
 			}
+			lotterys = tmp;
 
 			if(startRow >= lotterys.size())
 			    return null;
@@ -209,9 +190,9 @@ public class ProductService extends Observable implements Service{
 			LogManager.getLogger().info("get page data : start : " + start + ",end : " + end);
 
 			//转换为VO
-			List<Lottery> tmp = lotterys.subList(start, end);
+			tmp = lotterys.subList(start, end);
 
-			List<LotteryVo> result = new ArrayList<LotteryVo>();
+			List<LotteryVo> result = new ArrayList<>();
             if(direction == 1) {
                 for (int i = 0; i < tmp.size(); i++) {
                     result.add(LotteryVo.getVo(tmp.get(i)));
@@ -335,7 +316,7 @@ public class ProductService extends Observable implements Service{
 			lottery.product = product;
 			lottery.remainCountOfQulification = product.price;
 			lottery.status = LotteryStatu.waiting.getStatus();
-
+//			lottery.luckNumBitmap = lottery.remainCountOfQulification;
 			boolean ret =  lotteryDao.create(lottery) == 1;
 			return ret;
 		}catch (SQLException e){

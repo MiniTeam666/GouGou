@@ -49,8 +49,12 @@ public class AppConstant {
 	/**-----------------------------商品配置-------------------*/
 	
 	public static final int DEFAULT_PAGE_COUNT = 10;
+
 	public static final String PRODUCT_LOTTERY_RECORD_SPLIT_CHAR = ":";
+
 	public static final String PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR = ";";
+
+	public static final String PRODUCT_LUCKNUM_SPLIT_CHAR = ",";
 
 	public static final int DEFAULT_PRODUCT_HOT_CYCLE = 7 * 3600 * 1000; //一周
 
@@ -72,8 +76,10 @@ public class AppConstant {
 
     public static final String REQUEST_PRODUCTS_PATH = "/products";
 
-	public static final String REQUEST_ORDERS = "/products/records";
+	public static final String REQUEST_PRODUCT_ORDERS = "/products/records";
 
 	public static final String REQUEST_HOME = "/home";
+
+	public static final String REQUEST_GET_CATEGORY = "/products/category";
 
 }

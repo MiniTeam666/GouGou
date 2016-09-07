@@ -1,5 +1,6 @@
 package com.yyg;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.service.ProductService;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 
 /**
@@ -18,7 +20,7 @@ public class CacheManager {
 
     private CacheField<ConcurrentHashMap<Integer,Lottery>> mLotteriesCache;
 
-    private ConcurrentHashMap<Integer,Order> mOrderCache;
+    private ConcurrentHashMap<Integer,List<Order>> mOrderCache;
 
     private static volatile CacheManager instance;
 
@@ -38,13 +40,33 @@ public class CacheManager {
         return instance;
     }
 
-    public Order getOrder(int orderID){
-        return mOrderCache.get(orderID);
+    public List<Order> getOrders(int lotteryID){
+    	return mOrderCache.get(lotteryID);
     }
 
     public void cacheOrder(Order order){
-        mOrderCache.put(order.id,order);
+    	List<Order> orders = new ArrayList<>();
+		orders.add(order);
+    	cacheOrders(order.lottery.id,orders);
+	}
+
+    public void cacheOrders(int lotteryID,List<Order> orders){
+
+    	if(orders == null || orders.isEmpty())
+    		return;
+
+    	List<Order> srcList = mOrderCache.get(lotteryID);
+		for(Order order : orders) {
+			if (!srcList.contains(order)) {
+				srcList.add(order);
+			} else {
+				int index = srcList.indexOf(order);
+				Order old = srcList.get(index);
+				old.update(order);
+			}
+		}
     }
+
 
     public Lottery getLottery(int lotteryID){
         if(mLotteriesCache == null)

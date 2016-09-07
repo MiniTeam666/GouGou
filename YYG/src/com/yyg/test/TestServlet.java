@@ -2,20 +2,18 @@ package com.yyg.test;
 
 import com.yyg.ServiceManager;
 import com.yyg.model.Product;
-import com.yyg.model.vo.LotteryVo;
 import com.yyg.model.vo.ProductVo;
 import com.yyg.service.ProductService;
+import com.yyg.servlet.BaserServlet;
+import com.yyg.servlet.HttpRequest;
+import com.yyg.servlet.HttpResponse;
 import com.yyg.servlet.ProductServlet;
 import com.yyg.utils.YYGUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 import java.util.Random;
 
@@ -23,7 +21,7 @@ import java.util.Random;
  * Created by line on 2016/8/30.
  */
 @WebServlet("/test")
-public class TestServlet extends HttpServlet{
+public class TestServlet extends BaserServlet {
 
     public ProductService productService;
 
@@ -34,12 +32,7 @@ public class TestServlet extends HttpServlet{
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req,resp);
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doRequest(HttpRequest req, HttpResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
         if("addProduct".equals(action)){
             handleTestAddProduct(req,resp);
@@ -57,7 +50,7 @@ public class TestServlet extends HttpServlet{
         }
     }
 
-    private void handleTestGetLottery(HttpServletRequest req,HttpServletResponse resp){
+    private void handleTestGetLottery(HttpRequest req,HttpResponse resp){
         try{
             ProductServlet productServlet = new ProductServlet();
             productServlet.init();
@@ -67,7 +60,7 @@ public class TestServlet extends HttpServlet{
         }
     }
 
-    private void handleTestGetLotteries(HttpServletRequest req,HttpServletResponse resp){
+    private void handleTestGetLotteries(HttpRequest req,HttpResponse resp){
         try {
             ProductServlet productServlet = new ProductServlet();
             productServlet.init();
@@ -77,27 +70,24 @@ public class TestServlet extends HttpServlet{
         }
     }
 
-    private void handleTestCreateLottery(HttpServletRequest req, HttpServletResponse resp){
+    private void handleTestCreateLottery(HttpRequest req, HttpResponse resp){
         List<Product> products = productService.getAllProduct();
         try {
-            Writer writer = resp.getWriter();
             if (products != null) {
-                writer.write("<html><body>");
-                writer.flush();
+                resp.write("<html><body>");
+                resp.flush();
                 for (int i = 0; i < products.size(); i++) {
                     String remark = "备注" + (i + 1);
                     productService.createLottery(products.get(i).id, remark);
                     ProductVo vo = ProductVo.getVo(products.get(i));
-                    writer.write(vo.getData().toString());
-                    writer.write("<br/>");
-                    writer.flush();
+                    resp.write(vo.getData().toString());
+                    resp.write("<br/>");
+                    resp.flush();
                 }
-                writer.write("</body></html>");
-                writer.flush();
-                writer.close();
+                resp.write("</body></html>");
+                resp.flush();
             }else{
-                writer.write("get Product fail !");
-                writer.close();
+                resp.write("get Product fail !");
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -105,7 +95,7 @@ public class TestServlet extends HttpServlet{
     }
 
 
-    public void handleTestAddProduct(HttpServletRequest req,HttpServletResponse resp){
+    public void handleTestAddProduct(HttpRequest req,HttpResponse resp){
         int count = 30;
         Random random = new Random();
         int result = 0;
@@ -123,9 +113,9 @@ public class TestServlet extends HttpServlet{
 
         try {
             if (result == count) {
-                resp.getWriter().write("test successfull !");
+                resp.write("test successfull !");
             } else {
-                resp.getWriter().write("test error !");
+                resp.write("test error !");
             }
         }catch (Exception e){
             e.printStackTrace();

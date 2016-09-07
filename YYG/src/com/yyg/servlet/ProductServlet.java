@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.yyg.model.Lottery;
+import com.yyg.utils.ProductSortUtils;
 import com.yyg.utils.YYGUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +24,7 @@ import com.yyg.service.ProductService;
 @WebServlet(urlPatterns = {
 			AppConstant.REQUEST_PRODUCT_DETAIL_PATH,
 			AppConstant.REQUEST_PRODUCTS_PATH})
-public class ProductServlet extends HttpServlet{
+public class ProductServlet extends BaserServlet{
 	
 	private ProductService service;
 	
@@ -31,58 +33,58 @@ public class ProductServlet extends HttpServlet{
 		service = (ProductService)ServiceManager.getInstance().getService(ServiceManager.Product_Service);
 	}
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doRequest(HttpRequest req, HttpResponse resp)
 			throws ServletException, IOException {
         String uri = req.getRequestURI();
-        if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_DETAIL_PATH).equals(uri)){
-            handleGetProductDetail(req,resp);
-        }else if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCTS_PATH).equals(uri)){
-            handleGetProducts(req,resp);
-        }
+
+		if(YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_DETAIL_PATH).equals(uri))
+				handleGetProductDetail(req,resp);
+		else if (YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCTS_PATH).equals(uri))
+				handleGetProducts(req,resp);
+		else if (YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_ORDERS).equals(uri))
+				handleGetProductOrders(req,resp);
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		doGet(req,resp);
+	public void handleGetProductOrders(HttpRequest req, HttpResponse resp){
+
 	}
-	
-	public void handleGetProducts(HttpServletRequest req,HttpServletResponse resp){
+
+
+	public void handleGetProducts(HttpRequest req,HttpResponse resp){
 		try{
-			String callback = req.getParameter("callback");
-			int categoryID = Integer.valueOf(req.getParameter("category"));
-			int type = Integer.valueOf(req.getParameter("type"));
-			int direction = Integer.valueOf(req.getParameter("direction"));
-			int page = Integer.valueOf(req.getParameter("page"));
+			int categoryID = YYGUtils.getIntFromReq(req,"category",-1);
+			int type = YYGUtils.getIntFromReq(req,"type", ProductSortUtils.LotterySortType.Hot.getType());
+			int direction = YYGUtils.getIntFromReq(req,"direction",1);
+			int page = YYGUtils.getIntFromReq(req,"page",0);
+			int status = YYGUtils.getIntFromReq(req,"status", Lottery.LotteryStatu.waiting.getStatus());
 			int startRow = page * AppConstant.DEFAULT_PAGE_COUNT;
 			
-			List<LotteryVo> list = service.getLotterys(startRow,AppConstant.DEFAULT_PAGE_COUNT + 1,categoryID, type, direction);
+			List<LotteryVo> list = service.getLotterys(startRow,AppConstant.DEFAULT_PAGE_COUNT + 1,
+					categoryID, type, direction,status);
+
 			if(list == null || list.isEmpty()){
-				resp.getWriter().write("{}");
+				resp.writeJsonData("data",new JSONArray());
+				resp.writeJsonData("has_more",false);
 				return ;
 			}
 			
 			boolean hasMore = list.size() > AppConstant.DEFAULT_PAGE_COUNT;
 			int n = hasMore ? list.size() - 1 : list.size();
 			
-			JSONObject ret = new JSONObject();
-			ret.put("has_more",hasMore);
+			resp.writeJsonData("has_more",hasMore);
 			JSONArray array = new JSONArray();
 			
 			for(int i = 0; i < n ; i++){
 				array.put(list.get(i).getProductsPageData());
 			}
-			
-			ret.put("data", array);
-			
-			resp.getWriter().write(YYGUtils.getAjaxAcrossCallback(callback,ret.toString()));
+
+			resp.writeJsonData("data", array);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	public void handleGetProductDetail(HttpServletRequest req,HttpServletResponse resp){
+	public void handleGetProductDetail(HttpRequest req,HttpResponse resp){
 		try{
 			int id = Integer.valueOf(req.getParameter("id"));
 			User user = (User)req.getSession().getAttribute(AppConstant.USER);
@@ -90,7 +92,7 @@ public class ProductServlet extends HttpServlet{
 			int joinTime = user != null ? service.getJoinTimeForLottery(id,user.id) : -1;
 			
 			if(ret != null){
-				resp.getWriter().write(YYGUtils.getAjaxAcrossCallback(req.getParameter("callback"),ret.getProductDetailData(joinTime).toString()));
+				resp.replaceJsonData(ret.getProductDetailData(joinTime));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

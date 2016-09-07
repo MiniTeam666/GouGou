@@ -5,10 +5,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import com.yyg.AppConstant;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,52 +16,42 @@ import com.yyg.model.Category;
 import com.yyg.service.ProductService;
 import com.yyg.utils.YYGUtils;
 
-@WebServlet("/category/*")
-public class CategoryServlet extends HttpServlet{
+@WebServlet(urlPatterns = {AppConstant.REQUEST_GET_CATEGORY})
+public class CategoryServlet extends BaserServlet{
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doRequest(HttpRequest req, HttpResponse resp)
 			throws ServletException, IOException {
-		doPost(req,resp);
-	}
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		String uri = req.getRequestURI();
-		String action = uri.split("/")[3];
+		String reqUrl = req.getRequestURI();
 		
 		ProductService service = (ProductService)ServiceManager.getInstance().getService(ServiceManager.Product_Service);
 		
-		switch(action){
-			case "add":
-				String categoryName = req.getParameter("categoryName");
-				if(YYGUtils.isEmptyText(categoryName)){
-					
+		if(YYGUtils.getProjectURI(AppConstant.REQUEST_GET_CATEGORY).equals(reqUrl)) {
+			List<Category> categorys = service.getAllCategory();
+			if(categorys != null && categorys.size() > 0){
+				try{
+					JSONArray array = new JSONArray();
+					for(int i = 0 ; i < categorys.size(); i++){
+						JSONObject obj =  new JSONObject();
+						obj.put("id",categorys.get(i).id);
+						obj.put("name",categorys.get(i).name);
+						array.put(obj);
+					}
+					resp.writeJsonData("category",array);
+				}catch(JSONException e){
+					e.printStackTrace();
+				}
+			}
+		}else if("add".equals(reqUrl)){
+			String categoryName = req.getParameter("categoryName");
+			if(YYGUtils.isEmptyText(categoryName)){
+
+			}else{
+				if(service.addCategory(categoryName)){
 				}else{
-					if(service.addCategory(categoryName)){
-					}else{
-					}
 				}
-				break;
-			case "get":
-				List<Category> categorys = service.getAllCategory();
-				if(categorys != null && categorys.size() > 0){
-					try{
-						JSONArray array = new JSONArray();
-						for(int i = 0 ; i < categorys.size(); i++){
-							JSONObject obj =  new JSONObject();
-							obj.put("id",categorys.get(i).id);
-							obj.put("categoryName",categorys.get(i).name);
-							array.put(obj);
-						}
-						resp.getWriter().write(array.toString());
-					}catch(JSONException e){
-						e.printStackTrace();
-					}
-				}
-				break;
+			}
 		}
 	}
 	

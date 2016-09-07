@@ -2,6 +2,7 @@ package com.yyg.servlet;
 
 import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
+import com.yyg.model.Lottery;
 import com.yyg.model.vo.LotteryVo;
 import com.yyg.service.ProductService;
 import com.yyg.utils.ProductSortUtils;
@@ -26,8 +27,10 @@ public class HomeServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
-        List<LotteryVo> hotList = service.getLotterys(0,3,-1, ProductSortUtils.LotterySortType.Hot.getType(),1);
-        List<LotteryVo> latestList = service.getLotterys(0,3,-1, ProductSortUtils.LotterySortType.Lastest.getType(),1);
+        List<LotteryVo> hotList = service.getLotterys(0,3,-1,
+				ProductSortUtils.LotterySortType.Hot.getType(),1, Lottery.LotteryStatu.waiting.getStatus());
+        List<LotteryVo> latestList = service.getLotterys(0,3,-1,
+				ProductSortUtils.LotterySortType.Lastest.getType(),1,Lottery.LotteryStatu.waiting.getStatus());
         JSONObject result = new JSONObject();
 
         if(hotList != null){

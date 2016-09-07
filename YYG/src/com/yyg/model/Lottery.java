@@ -36,6 +36,9 @@ public class Lottery {
 	@DatabaseField
 	public long luckyNum;
 
+//	@DatabaseField
+//	public long luckNumBitmap; // 幸运号位图
+
 	@DatabaseField
 	public String buyRecord; //计算热度用
 

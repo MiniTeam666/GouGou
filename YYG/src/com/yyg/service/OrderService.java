@@ -1,14 +1,12 @@
 package com.yyg.service;
 
 import com.j256.ormlite.dao.Dao;
-import com.yyg.AppConstant;
-import com.yyg.DatabaseManager;
-import com.yyg.ServiceManager;
-import com.yyg.ThreadManager;
+import com.yyg.*;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.model.OrderGroup;
 import com.yyg.model.User;
+import com.yyg.model.vo.OrderVo;
 import com.yyg.utils.Message;
 import com.yyg.utils.OrderTimeoutRunnable;
 import com.yyg.utils.YYGUtils;
@@ -16,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,6 +68,40 @@ public class OrderService extends Observable implements Service {
 		return -1;
 	}
 
+	public List<OrderVo> getOrders(int lotteryID, int startRow, int count){
+		try{
+
+			List<Order> orderList = CacheManager.getInstance().getOrders(lotteryID);
+			if(orderList == null){
+				orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
+				CacheManager.getInstance().cacheOrders(lotteryID,orderList);
+			}
+
+			if(orderList != null){
+				int end = startRow + count < orderList.size() ? startRow + count : orderList.size();
+				orderList = orderList.subList(startRow,end);
+				return OrderVo.translateOrders(orderList);
+			}
+
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean updateOrder(Order order){
+		try{
+			int num = orderDao.update(order);
+			if(num == 1) {
+				CacheManager.getInstance().cacheOrder(order);
+				return true;
+			}
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public Order createOrder(User user,int lotteryID,int count,OrderGroup orderGroup){
 		final Order order;
 		try{
@@ -109,18 +142,6 @@ public class OrderService extends Observable implements Service {
 		return null;
 	}
 
-	public boolean updateOrder(Order order){
-		try{
-
-			if(orderDao.update(order) == 1)
-				return true;
-
-		}catch (SQLException e){
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 	public void notifyOrderPayResult(Order order,int result){
 		int id = order.id;
 		OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
@@ -133,6 +154,14 @@ public class OrderService extends Observable implements Service {
 		Message msg = Message.getUpdateStockMsg(order.lottery.id,result,order);
 		notifyObservers(msg);
 		setChanged();
+	}
+
+	interface OrderResultCode{
+		interface GetOrder{
+			int Lottery_Not_Exist = 1001;
+			int Successful = 1002;
+			int Exception = 1003;
+		}
 	}
 
 }

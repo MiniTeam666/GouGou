@@ -2,14 +2,15 @@ package com.yyg.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.sun.org.apache.xpath.internal.operations.Or;
 
 @DatabaseTable
 public class Order {
 	
-	@DatabaseField(generatedId=true)
+	@DatabaseField(generatedId = true)
 	public int id;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true,foreignAutoRefresh = true)
     public Lottery lottery;
 	
 	@DatabaseField
@@ -21,7 +22,7 @@ public class Order {
 	@DatabaseField
 	public long time;
 	
-	@DatabaseField(foreign=true,foreignAutoRefresh=true)
+	@DatabaseField(foreign = true,foreignAutoRefresh = true)
 	public User user;
 	
 	@DatabaseField
@@ -48,5 +49,19 @@ public class Order {
 		public int getStatus(){
 			return status;
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Order){
+			return ((Order) obj).id == id;
+		}
+		return false;
+	}
+
+	public void update(Order order){
+		this.state = order.state;
+		this.postCode = order.postCode;
+		this.postCompany = order.postCompany;
 	}
 }
