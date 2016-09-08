@@ -178,7 +178,8 @@ example :
 				}
 
 			}
-		]
+		],
+		has_more:false,//是否是末页了
 	},
 	status:0,//状态信息
  	errMsg:'超时错误',

@@ -31,6 +31,7 @@ export default class Products extends React.Component{
 		const fetch = new Fetch();
 		let json = await fetch.get(url,REQUEST_PRODUCTS_PATH,obj);
 		dataCache = dataCache.concat(json.data);
+		console.log(dataCache);
 		this.setProducts(dataCache);
 	}
 	setProducts(products){
