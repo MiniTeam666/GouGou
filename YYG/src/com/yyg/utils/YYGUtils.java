@@ -1,6 +1,7 @@
 package com.yyg.utils;
 
 import com.yyg.AppConstant;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.DataInputStream;
@@ -48,7 +49,16 @@ public class YYGUtils {
 	public static String int2Hex(int[] datas){
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < datas.length ; i++){
-			sb.append(Integer.toHexString(datas[i]));
+			String numHexStr = Integer.toHexString(datas[i]);
+			int len = numHexStr.length();
+			if(len < 8){
+				int n = 8 - len;
+				while (n > 0){
+					numHexStr = "0" + numHexStr;
+					n--;
+				}
+			}
+			sb.append(numHexStr);
 		}
 		return sb.toString();
 	}
@@ -70,14 +80,23 @@ public class YYGUtils {
 		int n = luckBimap.length;
 		for(int i = 0; i < n ; i++){
 			int fbit = luckBimap[i];
-			int j = 32;
-			while((32 * i + (32 - j)) <= maxNum && --j >= 0){
-				if(((fbit >> j) & 1) != 1){
-					int num = 32 * i + (32 - j);
+			int bitIndex = 31;
+			int offsetValue = 1;
+			while(bitIndex >= 0){
+				int map = 1 << bitIndex;
+				bitIndex--;
+				if((fbit & map) == 0){
+					int num = 32 * i + offsetValue;
+					if(num > maxNum)
+						break;
 					luckNum.add(num);
 				}
+
+				offsetValue++;
+
 			}
 		}
+
 
 		String result = "";
 		Random random = new Random();
@@ -87,12 +106,16 @@ public class YYGUtils {
 			int num = luckNum.remove(index);
 
 			//set bitmap bit to 1
-			int bitmapIndex = num / 33;
+			int bitmapIndex = num / 32;
+			if(num % 32 == 0)
+				bitmapIndex--;
 			int bit =  ( 32 - num % 32 ) % 32;
 
 			luckBimap[bitmapIndex] = luckBimap[bitmapIndex] | (1 << bit);
 
 			result += num ;
+
+
 			if(i + 1 < cnt)
 				result += AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR;
 		}
