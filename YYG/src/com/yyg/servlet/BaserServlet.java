@@ -14,6 +14,9 @@ import java.io.IOException;
  */
 public abstract class BaserServlet extends HttpServlet{
 
+	private HttpRequest reqWrapper;
+	private HttpResponse respWrapper;
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		handleRequest(req,resp);
@@ -25,8 +28,8 @@ public abstract class BaserServlet extends HttpServlet{
 	}
 
 	private void handleRequest(HttpServletRequest req,HttpServletResponse resp) throws ServletException, IOException {
-		HttpRequest reqWrapper = new HttpRequest(req);
-		HttpResponse respWrapper = new HttpResponse(resp);
+		reqWrapper = new HttpRequest(req);
+		respWrapper = new HttpResponse(resp);
 		doRequest(reqWrapper,respWrapper);
 		String callback = req.getParameter("callback");
 		if(AppConstant.NEED_AJAX_CROSS && !YYGUtils.isEmptyText(callback)){
@@ -36,5 +39,9 @@ public abstract class BaserServlet extends HttpServlet{
 	}
 
 	protected abstract void doRequest(HttpRequest req,HttpResponse resp) throws ServletException, IOException ;
+
+	public boolean isRequest(String path){
+		return YYGUtils.getProjectURI(path).equals(reqWrapper.getRequestURI());
+	}
 
 }

@@ -5,6 +5,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Collection;
+
 /**
  * Created by line on 2016/9/4.
  */
@@ -27,5 +29,5 @@ public class OrderGroup {
     public User user;
 
     @ForeignCollectionField
-    public ForeignCollection<Order> orders;
+    public Collection<Order> orders;
 }

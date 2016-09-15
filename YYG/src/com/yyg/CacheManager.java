@@ -1,16 +1,14 @@
 package com.yyg;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.service.ProductService;
-import com.yyg.utils.LotteryInfo;
+import com.yyg.utils.LotteryBuyController;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 
 /**
@@ -86,7 +84,7 @@ public class CacheManager {
             ConcurrentHashMap<Integer,Lottery> data = mLotteriesCache.getData();
             Lottery old = data.get(lottery.id);
             if(old == null || old.lastJoinTime <= lottery.lastJoinTime){
-                lottery.lotteryInfo = old == null ? new LotteryInfo(lottery) : old.lotteryInfo;
+                lottery.lotteryBuyController = old == null ? new LotteryBuyController(lottery) : old.lotteryBuyController;
                 data.put(lottery.id,lottery);
             }
         }
@@ -98,7 +96,7 @@ public class CacheManager {
         int n = list.size();
         for(int i = 0; i < n ; i++){
             Lottery lottery = list.get(i);
-            lottery.lotteryInfo = new LotteryInfo(lottery);
+            lottery.lotteryBuyController = new LotteryBuyController(lottery);
             tmp.put(lottery.id,lottery);
         }
 
@@ -126,7 +124,7 @@ public class CacheManager {
                 Lottery newValue = list.get(i);
                 Lottery oldValue = data.get(newValue.id);
                 if(oldValue == null || oldValue.lastJoinTime <= newValue.lastJoinTime){
-                    newValue.lotteryInfo = oldValue == null ? new LotteryInfo(newValue) : oldValue.lotteryInfo;
+                    newValue.lotteryBuyController = oldValue == null ? new LotteryBuyController(newValue) : oldValue.lotteryBuyController;
                     data.put(newValue.id,newValue);
                 }
             }

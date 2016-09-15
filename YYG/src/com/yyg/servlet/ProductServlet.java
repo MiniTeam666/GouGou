@@ -41,14 +41,7 @@ public class ProductServlet extends BaserServlet{
 				handleGetProductDetail(req,resp);
 		else if (YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCTS_PATH).equals(uri))
 				handleGetProducts(req,resp);
-		else if (YYGUtils.getProjectURI(AppConstant.REQUEST_PRODUCT_ORDERS).equals(uri))
-				handleGetProductOrders(req,resp);
 	}
-
-	public void handleGetProductOrders(HttpRequest req, HttpResponse resp){
-
-	}
-
 
 	public void handleGetProducts(HttpRequest req,HttpResponse resp){
 		try{

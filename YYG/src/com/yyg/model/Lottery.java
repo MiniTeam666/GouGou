@@ -4,7 +4,7 @@ import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.yyg.utils.LotteryInfo;
+import com.yyg.utils.LotteryBuyController;
 
 @DatabaseTable
 public class Lottery {
@@ -36,8 +36,8 @@ public class Lottery {
 	@DatabaseField
 	public long luckyNum;
 
-//	@DatabaseField
-//	public long luckNumBitmap; // 幸运号位图
+	@DatabaseField
+	public String luckNumBitmap; // 幸运号位图
 
 	@DatabaseField
 	public String buyRecord; //计算热度用
@@ -48,7 +48,7 @@ public class Lottery {
 	@ForeignCollectionField
 	public ForeignCollection<OrderShow> orderShows;
 
-	public LotteryInfo lotteryInfo;
+	public LotteryBuyController lotteryBuyController;
 	
 	public static enum LotteryStatu{
 		waiting(0), inLottery(1),close(2);

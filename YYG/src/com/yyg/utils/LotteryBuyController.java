@@ -14,7 +14,7 @@ import java.util.Observer;
 /**
  * Created by line on 2016/9/3.
  */
-public class LotteryInfo implements Observer{
+public class LotteryBuyController implements Observer{
 
     private Lottery lottery;
 
@@ -22,15 +22,19 @@ public class LotteryInfo implements Observer{
 
     private volatile int copyStock;
 
-    private volatile int luckyNumBitmap;
+    private volatile int[] luckyNumBitmap;
 
     private int id;
 
-    public LotteryInfo(Lottery lottery){
+	private int price;
+
+    public LotteryBuyController(Lottery lottery){
         this.lottery = lottery;
         this.id = lottery.id;
         realStock = lottery.remainCountOfQulification;
         copyStock = lottery.remainCountOfQulification;
+		luckyNumBitmap = YYGUtils.hex2Int(lottery.luckNumBitmap);
+		price = lottery.product.price;
     }
 
     private synchronized boolean incremeCopyStock(int delta){
@@ -48,21 +52,28 @@ public class LotteryInfo implements Observer{
         return true;
     }
 
-    private synchronized boolean updateStockInfo(int delta){
-        if(!incrementRealStock(delta))
-            return false;
+    private synchronized String updateStockInfo(int delta){
+        if(!incrementRealStock(-delta))
+            return null;
+
         lottery.remainCountOfQulification = realStock;
         lottery.lastJoinTime = System.currentTimeMillis();
         lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,delta,lottery.lastJoinTime);
+
+		String luckNum = YYGUtils.getLuckNum(luckyNumBitmap,price,delta);
+		lottery.luckNumBitmap = YYGUtils.int2Hex(luckyNumBitmap);
+
         if(lottery.remainCountOfQulification == 0){
             lottery.status = Lottery.LotteryStatu.inLottery.getStatus();
-            lottery.lotteryTime = lottery.lastJoinTime - AppConstant.LOTTERY_DELAY_TIME_MILL;
+            lottery.lotteryTime = lottery.lastJoinTime + AppConstant.LOTTERY_DELAY_TIME_MILL;
         }
-        CacheManager.getInstance().cacheLottery(lottery);
+
+
+		CacheManager.getInstance().cacheLottery(lottery);
 
         //TODO 定时刷新数据库
 
-        return true;
+        return luckNum;
     }
 
     public int decrementStock(int count){
@@ -93,12 +104,13 @@ public class LotteryInfo implements Observer{
                     return;
                 }
 
-                boolean ret = updateStockInfo(-value);
-                if(!ret){
+                String luckNum = updateStockInfo(value);
+                if(YYGUtils.isEmptyText(luckNum)){
                     LogManager.getLogger().error("id : " + id + " has appear positive stock . now : " + oldValue + ", newValue : " + newValue + " , offset : " + value);
                     return;
                 }else {
                     order.state = Order.OrderStatu.paySuccess.getStatus();
+					order.luckNum = luckNum;
                 }
 
             }else{

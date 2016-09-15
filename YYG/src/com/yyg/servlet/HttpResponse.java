@@ -66,6 +66,10 @@ public class HttpResponse {
 		}
 	}
 
+	public void writeHasMore(boolean hasMore) throws IOException{
+		writeJsonData("has_more",hasMore);
+	}
+
 	public void writeJsonData(String key,Object obj) throws IOException{
 		try {
 

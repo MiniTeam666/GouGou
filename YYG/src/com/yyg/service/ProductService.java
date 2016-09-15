@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.yyg.CacheManager;
 import com.yyg.model.*;
+import com.yyg.utils.YYGUtils;
 import org.apache.logging.log4j.LogManager;
 
 import com.j256.ormlite.dao.Dao;
@@ -51,8 +52,8 @@ public class ProductService extends Observable implements Service{
 			product.creatTime = System.currentTimeMillis();
 			
 			if(productDao.create(product) == 1) {
-			    //AUTO
-			    createLottery(product.id);
+			    //TODO
+			    createLottery(product.id,"");
                 return true;
             }
 			
@@ -127,6 +128,11 @@ public class ProductService extends Observable implements Service{
 			lottery.status = LotteryStatu.waiting.getStatus();
 			lottery.remainCountOfQulification = product.price;
 			lottery.buyRecord = "";
+
+			int bitmapSize = (int)Math.ceil(product.price / 32.0);
+			int[] bitmap = new int[bitmapSize];
+			lottery.luckNumBitmap = YYGUtils.int2Hex(bitmap);
+
 			if(lotteryDao.create(lottery) == 1)
 				return true;
 		}catch(SQLException e){
@@ -307,23 +313,5 @@ public class ProductService extends Observable implements Service{
 		}
 		return -1;
 	}
-
-	public boolean createLottery(int productID){
-		try{
-			Product product = productDao.queryForId(String.valueOf(productID));
-			Lottery lottery = new Lottery();
-			lottery.createTime = System.currentTimeMillis();
-			lottery.product = product;
-			lottery.remainCountOfQulification = product.price;
-			lottery.status = LotteryStatu.waiting.getStatus();
-//			lottery.luckNumBitmap = lottery.remainCountOfQulification;
-			boolean ret =  lotteryDao.create(lottery) == 1;
-			return ret;
-		}catch (SQLException e){
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 
 }

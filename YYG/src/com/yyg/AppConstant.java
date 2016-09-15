@@ -72,14 +72,20 @@ public class AppConstant {
 	public static final long ORDER_PAY_TIMEOUT = 30 * 1000; //30s
 
 	/**---------------------------接口配置-------------------*/
-	public static final String REQUEST_PRODUCT_DETAIL_PATH = "/products/detail";
+	public static final String REQUEST_PRODUCT_DETAIL_PATH = "/products/detail"; // 获取商品详情
 
-    public static final String REQUEST_PRODUCTS_PATH = "/products";
+    public static final String REQUEST_PRODUCTS_PATH = "/products"; // 获取所有商品
 
-	public static final String REQUEST_PRODUCT_ORDERS = "/products/records";
+	public static final String REQUEST_PRODUCT_ORDERS = "/products/records"; // 获取商品订单记录
 
-	public static final String REQUEST_HOME = "/home";
+	public static final String REQUEST_HOME = "/home"; // 获取主页数据
 
-	public static final String REQUEST_GET_CATEGORY = "/products/category";
+	public static final String REQUEST_GET_CATEGORY = "/products/category"; // 获取商品分类
+
+	public static final String REQUEST_CREATE_ORDER = "/shopping_cart"; // 购物车结算
+
+	public static final String REQUEST_GET_ORDERSHOW = "/show"; //获取晒单
+
+	public static final String REQUEST_GET_PERSON_LUCKYNUM = "/personal/getnums"; //获取个人幸运码
 
 }
