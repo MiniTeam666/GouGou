@@ -3,6 +3,7 @@ package com.yyg.servlet;
 import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
 import com.yyg.model.User;
+import com.yyg.model.vo.OrderResult;
 import com.yyg.model.vo.OrderVo;
 import com.yyg.service.OrderService;
 import com.yyg.utils.YYGUtils;
@@ -70,7 +71,13 @@ public class OrderServlet extends BaserServlet{
 			if(user == null){
 				resp.writeJsonBusiError(1004,"please check login");
 			}
-			service.createOrderGroup(user,datas);
+
+			OrderResult result = service.createOrderGroup(user,datas);
+			if(result.success){
+
+			}else{
+
+			}
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -120,5 +127,9 @@ public class OrderServlet extends BaserServlet{
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	public void handlePayResult(HttpRequest req , HttpResponse resp){
+		service.handleOrderGroupPayResult(1,0);
 	}
 }

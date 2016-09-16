@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.yyg.utils.LotteryBuyController;
 
 @DatabaseTable
-public class Lottery {
+public class Lottery implements Cloneable{
 	
 	@DatabaseField(generatedId=true)
 	public int id;
@@ -61,5 +61,19 @@ public class Lottery {
 			return status;
 		}
 	}
-	
+
+	/**
+	 * 这里浅克隆就ok了，只要保证基础属性不被修改
+	 * @return
+	 */
+	@Override
+	public Lottery clone(){
+		Lottery lottery = null;
+		try{
+			lottery = (Lottery) super.clone();
+		}catch (CloneNotSupportedException e){
+			e.printStackTrace();
+		}
+		return lottery;
+	}
 }

@@ -6,6 +6,7 @@ import com.yyg.ServiceManager;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.service.OrderService;
+import com.yyg.service.ProductService;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.Observable;
@@ -71,7 +72,10 @@ public class LotteryBuyController implements Observer{
 
 		CacheManager.getInstance().cacheLottery(lottery);
 
-        //TODO 定时刷新数据库
+		/** 异步刷新数据库 */
+		//TODO 考虑异步刷新任务失败如何ReToDo
+		ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+        service.updateLotteryAsync(lottery);
 
         return luckNum;
     }

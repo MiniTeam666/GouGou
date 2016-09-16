@@ -16,6 +16,8 @@ public class ThreadManager {
 
     private static ScheduledExecutorService mUpdateExecutor =  Executors.newScheduledThreadPool(AppConstant.CACHE_THREAD_NUM);
 
+	private static ExecutorService mSingleUpdateExecutor = Executors.newSingleThreadExecutor();
+
     public static void executeOnNormalThread(Runnable runnable){
         mSingleExecutor.execute(runnable);
     }
@@ -31,5 +33,9 @@ public class ThreadManager {
     public static void executeOnUpdateThread(Runnable runnable){
         executeOnUpdateThread(runnable,0);
     }
+
+    public static void executeOnSingleUpdateThread(Runnable runnable){
+    	mSingleUpdateExecutor.execute(runnable);
+	}
 
 }

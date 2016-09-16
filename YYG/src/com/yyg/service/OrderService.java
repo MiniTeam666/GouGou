@@ -32,11 +32,14 @@ public class OrderService extends Observable implements Service {
 
 	private ProductService productService;
 
+	private ConcurrentHashMap<Integer,OrderGroup> mPayingOrderGroups;
+
 	public OrderService(){
 		orderDao = DatabaseManager.getInstance().createDao(Order.class);
 		orderGroupDao = DatabaseManager.getInstance().createDao(OrderGroup.class);
 		productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
 		mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
+		mPayingOrderGroups = new ConcurrentHashMap<>();
 	}
 
 	public OrderResult createOrderGroup(User user, HashMap<Integer,Integer> orders){
@@ -89,6 +92,7 @@ public class OrderService extends Observable implements Service {
 				mOrderTimeoutMap.put(orderGroup.id,runnable);
 				ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
 
+				mPayingOrderGroups.put(orderGroup.id,orderGroup);
 				result.success = true ;
 
 
@@ -176,6 +180,18 @@ public class OrderService extends Observable implements Service {
 		return false;
 	}
 
+	public boolean updateOrderGroup(OrderGroup group){
+		try{
+			int line = orderGroupDao.update(group);
+			if(line == 1){
+				return true;
+			}
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 //	public Order createOrder(User user,int lotteryID,int count,OrderGroup orderGroup){
 //		final Order order;
 //		try{
@@ -216,6 +232,13 @@ public class OrderService extends Observable implements Service {
 //		return null;
 //	}
 
+	public void handleOrderGroupPayResult(int orderGroupID,int result){
+		OrderGroup orderGroup = mPayingOrderGroups.remove(orderGroupID);
+		if(orderGroup == null){
+			LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
+		}
+	}
+
 	public void notifyOrderPayResult(OrderGroup orderGroup,int result){
 		int id = orderGroup.id;
 		OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
@@ -226,6 +249,14 @@ public class OrderService extends Observable implements Service {
 			}
 		}
 
+		if(result == AppConstant.OK){
+			orderGroup.statu = Order.OrderStatu.paySuccess.getStatus();
+		}else {
+			orderGroup.statu = Order.OrderStatu.payFail.getStatus();
+		}
+		updateOrderGroup(orderGroup);
+
+
 		Iterator<Order> orderIterator = orderGroup.orders.iterator();
 		while (orderIterator.hasNext()){
 			Order order = orderIterator.next();
@@ -233,6 +264,7 @@ public class OrderService extends Observable implements Service {
 			notifyObservers(msg);
 			setChanged();
 		}
+
 	}
 
 

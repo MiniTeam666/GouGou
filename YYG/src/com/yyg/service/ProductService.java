@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.yyg.CacheManager;
+import com.yyg.ThreadManager;
 import com.yyg.model.*;
 import com.yyg.utils.YYGUtils;
 import org.apache.logging.log4j.LogManager;
@@ -286,14 +287,20 @@ public class ProductService extends Observable implements Service{
         }
     }
 
-	public boolean updateLottery(Lottery lottery){
-	    try{
-	        if( lotteryDao.update(lottery) == 1)
-	            return true;
-        }catch (SQLException e){
-            e.getErrorCode();
-        }
-        return false;
+	public void updateLotteryAsync(Lottery lottery){
+		final Lottery updateLottery = lottery.clone();
+		ThreadManager.executeOnSingleUpdateThread(new Runnable() {
+			@Override
+			public void run() {
+				try{
+					if(lotteryDao.update(updateLottery) != 1){
+						LogManager.getLogger().warn("update lottery fail ! lotteryID : " + updateLottery.id);
+					}
+				}catch (SQLException e){
+					e.getErrorCode();
+				}
+			}
+		});
     }
 	
 	public int getJoinTimeForLottery(int lotteryID,int userID){
