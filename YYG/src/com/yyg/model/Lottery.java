@@ -1,6 +1,7 @@
 package com.yyg.model;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -36,8 +37,8 @@ public class Lottery implements Cloneable{
 	@DatabaseField
 	public long luckyNum;
 
-	@DatabaseField
-	public String luckNumBitmap; // 幸运号位图
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	public byte[] luckNumBitmap; // 幸运号位图
 
 	@DatabaseField
 	public String buyRecord; //计算热度用

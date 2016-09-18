@@ -1,6 +1,7 @@
 package com.yyg.service;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.yyg.*;
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
@@ -24,9 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class OrderService extends Observable implements Service {
 
-	private Dao<OrderGroup,String> orderGroupDao;
+	private Dao<OrderGroup,Integer> orderGroupDao;
 
-	private Dao<Order,String> orderDao;
+	private Dao<Order,Integer> orderDao;
 
 	private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
 
@@ -237,6 +238,7 @@ public class OrderService extends Observable implements Service {
 		if(orderGroup == null){
 			LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
 		}
+		notifyOrderPayResult(orderGroup,result);
 	}
 
 	public void notifyOrderPayResult(OrderGroup orderGroup,int result){
@@ -267,6 +269,33 @@ public class OrderService extends Observable implements Service {
 
 	}
 
+	public JSONArray getUserLuckyNums(int userID,int lotteryID){
+		JSONArray data = new JSONArray();
+		try{
+			QueryBuilder<OrderGroup,Integer> groupBuilder = orderGroupDao.queryBuilder();
+			groupBuilder.where().eq("lottery_id",lotteryID);
+			QueryBuilder<Order,Integer> orderBuilder = orderDao.queryBuilder();
+			orderBuilder.where().eq("user_id",userID).eq("status", Order.OrderStatu.paySuccess.getStatus());
 
+			List<Order> orders = orderBuilder.join(groupBuilder).query();
+			if(orders != null){
+				int n = orders.size();
+				for(int i = 0 ; i < n ; i ++ ){
+					Order order = orders.get(i);
+					String luckNums = order.luckNum;
+					if(YYGUtils.isEmptyText(luckNums))
+						continue;
+					String[] luckNumArray = luckNums.split(AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR);
+					for(String luckNum : luckNumArray){
+						data.put(luckNum);
+					}
+				}
+			}
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return data;
+	}
 
 }

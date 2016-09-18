@@ -24,7 +24,8 @@ import java.util.List;
 		AppConstant.REQUEST_PRODUCT_ORDERS,
 		AppConstant.REQUEST_CREATE_ORDER,
 		AppConstant.REQUEST_GET_ORDERSHOW,
-		AppConstant.REQUEST_GET_PERSON_LUCKYNUM
+		AppConstant.REQUEST_GET_PERSON_LUCKYNUM,
+		AppConstant.REQUEST_GET_PAY_RESULT
 })
 public class OrderServlet extends BaserServlet{
 
@@ -41,6 +42,10 @@ public class OrderServlet extends BaserServlet{
 			handleGetOrders(req,resp);
 		}else if (isRequest(AppConstant.REQUEST_CREATE_ORDER)){
 			handleCreateOrders(req,resp);
+		}else if (isRequest(AppConstant.REQUEST_GET_PERSON_LUCKYNUM)){
+			handleGetPersonalLuckNum(req,resp);
+		}else if (isRequest(AppConstant.REQUEST_GET_PAY_RESULT)){
+			handlePayResult(req,resp);
 		}
 	}
 
@@ -130,6 +135,33 @@ public class OrderServlet extends BaserServlet{
 	}
 
 	public void handlePayResult(HttpRequest req , HttpResponse resp){
-		service.handleOrderGroupPayResult(1,0);
+		//TODO
+		int result = YYGUtils.getIntFromReq(req,"result",0);
+		int orderID = YYGUtils.getIntFromReq(req,"id",1);
+		service.handleOrderGroupPayResult(orderID,result);
+	}
+
+	public void handleGetPersonalLuckNum(HttpRequest req , HttpResponse resp ){
+		try {
+			int lotteryID = YYGUtils.getIntFromReq(req, "product_id", -1);
+
+			if (lotteryID == -1) {
+				resp.writeJsonBusiError(-1, "parameter is error ! ");
+				return;
+			}
+
+			User user = (User) req.getSession().getAttribute(AppConstant.USER);
+			if(user == null){
+				//ToDo 调鉴权页
+			}
+
+			JSONArray data = service.getUserLuckyNums(user.id,lotteryID);
+			if(data != null){
+				resp.writeJsonData("data",data);
+			}
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }

@@ -34,7 +34,7 @@ public class LotteryBuyController implements Observer{
         this.id = lottery.id;
         realStock = lottery.remainCountOfQulification;
         copyStock = lottery.remainCountOfQulification;
-		luckyNumBitmap = YYGUtils.hex2Int(lottery.luckNumBitmap);
+		luckyNumBitmap = YYGUtils.hex2Int(new String(lottery.luckNumBitmap));
 		price = lottery.product.price;
     }
 
@@ -62,7 +62,7 @@ public class LotteryBuyController implements Observer{
         lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,delta,lottery.lastJoinTime);
 
 		String luckNum = YYGUtils.getLuckNum(luckyNumBitmap,price,delta);
-		lottery.luckNumBitmap = YYGUtils.int2Hex(luckyNumBitmap);
+		lottery.luckNumBitmap = YYGUtils.int2Hex(luckyNumBitmap).getBytes();
 
         if(lottery.remainCountOfQulification == 0){
             lottery.status = Lottery.LotteryStatu.inLottery.getStatus();

@@ -132,7 +132,7 @@ public class ProductService extends Observable implements Service{
 
 			int bitmapSize = (int)Math.ceil(product.price / 32.0);
 			int[] bitmap = new int[bitmapSize];
-			lottery.luckNumBitmap = YYGUtils.int2Hex(bitmap);
+			lottery.luckNumBitmap = YYGUtils.int2Hex(bitmap).getBytes();
 
 			if(lotteryDao.create(lottery) == 1)
 				return true;
