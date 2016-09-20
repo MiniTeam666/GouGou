@@ -28,7 +28,7 @@ public class ProductVo {
             object.put("id",mProduct.id);
 //            object.put("category",mProduct.category.name);
 //            object.put("category_id",mProduct.category.id);
-            object.put("describe",mProduct.describes);
+            object.put("describe",new String(mProduct.describes));
             object.put("coverUrl",mProduct.coverUrl);
             object.put("createTime", YYGUtils.getTimeStr(mProduct.creatTime));
             return object;

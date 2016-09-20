@@ -77,4 +77,13 @@ public class Lottery implements Cloneable{
 		}
 		return lottery;
 	}
+
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder(255);
+		sb.append("id").append(":").append(id).append(" ");
+		sb.append(",stock").append(":").append(remainCountOfQulification).append(" ");
+		sb.append(",status").append(":").append(status).append(" ");
+		return sb.toString();
+	}
 }

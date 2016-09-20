@@ -1,5 +1,6 @@
 package com.yyg.model;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.sun.org.apache.xpath.internal.operations.Or;
@@ -13,8 +14,8 @@ public class Order {
     @DatabaseField(foreign = true,foreignAutoRefresh = true)
     public Lottery lottery;
 	
-	@DatabaseField
-	public String luckNum;
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	public byte[] luckNums;
 	
 	@DatabaseField
 	public int state;

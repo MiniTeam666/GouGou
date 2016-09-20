@@ -54,10 +54,11 @@ public class OrderService extends Observable implements Service {
 			orderGroup.createTime = System.currentTimeMillis();
 			orderGroup.statu = Order.OrderStatu.waitpay.getStatus();
 			orderGroup.user = user;
-			orderGroup.orders = new ArrayList<>();
-//			if(orderGroupDao.create(orderGroup) == 1){
-//				return 0;
-//			}
+			orderGroup.orders = orderGroupDao.getEmptyForeignCollection("orders");
+			if(orderGroupDao.create(orderGroup) != 1){
+				LogManager.getLogger().error("create order group fail ! ");
+				return null;
+			}
 
 			List<Lottery> hasNoStockLotteries = new ArrayList<>();
 			for(Integer lotteryID : orders.keySet()){
@@ -85,13 +86,19 @@ public class OrderService extends Observable implements Service {
 			}
 
 
-			if(hasNoStockLotteries.size() == 0 && orderGroupDao.create(orderGroup) == 1){
+			if(hasNoStockLotteries.size() == 0){
 
 				//TODO 生成支付接口,超时时间要大于支付接口超时时间
-				LogManager.getLogger().error("create orderGroup successful ! id : " + orderGroup.id + " time : "  + YYGUtils.getTimeStr(orderGroup.createTime));
+				LogManager.getLogger().info("create orderGroup successful ! id : " + orderGroup.id + " time : "  + YYGUtils.getTimeStr(orderGroup.createTime));
 				OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT,this);
 				mOrderTimeoutMap.put(orderGroup.id,runnable);
 				ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
+//				ThreadManager.executeOnTimeoutThread(new Runnable() {
+//					@Override
+//					public void run() {
+//						System.out.println("test thread manaer!");
+//					}
+//				}, AppConstant.ORDER_PAY_TIMEOUT);
 
 				mPayingOrderGroups.put(orderGroup.id,orderGroup);
 				result.success = true ;
@@ -235,23 +242,25 @@ public class OrderService extends Observable implements Service {
 
 	public void handleOrderGroupPayResult(int orderGroupID,int result){
 		OrderGroup orderGroup = mPayingOrderGroups.remove(orderGroupID);
-		if(orderGroup == null){
+		if(orderGroup == null || orderGroup.statu != Order.OrderStatu.waitpay.getStatus()) {
 			LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
+			return;
 		}
+
 		notifyOrderPayResult(orderGroup,result);
 	}
 
 	public void notifyOrderPayResult(OrderGroup orderGroup,int result){
 		int id = orderGroup.id;
 		OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
-		if(runnable != null){
+		if(runnable != null && result != Message.ERROR_CODE_ORDERE_PAY_TIMEOUT){
 			boolean cancelRet = runnable.cancel();
 			if(!cancelRet && result == 0){
 				//TODO 回滚timeout操作
 			}
 		}
 
-		if(result == AppConstant.OK){
+		if(result == 0){
 			orderGroup.statu = Order.OrderStatu.paySuccess.getStatus();
 		}else {
 			orderGroup.statu = Order.OrderStatu.payFail.getStatus();
@@ -262,9 +271,10 @@ public class OrderService extends Observable implements Service {
 		Iterator<Order> orderIterator = orderGroup.orders.iterator();
 		while (orderIterator.hasNext()){
 			Order order = orderIterator.next();
+			LogManager.getLogger().error("update order status ! id : " + order.id);
 			Message msg = Message.getUpdateStockMsg(order.lottery.id, result, order);
-			notifyObservers(msg);
 			setChanged();
+			notifyObservers(msg);
 		}
 
 	}
@@ -282,7 +292,7 @@ public class OrderService extends Observable implements Service {
 				int n = orders.size();
 				for(int i = 0 ; i < n ; i ++ ){
 					Order order = orders.get(i);
-					String luckNums = order.luckNum;
+					String luckNums = new String(order.luckNums);
 					if(YYGUtils.isEmptyText(luckNums))
 						continue;
 					String[] luckNumArray = luckNums.split(AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR);

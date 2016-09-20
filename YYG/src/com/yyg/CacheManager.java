@@ -54,6 +54,11 @@ public class CacheManager {
     		return;
 
     	List<Order> srcList = mOrderCache.get(lotteryID);
+		if(srcList == null){
+			srcList = new ArrayList<>();
+			mOrderCache.put(lotteryID,srcList);
+		}
+
 		for(Order order : orders) {
 			if (!srcList.contains(order)) {
 				srcList.add(order);

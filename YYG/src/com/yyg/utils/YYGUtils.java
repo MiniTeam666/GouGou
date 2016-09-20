@@ -25,7 +25,11 @@ public class YYGUtils {
 	}
 
 	public static String getBuyRecord(String src,int count,long time){
-		src += AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR;
+		if(!isEmptyText(src)) {
+			src += AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR;
+		}else {
+			src = "";
+		}
 		src += time + AppConstant.PRODUCT_LOTTERY_RECORD_SPLIT_CHAR + count;
 		return src;
 	}

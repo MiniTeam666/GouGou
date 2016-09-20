@@ -4,6 +4,7 @@ import com.yyg.model.Order;
 import com.yyg.model.OrderGroup;
 import com.yyg.service.OrderService;
 import com.yyg.service.ProductService;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Iterator;
 
@@ -18,7 +19,7 @@ public class OrderTimeoutRunnable implements Runnable{
 
     private long timeout;
 
-    private boolean cancel;
+    private boolean cancel = false;
 
     private volatile boolean start;
 
@@ -45,6 +46,7 @@ public class OrderTimeoutRunnable implements Runnable{
 
     @Override
     public void run() {
+		LogManager.getLogger().info("timeout runnable run !");
         if(!cancel){
             start = true;
 			Iterator<Order> orderIterator = orderGroup.orders.iterator();

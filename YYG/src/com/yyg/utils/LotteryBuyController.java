@@ -36,12 +36,17 @@ public class LotteryBuyController implements Observer{
         copyStock = lottery.remainCountOfQulification;
 		luckyNumBitmap = YYGUtils.hex2Int(new String(lottery.luckNumBitmap));
 		price = lottery.product.price;
+
+		OrderService service = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Order_Service);
+		service.addObserver(this);
     }
 
     private synchronized boolean incremeCopyStock(int delta){
         if(copyStock + delta < 0 || copyStock + delta > realStock)
             return false;
         copyStock += delta;
+		LogManager.getLogger().info("copy stock change ! lottery : " + id
+				+ ", realStock : " + realStock + ", copyStock : " + copyStock + ", cnt : " + delta);
         return true;
     }
 
@@ -50,18 +55,20 @@ public class LotteryBuyController implements Observer{
             return false;
         realStock += delta;
 
+		LogManager.getLogger().info("real stock change ! lottery : " + id
+				+ ", realStock : " + realStock + ", copyStock : " + copyStock + ", cnt : " + delta);
         return true;
     }
 
-    private synchronized String updateStockInfo(int delta){
-        if(!incrementRealStock(-delta))
+    private synchronized String updateStockInfo(int count){
+        if(!incrementRealStock(-count))
             return null;
 
         lottery.remainCountOfQulification = realStock;
         lottery.lastJoinTime = System.currentTimeMillis();
-        lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,delta,lottery.lastJoinTime);
+        lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,count,lottery.lastJoinTime);
 
-		String luckNum = YYGUtils.getLuckNum(luckyNumBitmap,price,delta);
+		String luckNum = YYGUtils.getLuckNum(luckyNumBitmap,price,count);
 		lottery.luckNumBitmap = YYGUtils.int2Hex(luckyNumBitmap).getBytes();
 
         if(lottery.remainCountOfQulification == 0){
@@ -77,6 +84,9 @@ public class LotteryBuyController implements Observer{
 		ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
         service.updateLotteryAsync(lottery);
 
+		LogManager.getLogger().info("update lottery stock successful ! lottery : " + id
+				+ ", real : " + realStock + ", copy : " + copyStock + ", cnt : " + count);
+
         return luckNum;
     }
 
@@ -87,6 +97,8 @@ public class LotteryBuyController implements Observer{
                 return 1;
             return 2;
         }
+        LogManager.getLogger().info("decrement copy stock successful ! lottery : " + id
+				+ ", realStock : " + realStock + ", copyStock : " + copyStock + ", cnt : " + count);
         return 0;
     }
 
@@ -97,10 +109,10 @@ public class LotteryBuyController implements Observer{
             if(msg.event != AppConstant.EVENT_UPDATE_STOCK || msg.what != id)
                 return;
 
-			OrderService orderService = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+			OrderService orderService = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Order_Service);
             Order order = (Order) msg.obj;
             int value = order.joinTime;
-            if(AppConstant.OK == msg.result){
+            if(0 == msg.result){
                 int oldValue = realStock;
                 int newValue = realStock - value;
                 if(newValue < 0){
@@ -114,9 +126,11 @@ public class LotteryBuyController implements Observer{
                     return;
                 }else {
                     order.state = Order.OrderStatu.paySuccess.getStatus();
-					order.luckNum = luckNum;
+					order.luckNums = luckNum.getBytes();
                 }
 
+                LogManager.getLogger().info("order is pay success ! order.id : " + order.id
+						+ ", luckyNum : " + luckNum);
             }else{
 
                 order.state = Order.OrderStatu.payFail.getStatus();
@@ -135,6 +149,8 @@ public class LotteryBuyController implements Observer{
                     return;
                 }
 
+				LogManager.getLogger().info("order is pay fail ! order.id : " + order.id
+						+ ", result : " + msg.result);
             }
 
             if(msg.result != Message.ERROR_CODE_ORDERE_CREATE_FAIL)

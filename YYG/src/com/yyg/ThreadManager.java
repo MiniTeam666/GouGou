@@ -23,7 +23,7 @@ public class ThreadManager {
     }
 
     public static void executeOnTimeoutThread(Runnable runnable,long timeout){
-        mScheduleExecutor.schedule(runnable,timeout, TimeUnit.MILLISECONDS);
+        mScheduleExecutor.schedule(runnable,timeout,TimeUnit.MILLISECONDS);
     }
 
     public static void executeOnUpdateThread(Runnable runnable,long timeout){

@@ -35,7 +35,9 @@ public class ProductService extends Observable implements Service{
 		categoryDao = DatabaseManager.getInstance().createDao(Category.class);
 		lumDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
         mUpdateLotteryStockTaskList = new ConcurrentHashMap<>();
+	}
 
+	public void buildCache(){
 		//pre build cache
 		long start = System.currentTimeMillis();
 		getLotterys(0,1,-1,0,1,LotteryStatu.waiting.getStatus());
@@ -48,7 +50,7 @@ public class ProductService extends Observable implements Service{
 			product.name = name;
 			product.price = price;
 			product.coverUrl = coverUrl;
-			product.describes = describes;
+			product.describes = describes.getBytes();
 			product.category = categoryDao.queryForId(String.valueOf(categoryID));
 			product.creatTime = System.currentTimeMillis();
 			
@@ -294,7 +296,9 @@ public class ProductService extends Observable implements Service{
 			public void run() {
 				try{
 					if(lotteryDao.update(updateLottery) != 1){
-						LogManager.getLogger().warn("update lottery fail ! lotteryID : " + updateLottery.id);
+						LogManager.getLogger().error("update lottery async fail ! info : " + updateLottery);
+					}else{
+						LogManager.getLogger().info("update lottery async success ! info : " + updateLottery);
 					}
 				}catch (SQLException e){
 					e.getErrorCode();

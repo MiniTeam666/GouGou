@@ -69,7 +69,7 @@ public class AppConstant {
 	public static final int EVENT_UPDATE_STOCK = 1001;
 
 	/**---------------------------支付配置-------------------*/
-	public static final long ORDER_PAY_TIMEOUT = 1000 * 60 * 10 ; //30 * 1000; //30s
+	public static final long ORDER_PAY_TIMEOUT = 60 * 1000; //60s //2 * 1000;//1000 * 60 * 10 ;
 
 	/**---------------------------接口配置-------------------*/
 	public static final String REQUEST_PRODUCT_DETAIL_PATH = "/products/detail"; // 获取商品详情

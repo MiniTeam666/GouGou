@@ -1,6 +1,7 @@
 package com.yyg.model;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -17,8 +18,8 @@ public class Product {
 	@DatabaseField
 	public String coverUrl;
 	
-	@DatabaseField
-	public String describes;
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	public byte[] describes;
 	
 	@DatabaseField
 	public int price;

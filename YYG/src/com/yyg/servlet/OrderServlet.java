@@ -8,7 +8,6 @@ import com.yyg.model.vo.OrderVo;
 import com.yyg.service.OrderService;
 import com.yyg.utils.YYGUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -73,8 +72,11 @@ public class OrderServlet extends BaserServlet{
 			}
 
 			User user = (User) req.getSession().getAttribute(AppConstant.USER);
+			user = new User();
+			user.id = 1;
 			if(user == null){
 				resp.writeJsonBusiError(1004,"please check login");
+				return;
 			}
 
 			OrderResult result = service.createOrderGroup(user,datas);
@@ -151,6 +153,7 @@ public class OrderServlet extends BaserServlet{
 			}
 
 			User user = (User) req.getSession().getAttribute(AppConstant.USER);
+
 			if(user == null){
 				//ToDo 调鉴权页
 			}

@@ -28,6 +28,6 @@ public class OrderGroup {
     @DatabaseField(foreign = true)
     public User user;
 
-    @ForeignCollectionField
-    public Collection<Order> orders;
+    @ForeignCollectionField(eager = true,maxEagerLevel = 1)
+    public ForeignCollection<Order> orders;
 }
