@@ -10,6 +10,8 @@ public class AppConstant {
 	
 	public static final String HOST = "119.29.103.125:8080";
 
+	public static final String APP_IP = "119.29.103.125";
+
 	public static final boolean NEED_AJAX_CROSS = true;
 
 	public static final int OK = 1;
@@ -69,7 +71,16 @@ public class AppConstant {
 	public static final int EVENT_UPDATE_STOCK = 1001;
 
 	/**---------------------------支付配置-------------------*/
+
 	public static final long ORDER_PAY_TIMEOUT = 60 * 1000; //60s //2 * 1000;//1000 * 60 * 10 ;
+
+	public static final String REQUEST_GET_PAY_RESULT = "/test/pay";
+
+	public static final String THIRD_PAY_ACCOUNT = "";
+
+	public static final String THIRD_PAY_KEY = "";
+
+	public static final String THIRD_PAY_CREATE_NATIVE_PAY_URL = "https://pay.swiftpass.cn/pay/gateway";
 
 	/**---------------------------接口配置-------------------*/
 	public static final String REQUEST_PRODUCT_DETAIL_PATH = "/products/detail"; // 获取商品详情
@@ -88,6 +99,6 @@ public class AppConstant {
 
 	public static final String REQUEST_GET_PERSON_LUCKYNUM = "/personal/getnums"; //获取个人幸运码
 
-	public static final String REQUEST_GET_PAY_RESULT = "/test/pay";
+
 
 }
