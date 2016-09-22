@@ -1,6 +1,8 @@
 package com.yyg;
 
+import com.j256.ormlite.logger.Log;
 import com.yyg.model.Order;
+import com.yyg.model.OrderGroup;
 import com.yyg.utils.MD5;
 import com.yyg.utils.SignUtils;
 import com.yyg.utils.XmlUtils;
@@ -19,13 +21,26 @@ import java.util.*;
  */
 public class ThirdPay {
 
-	public String createWxPayUrl(Order order){
+	private volatile static ThirdPay instance;
+
+	public static ThirdPay getInstance(){
+		if(instance == null){
+			synchronized (ThirdPay.class){
+				if(instance == null){
+					instance = new ThirdPay();
+				}
+			}
+		}
+		return instance;
+	}
+
+	public String createWxPayUrl(OrderGroup orderGroup){
 		SortedMap<String,String> map = new TreeMap<>();
 		map.put("service","pay.weixin.native");
 		map.put("mch_id",AppConstant.THIRD_PAY_ACCOUNT);
-		map.put("out_trade_no",order.id+"");
-		map.put("body",order.lottery.toString());
-		map.put("total_fee",String.valueOf(100 * order.joinTime));
+		map.put("out_trade_no",orderGroup.id+"");
+		map.put("body",orderGroup.toString());
+		map.put("total_fee",String.valueOf(100 * orderGroup.price));
 		map.put("mch_create_ip",AppConstant.APP_IP);
 		map.put("notify_url",AppConstant.REQUEST_GET_PAY_RESULT);
 		map.put("nonce_str",String.valueOf(new Date().getTime()));
@@ -50,7 +65,7 @@ public class ThirdPay {
 				Map<String,String> resultMap = XmlUtils.toMap(EntityUtils.toByteArray(response.getEntity()), "utf-8");
 				res = XmlUtils.toXml(resultMap);
 
-				LogManager.getLogger().info("create pay result : " + res + ", orderID : " + order.id);
+				LogManager.getLogger().info("create pay result : " + res + ", orderID : " + orderGroup.id);
 
 				if(resultMap.containsKey("sign")){
 					if(!SignUtils.checkParam(resultMap, AppConstant.THIRD_PAY_KEY)){
@@ -86,6 +101,9 @@ public class ThirdPay {
 				}
 			}catch (Exception e){}
 		}
+
+		LogManager.getLogger().error("create pay link error ! " + res);
+
 		return null;
 	}
 }

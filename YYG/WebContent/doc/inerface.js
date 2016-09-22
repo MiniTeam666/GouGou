@@ -53,8 +53,8 @@
 
 #/products 全部商品接口  /products?category='all'&type='renqi'&direction=1&page=
 category:商品分类(例如: 全部分类 手机数码  电脑办公  家用电器 )
-type: 商品分类   人气:0  最新:1 剩余人次:2 价值:3 
-direction:剩余人次 价值 那个分类的排序方式 例如 对于剩余人次 1 代表剩余人次最少 0 代表剩余人次最多 
+type: 商品分类   人气:0  最新:1 剩余人次:2 价值:3
+direction:剩余人次 价值 那个分类的排序方式 例如 对于剩余人次 1 代表剩余人次最少 0 代表剩余人次最多
 			对于价值  1代表价值最高  0代表价值最低
 page:页数
 {
@@ -66,7 +66,7 @@ page:页数
 				name:"中国黄金 AU9999投资金50g薄片",
 				value:17680,
 				stock:9786,
-				
+
 			}
 		],
 		has_more:false//是否是末页了
@@ -76,7 +76,7 @@ page:页数
  	errMsg:'超时错误',
 }
 
-#/products/detail 商品内容详情页 /products/detail?id='123123' 
+#/products/detail 商品内容详情页 /products/detail?id='123123'
 {
 	data:{
 		status:0 //商品状态 0代表购买中 1代表开奖中 2代表购买结束
@@ -87,7 +87,7 @@ page:页数
 		],// status=0,1 2 时需要传回
 		cnt:13 //商品期数 status=0,1,2 时需要传回
 		name:'平安银行 平安金福金条 Au9999 100g' // status=0,1,2 时需要传回
-		detail:'以“平安”组成“福”字，寓意平安有福，新颖别致，妙思无穷！' //商品详情介绍 status=0,1,2 时需要传回 
+		detail:'以“平安”组成“福”字，寓意平安有福，新颖别致，妙思无穷！' //商品详情介绍 status=0,1,2 时需要传回
 		value:17680,// status=0,1,2 时需要传回
 		stock:9786,// status=0,1,2 时需要传回 代表当前该商品剩下的份数
 		describe:"<p>sdfsd</p>",//图文详情HTML status=0,1,2 时需要传回
@@ -196,16 +196,18 @@ post提交数据 {
 				}
 			]
 		 }
-
 返回数据 {
 			data:{
-				fail_list:[
+			    //支付链接
+			    payLink : "http:/weixin/sks",
+			    // 当status 不等于0时才返回
+				failList:[
 					{
 						id:'123123',//商品ID
 						stock:12,//当前商品所剩份数
-						next_product_id:'123123'//下一云商品ID
-						next_product_stock:568//下一商品所剩份数
-						next_num:'1231',//下一云的云号
+						nextProductId:'123123'//下一云商品ID
+						nextProductStock:568//下一商品所剩份数
+						nextNum:'1231',//下一云的云号
 					}
 				],
 

@@ -291,6 +291,12 @@ public class ProductService extends Observable implements Service{
 
 	public void updateLotteryAsync(Lottery lottery){
 		final Lottery updateLottery = lottery.clone();
+
+		//auto create next lottery
+		if(updateLottery.status == LotteryStatu.inLottery.getStatus()){
+			createLottery(updateLottery.product.id,updateLottery.remark);
+		}
+
 		ThreadManager.executeOnSingleUpdateThread(new Runnable() {
 			@Override
 			public void run() {

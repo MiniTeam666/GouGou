@@ -3,6 +3,8 @@ package com.yyg.model.vo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 /**
  * Created by line on 2016/9/15.
  */
@@ -14,9 +16,9 @@ public class OrderResult {
 
 	public String errMsg;
 
-	public JSONArray array;
+	public Map<Integer,Integer> errList;
 
-	public JSONObject object;
+	public String payLink;
 
 	public interface OrderResultCode{
 
@@ -30,6 +32,7 @@ public class OrderResult {
 			int CREATE_FAIL = -1 ;
 			int NO_STOCK = -2 ;
 			int Exception = -3 ;
+			int CREAT_PAY_LINK_ERROR = -4;
 		}
 	}
 }

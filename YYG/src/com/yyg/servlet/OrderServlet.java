@@ -81,9 +81,20 @@ public class OrderServlet extends BaserServlet{
 
 			OrderResult result = service.createOrderGroup(user,datas);
 			if(result.success){
-
+				resp.writeJsonData("payLink",result.payLink);
 			}else{
-
+				if(result.errList != null && !result.errList.isEmpty()){
+					JSONArray errArray = new JSONArray();
+					for (Integer id : result.errList.keySet()){
+						JSONObject item = new JSONObject();
+						int stock = result.errList.get(id);
+						item.put("id",id);
+						item.put("stock",stock);
+						errArray.put(item);
+					}
+					resp.writeJsonData("failList",errArray);
+				}
+				resp.writeJsonBusiError(result.errCode,result.errMsg);
 			}
 
 		}catch (Exception e){

@@ -48,7 +48,6 @@ public class OrderService extends Observable implements Service {
 		OrderResult result = new OrderResult();
 		try{
 
-			//TODO　事务开发
 			final OrderGroup orderGroup = new OrderGroup();
 			orderGroup.price = 0;
 			orderGroup.createTime = System.currentTimeMillis();
@@ -88,11 +87,18 @@ public class OrderService extends Observable implements Service {
 
 			if(hasNoStockLotteries.size() == 0){
 
-				//TODO 生成支付接口,超时时间要大于支付接口超时时间
-				LogManager.getLogger().info("create orderGroup successful ! id : " + orderGroup.id + " time : "  + YYGUtils.getTimeStr(orderGroup.createTime));
-				OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT,this);
-				mOrderTimeoutMap.put(orderGroup.id,runnable);
-				ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
+				String payLink = ThirdPay.getInstance().createWxPayUrl(orderGroup);
+				if(YYGUtils.isEmptyText(payLink)){
+					result.success = false;
+					result.errCode = OrderResult.OrderResultCode.CreateOrder.CREAT_PAY_LINK_ERROR;
+					result.errMsg = "create pay link error !";
+				}else {
+
+					LogManager.getLogger().info("create orderGroup successful ! id : " + orderGroup.id + " time : " + YYGUtils.getTimeStr(orderGroup.createTime));
+
+					OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT, this);
+					mOrderTimeoutMap.put(orderGroup.id, runnable);
+					ThreadManager.executeOnTimeoutThread(runnable, AppConstant.ORDER_PAY_TIMEOUT);
 //				ThreadManager.executeOnTimeoutThread(new Runnable() {
 //					@Override
 //					public void run() {
@@ -100,9 +106,10 @@ public class OrderService extends Observable implements Service {
 //					}
 //				}, AppConstant.ORDER_PAY_TIMEOUT);
 
-				mPayingOrderGroups.put(orderGroup.id,orderGroup);
-				result.success = true ;
-
+					mPayingOrderGroups.put(orderGroup.id, orderGroup);
+					result.success = true;
+					result.payLink = payLink;
+				}
 
 			}else{
 
@@ -117,22 +124,17 @@ public class OrderService extends Observable implements Service {
 				});
 
 				//返回错误列表
-				if(hasNoStockLotteries.size() > 0 ){
-					JSONArray jsonArray = new JSONArray();
-					for(int i = 0 ; i < hasNoStockLotteries.size() ; i ++ ){
-						JSONObject item = new JSONObject();
-						Lottery lottery = hasNoStockLotteries.get(i);
-						item.put("id",hasNoStockLotteries.get(i).id);
-						item.put("stock",lottery.remainCountOfQulification);
-						jsonArray.put(item);
-					}
-
-					result.errCode = OrderResult.OrderResultCode.CreateOrder.CREATE_FAIL;
-					result.array = jsonArray;
-				}else{
-					result.errCode = OrderResult.OrderResultCode.CreateOrder.NO_STOCK;
+				HashMap<Integer,Integer> map = new HashMap<>();
+				for(int i = 0 ; i < hasNoStockLotteries.size() ; i ++ ){
+					Lottery lottery = hasNoStockLotteries.get(i);
+					int id = lottery.id;
+					int stock = lottery.remainCountOfQulification;
+					map.put(id,stock);
 				}
 
+				result.errCode = OrderResult.OrderResultCode.CreateOrder.CREATE_FAIL;
+				result.errMsg = "has some product stock not enough buy ! ";
+				result.errList = map;
 			}
 
 		}catch (Exception e){
