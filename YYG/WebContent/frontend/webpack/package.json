@@ -7,7 +7,7 @@
     "url": "https://github.com/callemall/material-ui.git"
   },
   "scripts": {
-    "start": "webpack-dev-server --config test-webpack.js --progress --inline --colors ",
+    "start": "webpack-dev-server --config test-webpack.js --progress --inline --colors --host 192.168.1.101",
     "build": "webpack --config webpack-production.config.js --progress --colors"
   },
   "private": true,

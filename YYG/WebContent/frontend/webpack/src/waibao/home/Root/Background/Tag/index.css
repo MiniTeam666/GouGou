@@ -1,0 +1,30 @@
+.imageTagsTag {
+    -webkit-animation: flickeringImageTags 3s;
+    animation: flickeringImageTags 3s
+}
+
+@keyframes flickeringImageTags {
+    0% {
+        transform: rotate(-80deg)
+    }
+
+    20% {
+        transform: rotate(40deg)
+    }
+
+    40% {
+        transform: rotate(-20deg)
+    }
+
+    60% {
+        transform: rotate(8deg)
+    }
+
+    80% {
+        transform: rotate(-3deg)
+    }
+
+    100% {
+        transform: rotate(0)
+    }
+}

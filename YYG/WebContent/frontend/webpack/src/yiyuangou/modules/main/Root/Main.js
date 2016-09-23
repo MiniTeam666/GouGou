@@ -3,7 +3,7 @@ import Tabs from 'company/yiyuangou/lib/Tabs';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Home from '../../home/Root/Home';
-
+import Loading from './Loading';
 import Route from 'company/yiyuangou/util/Route';
 
 const muiTheme = getMuiTheme({
@@ -16,8 +16,12 @@ let  Root = React.createClass({
     return(
       <MuiThemeProvider muiTheme={muiTheme}>
        <div>
-          {this.props.children|| <Home />}
-         
+          <div>
+            <Loading />
+          </div>
+          <div>
+            {this.props.children|| <Home />}
+          </div>
        </div>
       </MuiThemeProvider>
     )

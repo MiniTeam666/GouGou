@@ -15,6 +15,7 @@ var config = {
     'webpack/hot/dev-server',
     'webpack/hot/only-dev-server',
         // path.join(__dirname, '/src/yiyuangou/background/main/index.js')
+    // path.join(__dirname, '/src/waibao/home/index.js')
 
     path.join(__dirname, '/src/yiyuangou/modules/main/index.js')
 
@@ -83,7 +84,7 @@ var config = {
         include:includeModule,
       },
       {
-        test: /\.(png|jpg)$/, 
+        test: /\.(png|jpg|gif)$/, 
         loader: 'url-loader?limit=8192',
         include:includeModule,
       },

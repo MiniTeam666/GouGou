@@ -1,0 +1,66 @@
+#imageTagPopup {
+   
+    /*width: 212px;*/
+    z-index: 2100;
+    word-wrap: break-word;
+    border: 5px solid #f4f4f4;
+    background-color: #fff;
+}
+
+#imageTagPopup .imageTagPopupContainer #imageTagPopupType {
+    margin: 0 10px;
+}
+#imageTagPopup .imageTagPopupContainer #imageTagPopupTitle {
+    font-size: 13px;
+    color: #333;
+    padding: 12px;
+    min-height: 24px;
+}
+#imageTagPopup .imageTagPopupContainer #imageTagPopupTitle .imageTagPopupProductImage {
+       border: 1px #DDD solid;
+    max-width: 85px;
+    max-height: 85px;
+    text-align: center;
+    float: left;
+    margin-right: 16px;
+}
+.hbs a {
+    color: #333333;
+    text-decoration: none;
+}
+.hbs * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.hbs img {
+    vertical-align: middle;
+}
+#imageTagPopup .imageTagPopupContainer #imageTagPopupTitle .titleWrap {
+    width: 160px;
+    float: left;
+}
+#imageTagPopup .imageTagPopupContainer #imageTagPopupTitle .titleWrap .imageTagPopupProductTitle {
+    font-weight: bold;
+}
+.hbs a {
+    color: #333333;
+    text-decoration: none;
+}
+.hbs .colorLink {
+    color: #3d8901;
+}
+.more-icon, .less-icon, .down-icon, .up-icon {
+    font-family: 'Houzz-Glyphs' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: inherit;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline;
+    vertical-align: middle;
+    font-size: 0.78em;
+}

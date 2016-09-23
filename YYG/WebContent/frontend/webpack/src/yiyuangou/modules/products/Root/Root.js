@@ -5,6 +5,7 @@ import Tabs from 'company/yiyuangou/lib/Tabs';
 
 export default class Root extends React.Component{
   render(){
+    // alert('renderRoot');
     return(
        <div className='products'>
           {this.props.children||

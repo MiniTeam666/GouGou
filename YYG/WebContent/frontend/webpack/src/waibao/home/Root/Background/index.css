@@ -1,0 +1,6 @@
+#home_logo{
+	background:blue;
+	background-image: url(./background.jpg);
+	background-size: cover;
+	position: relative;
+}

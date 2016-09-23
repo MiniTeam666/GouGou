@@ -15,6 +15,9 @@ import {REQUEST_PRODUCTS_LIST_PATH} from 'company/yiyuangou/api/frontend';
 import Fetch from 'company/util/lib/Fetch';
 
 import Router from 'company/util/lib/Router';
+
+import RaisedButton from 'material-ui/RaisedButton';
+
 const height = 40;
 const TabStyle={
   height:height,
@@ -53,12 +56,15 @@ export default class SecondTabs extends React.Component{
 		});
 		
 	}
+	
+
 	handleTouchTap = (index,event) => {
+		// alert(1);
 	    event.preventDefault();
 	    this.setState({
 	      open: true,
 	      anchorEl: event.currentTarget,
-	      index:0,
+	      // index:0,
 	    });
 	}
 
@@ -90,6 +96,7 @@ export default class SecondTabs extends React.Component{
 	}
 	
 	getList(){
+		// console.log(this.props);
 		var list = this.state.list;
 		let list1=[];
 		let list2=[];
@@ -104,15 +111,24 @@ export default class SecondTabs extends React.Component{
 			}
 
 		}
+		var __tabs = this;
 		var productList = [];
 		let _renderMenu=function(list){
 			var menuItems = list.map(function(menuItem){
 				var touchTap = function(){
 					let router = new Router;
+					__tabs.handleRequestClose();
+					console.log(__tabs.props.query);
+					window.__router = true;
 					router.route({
 						url:'products',
 						query:{
-							category:menuItem.id
+							category:menuItem.id,
+							type:1,
+							direction:1,
+						},
+						state:{
+
 						}
 					});
 				};
@@ -161,9 +177,11 @@ export default class SecondTabs extends React.Component{
 
 		return(
 			<div>
+			 
 				<Tabs  value={this.state.index}　style={{position:'fixed',top:0,width:'100%',zIndex:99}}>
 			     {tabList}
 	    	    </Tabs>
+	    	   
 	    	      <Popover
 	    	      	  style={{width:'100%'}}
 			          open={this.state.open}
