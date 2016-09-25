@@ -14,10 +14,10 @@ var config = {
   entry: [
     'webpack/hot/dev-server',
     'webpack/hot/only-dev-server',
-        // path.join(__dirname, '/src/yiyuangou/background/main/index.js')
+        path.join(__dirname, '/src/yiyuangou/background/main/index.js')
     // path.join(__dirname, '/src/waibao/home/index.js')
 
-    path.join(__dirname, '/src/yiyuangou/modules/main/index.js')
+    // path.join(__dirname, '/src/yiyuangou/modules/main/index.js')
 
     // path.join(__dirname, '/src/yiyuangou/modules/test/router/app.js')
     // path.join(__dirname, '/src/pages/flow/Server/index.js'),

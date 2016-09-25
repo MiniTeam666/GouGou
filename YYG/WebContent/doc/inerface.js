@@ -4,6 +4,35 @@
 	status:0, //0代表成功返回数据 非0代表接口返回错误
 	errMsg:'超时错误',//接口错误信息
 }
+# status=0 数据获取成功
+# status=1000 没有登陆(需要鉴权)
+# status=1001 参数不对应
+# status=1002 服务器错误
+
+
+
+
+#/login 登陆 /login
+{
+	wxopenid:,
+	args:{
+		"subscribe": 1, 
+	    "openid": "o6_bmjrPTlm6_2sgVt7hMZOPfL2M", 
+	    "nickname": "Band", 
+	    "sex": 1, 
+	    "language": "zh_CN", 
+	    "city": "广州", 
+	    "province": "广东", 
+	    "country": "中国", 
+	    "headimgurl":    "http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0", 
+	   "subscribe_time": 1382694957,
+	   "unionid": " o6_bmasdasdsad6_2sgVt7hMZOPfL"
+	   "remark": "",
+	   "groupid": 0,
+	}
+}
+
+
 
 #/home 首页接口 /home
 {
@@ -200,6 +229,7 @@ post提交数据 {
 			data:{
 			    //支付链接
 			    payLink : "http:/weixin/sks",
+			    orderId:'12323',
 			    // 当status 不等于0时才返回
 				failList:[
 					{
@@ -215,6 +245,19 @@ post提交数据 {
 			status:0,//状态信息
 			errMsg:'超时错误'
 		}
+
+#/shopping_cart/payinfo 支付接口 /shopping_cart/payinfo?id='123123'
+
+{
+			data:{
+			    status:0,1,2//0支付成功,1支付失败,2未支付
+
+			},
+			status:0,//状态信息
+			errMsg:'超时错误'
+}
+
+
 
 
 

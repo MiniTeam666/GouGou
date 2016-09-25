@@ -12,7 +12,6 @@ export default class Products extends React.Component{
 		super(props);
 		this.state={
 			products:[],
-
 		}
 		this.page=0;
 	}
@@ -29,7 +28,7 @@ export default class Products extends React.Component{
 		var direction = Location.getItem('direction');
 		const obj = {
 			category:-1,
-			type:category=='undefined'?1:category,
+			type:!category?1:category,
 			direction:1,
 			page:page,
 		};
