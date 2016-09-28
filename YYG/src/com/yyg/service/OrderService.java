@@ -14,7 +14,6 @@ import com.yyg.utils.OrderTimeoutRunnable;
 import com.yyg.utils.YYGUtils;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -96,9 +95,9 @@ public class OrderService extends Observable implements Service {
 
 					LogManager.getLogger().info("create orderGroup successful ! id : " + orderGroup.id + " time : " + YYGUtils.getTimeStr(orderGroup.createTime));
 
-					OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT, this);
-					mOrderTimeoutMap.put(orderGroup.id, runnable);
-					ThreadManager.executeOnTimeoutThread(runnable, AppConstant.ORDER_PAY_TIMEOUT);
+//					OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT, this);
+//					mOrderTimeoutMap.put(orderGroup.id, runnable);
+//					ThreadManager.executeOnTimeoutThread(runnable, AppConstant.ORDER_PAY_TIMEOUT);
 //				ThreadManager.executeOnTimeoutThread(new Runnable() {
 //					@Override
 //					public void run() {
@@ -106,11 +105,11 @@ public class OrderService extends Observable implements Service {
 //					}
 //				}, AppConstant.ORDER_PAY_TIMEOUT);
 
-					mPayingOrderGroups.put(orderGroup.id, orderGroup);
+					addOrderGroup2PayingList(orderGroup);
 					result.success = true;
 					result.payLink = payLink;
+					result.orderID = orderGroup.id;
 				}
-
 			}else{
 
 				result.success = false ;
@@ -147,9 +146,53 @@ public class OrderService extends Observable implements Service {
 		return result;
 	}
 
-	public List<OrderVo> getOrders(int lotteryID, int startRow, int count){
+	public List<Order> getLatestOrder(int lotteryID,int cnt){
 		try{
 
+			List<Order> orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
+
+			if(orderList != null && !orderList.isEmpty()){
+
+				//按照购买时间逆序排序
+				Collections.sort(orderList, new Comparator<Order>() {
+					@Override
+					public int compare(Order o1, Order o2) {
+						return o1.time > o2.time ? -1 : 1;
+					}
+				});
+
+				cnt = orderList.size() > cnt ? cnt : orderList.size();
+				return orderList.subList(0,cnt);
+			}
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public Order getLuckyOrder(int lotteryID,int luckyNum){
+		try{
+			List<Order> orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
+			if(orderList != null && !orderList.isEmpty()){
+				int n = orderList.size();
+				for(int i = 0 ; i < n ; i ++){
+					Order order = orderList.get(i);
+					if(YYGUtils.hasLuckyNum(new String(order.luckNums),luckyNum)){
+						return order;
+					}
+				}
+			}
+
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<OrderVo> getOrders(int lotteryID, int startRow, int count){
+		try{
 			List<Order> orderList = CacheManager.getInstance().getOrders(lotteryID);
 			if(orderList == null){
 				orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
@@ -202,54 +245,39 @@ public class OrderService extends Observable implements Service {
 		return false;
 	}
 
-//	public Order createOrder(User user,int lotteryID,int count,OrderGroup orderGroup){
-//		final Order order;
-//		try{
-//			Lottery lottery = productService.getLottery(lotteryID);
-//			int stockStatus = lottery.lotteryBuyController.decrementStock(count);
-//			if(stockStatus != 0) {
-//				LogManager.getLogger().warn("create order fail , lottery stock not permit " + stockStatus);
-//				return null;
-//			}
-//
-//			order = new Order();
-//			order.user = user;
-//			order.time = System.currentTimeMillis();
-//			order.state = Order.OrderStatu.waitpay.getStatus();
-//			order.joinTime = count;
-//			order.lottery = lottery;
-//			order.orderGroup = orderGroup;
-//			boolean createOrder = orderDao.create(order) == 1;
-//			if(createOrder){
-//				//TODO 生成支付接口,超时时间要大于支付接口超时时间
-//				LogManager.getLogger().error("create order successful ! id : " + order.id + " time : "  + YYGUtils.getTimeStr(order.time));
-//				OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(order, AppConstant.ORDER_PAY_TIMEOUT,this);
-//				mOrderTimeoutMap.put(order.id,runnable);
-//				ThreadManager.executeOnTimeoutThread(runnable,AppConstant.ORDER_PAY_TIMEOUT);
-//			}else{
-//				LogManager.getLogger().error("create order fail ! user : " + user.id + ", buyCount : " + count);
-//				ThreadManager.executeOnNormalThread(new Runnable() {
-//					@Override
-//					public void run() {
-//						notifyOrderPayResult(order, Message.ERROR_CODE_ORDERE_CREATE_FAIL);
-//					}
-//				});
-//			}
-//
-//		}catch (SQLException e){
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
+	private void addOrderGroup2PayingList(OrderGroup orderGroup){
+		mPayingOrderGroups.put(orderGroup.id,orderGroup);
+		if(mPayingOrderGroups.size() < 10000){
+			OrderGroup older = null;
+			for(Integer key : mPayingOrderGroups.keySet()){
+				OrderGroup item = mPayingOrderGroups.get(key);
+				if(older == null || item.createTime < older.createTime){
+					older = item;
+				}
+			}
+			mPayingOrderGroups.remove(older);
+		}
+	}
 
 	public void handleOrderGroupPayResult(int orderGroupID,int result){
-		OrderGroup orderGroup = mPayingOrderGroups.remove(orderGroupID);
+		OrderGroup orderGroup = mPayingOrderGroups.get(orderGroupID);
+
+		if(orderGroup == null){
+			try {
+				orderGroup = (OrderGroup) orderGroupDao.queryForId(orderGroupID);
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+
 		if(orderGroup == null || orderGroup.statu != Order.OrderStatu.waitpay.getStatus()) {
 			LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
 			return;
 		}
 
-		notifyOrderPayResult(orderGroup,result);
+		synchronized (orderGroup) {
+			notifyOrderPayResult(orderGroup, result);
+		}
 	}
 
 	public void notifyOrderPayResult(OrderGroup orderGroup,int result){

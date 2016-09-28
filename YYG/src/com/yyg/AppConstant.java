@@ -5,6 +5,8 @@ import com.yyg.model.*;
 public class AppConstant {
 
 	/**-----------------------------系统配置-------------------*/
+
+	public static final boolean isDebugVersion = true;
 	
 	public static final String APP_NAME = "YYG";
 	

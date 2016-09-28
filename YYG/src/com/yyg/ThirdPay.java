@@ -35,6 +35,11 @@ public class ThirdPay {
 	}
 
 	public String createWxPayUrl(OrderGroup orderGroup){
+
+		if(AppConstant.isDebugVersion){
+			return "http://baidu.com";
+		}
+
 		SortedMap<String,String> map = new TreeMap<>();
 		map.put("service","pay.weixin.native");
 		map.put("mch_id",AppConstant.THIRD_PAY_ACCOUNT);

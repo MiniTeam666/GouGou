@@ -36,12 +36,15 @@ public class Order {
 	@DatabaseField
 	public int joinTime;
 
+	@DatabaseField
+	public int magic;
+
 	@DatabaseField(foreign = true)
 	public OrderGroup orderGroup;
 
 
 	public static enum OrderStatu{
-		waitpay(0),paySuccess(1),payFail(2);
+		waitpay(0),paySuccess(1),payFail(2),winning(3);
 		private int status;
 		OrderStatu(int status){
 			this.status = status;

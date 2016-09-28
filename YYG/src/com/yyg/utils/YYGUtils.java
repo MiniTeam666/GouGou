@@ -1,6 +1,8 @@
 package com.yyg.utils;
 
+import com.j256.ormlite.stmt.query.In;
 import com.yyg.AppConstant;
+import javafx.util.Pair;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,11 +11,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class YYGUtils {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+	private static SimpleDateFormat lotterySDF = new SimpleDateFormat("HHmmssSSS");
 	
 	public static boolean isEmptyText(String str){
 		return str == null || str.trim().length() <= 0;
@@ -34,6 +39,18 @@ public class YYGUtils {
 		return src;
 	}
 
+	public static List<Pair<Long,Integer>> changeBuyRecord2List(String buyRecord){
+		List<Pair<Long,Integer>> result =  new ArrayList<Pair<Long, Integer>>();
+		String[] recordItems = buyRecord.split(AppConstant.PRODUCT_LOTTERY_BUY_RECORD_SPLIT_CHAR);
+		int len = recordItems.length;
+		for(int i = len - 1 ; i > 0 ; i -- ){
+			String[] subItem = recordItems[i].split(AppConstant.PRODUCT_LOTTERY_RECORD_SPLIT_CHAR);
+			Pair<Long,Integer> pair = new Pair<>(Long.valueOf(subItem[0]),Integer.valueOf(subItem[1]));
+			result.add(pair);
+		}
+		return result;
+	}
+
 	public static String getAjaxAcrossCallback(String callback,String result){
 		return callback + "(" +  result  + ")";
 	}
@@ -48,6 +65,43 @@ public class YYGUtils {
 		if(isEmptyText(value))
 			return defaultValue;
 		return Integer.valueOf(value);
+	}
+
+	public static int getLotteryCntNum(long time){
+		String numStr = lotterySDF.format(new Date(time));
+		return Integer.valueOf(numStr);
+	}
+
+	public static List<Integer> translateNumsStr2List(String numStr){
+		List<Integer> result =  new ArrayList<>();
+		String[] nums = numStr.split(AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR);
+		int len = nums.length;
+		try {
+			for (int i = 0; i < len ; i++ ){
+				result.add(Integer.valueOf(nums[i]));
+			}
+		}catch (NumberFormatException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static boolean hasLuckyNum(String luckysStr,int luckyNum){
+		if(isEmptyText(luckysStr))
+			return false;
+
+		String[] luckys = luckysStr.split(AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR);
+		int n = luckys.length;
+		try {
+			for (int i = 0; i < n; i++) {
+				if(luckyNum == Integer.valueOf(luckys[i]))
+					return true;
+			}
+		}catch (NumberFormatException e){
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	public static String int2Hex(int[] datas){

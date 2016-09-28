@@ -18,9 +18,9 @@ public class ServiceManager {
 
 	private volatile static ServiceManager instance;
 	
-	private Service[] services;
+	private static Service[] services;
 	
-	private Object[] serviceLocks;
+	private static Object[] serviceLocks;
 	
 	private ServiceManager(){
 		services = new Service[Service_Count];
@@ -37,7 +37,10 @@ public class ServiceManager {
 		return instance;
 	}
 	
-	public Service getService(int name){
+	public static Service getService(int name){
+
+		getInstance();
+
 		Service service = services[name];
 		if(service == null){
 			//lock

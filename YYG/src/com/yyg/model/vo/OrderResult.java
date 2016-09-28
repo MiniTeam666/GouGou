@@ -14,6 +14,8 @@ public class OrderResult {
 
 	public int errCode;
 
+	public int orderID:
+
 	public String errMsg;
 
 	public Map<Integer,Integer> errList;
