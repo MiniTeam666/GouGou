@@ -2,6 +2,7 @@ package com.yyg.servlet;
 
 import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
+import com.yyg.ThirdPay;
 import com.yyg.model.User;
 import com.yyg.model.vo.OrderResult;
 import com.yyg.model.vo.OrderVo;
@@ -10,6 +11,9 @@ import com.yyg.utils.YYGUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
@@ -24,8 +28,9 @@ import java.util.List;
 		AppConstant.REQUEST_CREATE_ORDER,
 		AppConstant.REQUEST_GET_ORDERSHOW,
 		AppConstant.REQUEST_GET_PERSON_LUCKYNUM,
+		AppConstant.REQUEST_NOTIFY_PAY_RESULT,
 		AppConstant.REQUEST_GET_PAY_RESULT
-})
+},asyncSupported = true)
 public class OrderServlet extends BaserServlet{
 
 	private OrderService service;
@@ -43,9 +48,37 @@ public class OrderServlet extends BaserServlet{
 			handleCreateOrders(req,resp);
 		}else if (isRequest(AppConstant.REQUEST_GET_PERSON_LUCKYNUM)){
 			handleGetPersonalLuckNum(req,resp);
+		}else if (isRequest(AppConstant.REQUEST_NOTIFY_PAY_RESULT)){
+			handleNotifyPayResult(req,resp);
 		}else if (isRequest(AppConstant.REQUEST_GET_PAY_RESULT)){
-			handlePayResult(req,resp);
+			handleGetPayResult(req,resp);
 		}
+	}
+
+	private void handleGetPayResult(HttpRequest req,HttpResponse resp){
+		final AsyncContext ctx = req.startAsync(req,resp.getInnerResp());
+		ctx.setTimeout(60 * 1000); // 60s 超时
+		ctx.addListener(new AsyncListener() {
+			@Override
+			public void onComplete(AsyncEvent asyncEvent) throws IOException {
+
+			}
+
+			@Override
+			public void onTimeout(AsyncEvent asyncEvent) throws IOException {
+
+			}
+
+			@Override
+			public void onError(AsyncEvent asyncEvent) throws IOException {
+
+			}
+
+			@Override
+			public void onStartAsync(AsyncEvent asyncEvent) throws IOException {
+
+			}
+		});
 	}
 
 	private void handleCreateOrders(HttpRequest req,HttpResponse resp){
@@ -82,6 +115,7 @@ public class OrderServlet extends BaserServlet{
 			OrderResult result = service.createOrderGroup(user,datas);
 			if(result.success){
 				resp.writeJsonData("payLink",result.payLink);
+				resp.writeJsonData("orderId",result.orderID);
 			}else{
 				if(result.errList != null && !result.errList.isEmpty()){
 					JSONArray errArray = new JSONArray();
@@ -147,11 +181,14 @@ public class OrderServlet extends BaserServlet{
 		}
 	}
 
-	public void handlePayResult(HttpRequest req , HttpResponse resp){
-		//TODO
-		int result = YYGUtils.getIntFromReq(req,"result",0);
-		int orderID = YYGUtils.getIntFromReq(req,"id",1);
-		service.handleOrderGroupPayResult(orderID,result);
+	public void handleNotifyPayResult(HttpRequest req , HttpResponse resp){
+		if(AppConstant.isDebugVersion) {
+			int result = YYGUtils.getIntFromReq(req, "result", 0);
+			int orderID = YYGUtils.getIntFromReq(req, "id", 1);
+			service.handleOrderGroupPayResult(orderID, result);
+		}else{
+			ThirdPay.getInstance().handlePayResultNotify(req,resp.getInnerResp(),(OrderService) ServiceManager.getService(ServiceManager.Order_Service));
+		}
 	}
 
 	public void handleGetPersonalLuckNum(HttpRequest req , HttpResponse resp ){

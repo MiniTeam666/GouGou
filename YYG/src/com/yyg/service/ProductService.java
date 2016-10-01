@@ -294,6 +294,8 @@ public class ProductService extends Observable implements Service{
 
 		//auto create next lottery
 		if(updateLottery.status == LotteryStatu.inLottery.getStatus()){
+			LogManager.getLogger().info("lottery enter inLottery status , auto create next lottery" +
+					" , product id : " + updateLottery.product.id + ", oldLottery : " + updateLottery.id);
 			createLottery(updateLottery.product.id,updateLottery.remark);
 		}
 

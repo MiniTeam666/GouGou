@@ -1,8 +1,7 @@
 package com.yyg;
 
-import com.j256.ormlite.logger.Log;
-import com.yyg.model.Order;
 import com.yyg.model.OrderGroup;
+import com.yyg.service.OrderService;
 import com.yyg.utils.MD5;
 import com.yyg.utils.SignUtils;
 import com.yyg.utils.XmlUtils;
@@ -14,6 +13,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -47,7 +48,7 @@ public class ThirdPay {
 		map.put("body",orderGroup.toString());
 		map.put("total_fee",String.valueOf(100 * orderGroup.price));
 		map.put("mch_create_ip",AppConstant.APP_IP);
-		map.put("notify_url",AppConstant.REQUEST_GET_PAY_RESULT);
+		map.put("notify_url",AppConstant.REQUEST_NOTIFY_PAY_RESULT);
 		map.put("nonce_str",String.valueOf(new Date().getTime()));
 
 		StringBuilder buff = new StringBuilder();
@@ -110,5 +111,43 @@ public class ThirdPay {
 		LogManager.getLogger().error("create pay link error ! " + res);
 
 		return null;
+	}
+
+	public static void handlePayResultNotify(HttpServletRequest req, HttpServletResponse resp, OrderService service){
+		resp.setHeader("Content-type", "text/html;charset=UTF-8");
+		String resString = XmlUtils.parseRequst(req);
+
+		try {
+			String respString = "success";
+			if (resString != null && !"".equals(resString)) {
+				Map<String, String> map = XmlUtils.toMap(resString.getBytes(), "utf-8");
+				if (map.containsKey("sign")) {
+					if (!SignUtils.checkParam(map, AppConstant.THIRD_PAY_KEY)) {
+						LogManager.getLogger().error("notify pay url , sign is no true !");
+					} else {
+						String status = map.get("status");
+						if (status != null && "0".equals(status)) {
+							String result_code = map.get("result_code");
+							if (result_code != null && "0".equals(result_code)) {
+								String out_trade_no = map.get("out_trade_no");
+								String pay_result = map.get("pay_result");
+								int orderGroupID = -1;
+								int payResult = 0 ;
+								try{
+									orderGroupID = Integer.valueOf(out_trade_no);
+									payResult = Integer.valueOf(pay_result);
+									service.handleOrderGroupPayResult(Integer.valueOf(out_trade_no),Integer.valueOf(pay_result));
+								}catch (NumberFormatException e){
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+			}
+			resp.getWriter().write(respString);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }

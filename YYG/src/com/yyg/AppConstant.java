@@ -76,7 +76,7 @@ public class AppConstant {
 
 	public static final long ORDER_PAY_TIMEOUT = 60 * 1000; //60s //2 * 1000;//1000 * 60 * 10 ;
 
-	public static final String REQUEST_GET_PAY_RESULT = "/test/pay";
+	public static final String REQUEST_NOTIFY_PAY_RESULT = "/test/pay";
 
 	public static final String THIRD_PAY_ACCOUNT = "";
 
@@ -101,6 +101,6 @@ public class AppConstant {
 
 	public static final String REQUEST_GET_PERSON_LUCKYNUM = "/personal/getnums"; //获取个人幸运码
 
-
+	public static final String REQUEST_GET_PAY_RESULT = "/shopping_cart/payinfo"; //查询支付结果
 
 }

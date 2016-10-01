@@ -29,6 +29,10 @@ public class HttpResponse {
 
 	private String ajaxCrossCallback;
 
+	public HttpServletResponse getInnerResp(){
+		return resp;
+	}
+
 	public HttpResponse(HttpServletResponse resp) {
 		this.resp = resp;
 	}
