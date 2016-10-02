@@ -88,7 +88,7 @@ public class HttpResponse {
 		}
 	}
 
-	public void writeJsonBusiError(int errorCode,String errMsg) throws IOException{
+	public void setBusiError(int errorCode, String errMsg) throws IOException{
 		error = true;
 		writeJsonStatus(errorCode,errMsg);
 	}

@@ -7,7 +7,7 @@ import com.yyg.model.Lottery;
 import com.yyg.model.Order;
 import com.yyg.model.OrderGroup;
 import com.yyg.model.User;
-import com.yyg.model.vo.OrderResult;
+import com.yyg.model.vo.OrderGroupPayResult;
 import com.yyg.model.vo.OrderVo;
 import com.yyg.utils.Message;
 import com.yyg.utils.OrderTimeoutRunnable;
@@ -32,7 +32,7 @@ public class OrderService extends Observable implements Service {
 
 	private ProductService productService;
 
-	private ConcurrentHashMap<Integer,OrderGroup> mPayingOrderGroups;
+	private ConcurrentHashMap<Integer,OrderGroupPayResult> mPayingOrderGroups;
 
 	public OrderService(){
 		orderDao = DatabaseManager.getInstance().createDao(Order.class);
@@ -42,9 +42,9 @@ public class OrderService extends Observable implements Service {
 		mPayingOrderGroups = new ConcurrentHashMap<>();
 	}
 
-	public OrderResult createOrderGroup(User user, HashMap<Integer,Integer> orders){
+	public OrderGroupPayResult createOrderGroup(User user, HashMap<Integer,Integer> orders){
 
-		OrderResult result = new OrderResult();
+		OrderGroupPayResult result;
 		try{
 
 			final OrderGroup orderGroup = new OrderGroup();
@@ -57,6 +57,8 @@ public class OrderService extends Observable implements Service {
 				LogManager.getLogger().error("create order group fail ! ");
 				return null;
 			}
+
+			result = new OrderGroupPayResult(orderGroup);
 
 			List<Lottery> hasNoStockLotteries = new ArrayList<>();
 			for(Integer lotteryID : orders.keySet()){
@@ -89,7 +91,7 @@ public class OrderService extends Observable implements Service {
 				String payLink = ThirdPay.getInstance().createWxPayUrl(orderGroup);
 				if(YYGUtils.isEmptyText(payLink)){
 					result.success = false;
-					result.errCode = OrderResult.OrderResultCode.CreateOrder.CREAT_PAY_LINK_ERROR;
+					result.errCode = OrderGroupPayResult.OrderResultCode.CreateOrder.CREAT_PAY_LINK_ERROR;
 					result.errMsg = "create pay link error !";
 				}else {
 
@@ -105,10 +107,10 @@ public class OrderService extends Observable implements Service {
 //					}
 //				}, AppConstant.ORDER_PAY_TIMEOUT);
 
-					addOrderGroup2PayingList(orderGroup);
 					result.success = true;
 					result.payLink = payLink;
-					result.orderID = orderGroup.id;
+
+					addOrderGroup2PayingList(orderGroup,result);
 				}
 			}else{
 
@@ -131,15 +133,16 @@ public class OrderService extends Observable implements Service {
 					map.put(id,stock);
 				}
 
-				result.errCode = OrderResult.OrderResultCode.CreateOrder.CREATE_FAIL;
+				result.errCode = OrderGroupPayResult.OrderResultCode.CreateOrder.CREATE_FAIL;
 				result.errMsg = "has some product stock not enough buy ! ";
 				result.errList = map;
 			}
 
 		}catch (Exception e){
 			e.printStackTrace();
+            result = new OrderGroupPayResult(new OrderGroup());
 			result.success = false;
-			result.errCode = OrderResult.OrderResultCode.CreateOrder.Exception;
+			result.errCode = OrderGroupPayResult.OrderResultCode.CreateOrder.Exception;
 			result.errMsg = e.toString();
 		}
 
@@ -245,13 +248,13 @@ public class OrderService extends Observable implements Service {
 		return false;
 	}
 
-	private void addOrderGroup2PayingList(OrderGroup orderGroup){
-		mPayingOrderGroups.put(orderGroup.id,orderGroup);
+	private void addOrderGroup2PayingList(OrderGroup orderGroup,OrderGroupPayResult result){
+		mPayingOrderGroups.put(orderGroup.id,result);
 		if(mPayingOrderGroups.size() < 10000){
-			OrderGroup older = null;
+			OrderGroupPayResult older = null;
 			for(Integer key : mPayingOrderGroups.keySet()){
-				OrderGroup item = mPayingOrderGroups.get(key);
-				if(older == null || item.createTime < older.createTime){
+				OrderGroupPayResult item = mPayingOrderGroups.get(key);
+				if(older == null || item.orderGroup.createTime < older.orderGroup.createTime && item.orderGroup.statu != Order.OrderStatu.waitpay.getStatus()){
 					older = item;
 				}
 			}
@@ -260,43 +263,54 @@ public class OrderService extends Observable implements Service {
 	}
 
 	public void handleOrderGroupPayResult(int orderGroupID,int result){
-		OrderGroup orderGroup = mPayingOrderGroups.get(orderGroupID);
-
-		if(orderGroup == null){
+		OrderGroupPayResult orderGroupPayResult = mPayingOrderGroups.get(orderGroupID);
+		OrderGroup orderGroup = null ;
+		if(orderGroupPayResult == null){
 			try {
 				orderGroup = (OrderGroup) orderGroupDao.queryForId(orderGroupID);
 			}catch (SQLException e){
 				e.printStackTrace();
 			}
+		}else{
+			orderGroup = orderGroupPayResult.orderGroup;
 		}
 
-		if(orderGroup == null || orderGroup.statu != Order.OrderStatu.waitpay.getStatus()) {
-			LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
-			return;
-		}
+		if(orderGroup == null)
+		    return;
 
-		synchronized (orderGroup) {
+        if(result == 0){
+            orderGroup.statu = Order.OrderStatu.paySuccess.getStatus();
+        }else {
+            orderGroup.statu = Order.OrderStatu.payFail.getStatus();
+        }
+
+        synchronized (orderGroup) {
+
+            if(orderGroup.statu != Order.OrderStatu.waitpay.getStatus()) {
+                LogManager.getLogger().error("duplicate pay result for " + orderGroupID + " , result : " + result);
+                return;
+            }
+
 			notifyOrderPayResult(orderGroup, result);
 		}
+
+        if(orderGroupPayResult != null)
+            orderGroupPayResult.notifyStatusChange();
 	}
 
 	public void notifyOrderPayResult(OrderGroup orderGroup,int result){
+
 		int id = orderGroup.id;
-		OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
-		if(runnable != null && result != Message.ERROR_CODE_ORDERE_PAY_TIMEOUT){
-			boolean cancelRet = runnable.cancel();
-			if(!cancelRet && result == 0){
-				//TODO 回滚timeout操作
-			}
-		}
 
-		if(result == 0){
-			orderGroup.statu = Order.OrderStatu.paySuccess.getStatus();
-		}else {
-			orderGroup.statu = Order.OrderStatu.payFail.getStatus();
-		}
+//		OrderTimeoutRunnable runnable = mOrderTimeoutMap.remove(id);
+//		if(runnable != null && result != Message.ERROR_CODE_ORDERE_PAY_TIMEOUT){
+//			boolean cancelRet = runnable.cancel();
+//			if(!cancelRet && result == 0){
+//				//TODO 回滚timeout操作
+//			}
+//		}
+
 		updateOrderGroup(orderGroup);
-
 
 		Iterator<Order> orderIterator = orderGroup.orders.iterator();
 		while (orderIterator.hasNext()){
@@ -336,6 +350,23 @@ public class OrderService extends Observable implements Service {
 			e.printStackTrace();
 		}
 		return data;
+	}
+
+	public OrderGroupPayResult getOrderPayResult(int orderGroupID){
+	    OrderGroupPayResult result = mPayingOrderGroups.get(orderGroupID);
+        if(result == null){
+            try {
+
+                OrderGroup orderGroup = orderGroupDao.queryForId(orderGroupID);
+                if(orderGroup == null )
+                    return null;
+                result = new OrderGroupPayResult(orderGroup);
+                addOrderGroup2PayingList(orderGroup,result);
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+		return result;
 	}
 
 }

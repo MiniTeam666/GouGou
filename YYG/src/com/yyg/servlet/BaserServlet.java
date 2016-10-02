@@ -44,4 +44,21 @@ public abstract class BaserServlet extends HttpServlet{
 		return YYGUtils.getProjectURI(path).equals(reqWrapper.getRequestURI());
 	}
 
+	public void hanleError(int errorCode){
+		try {
+			respWrapper.setBusiError(errorCode, "");
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+
+	public void hanleError(int errorCode,String msg){
+		try {
+			respWrapper.setBusiError(errorCode, msg);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
 }

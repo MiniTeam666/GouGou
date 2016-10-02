@@ -4,7 +4,7 @@ import com.yyg.AppConstant;
 import com.yyg.ServiceManager;
 import com.yyg.ThirdPay;
 import com.yyg.model.User;
-import com.yyg.model.vo.OrderResult;
+import com.yyg.model.vo.OrderGroupPayResult;
 import com.yyg.model.vo.OrderVo;
 import com.yyg.service.OrderService;
 import com.yyg.utils.YYGUtils;
@@ -55,30 +55,57 @@ public class OrderServlet extends BaserServlet{
 		}
 	}
 
-	private void handleGetPayResult(HttpRequest req,HttpResponse resp){
-		final AsyncContext ctx = req.startAsync(req,resp.getInnerResp());
-		ctx.setTimeout(60 * 1000); // 60s 超时
-		ctx.addListener(new AsyncListener() {
-			@Override
-			public void onComplete(AsyncEvent asyncEvent) throws IOException {
 
+	private void handleGetPayResult(HttpRequest req, final HttpResponse resp){
+
+		int orderID = YYGUtils.getIntFromReq(req,"id",-1);
+
+		if(orderID == -1) {
+			hanleError(AppConstant.PARAMETER_ERROR);
+			return;
+		}
+
+		final OrderGroupPayResult result = service.getOrderPayResult(orderID);
+		if(result == null){
+			hanleError(AppConstant.PARAMETER_ERROR,"cannot find the order by the id  : " + orderID);
+		}else if (result.getPayResult() == 2){
+
+			final AsyncContext ctx = req.startAsync(req, resp.getInnerResp());
+			ctx.setTimeout(60 * 1000); // 60s 超时
+			result.addStatusChangeListenner(ctx);
+			ctx.addListener(new AsyncListener() {
+
+				@Override
+				public void onComplete(AsyncEvent asyncEvent) throws IOException {
+                    resp.writeJsonData("status",result.getPayResult());
+				}
+
+				@Override
+				public void onTimeout(AsyncEvent asyncEvent) throws IOException {
+				    onComplete(asyncEvent);
+				}
+
+				@Override
+				public void onError(AsyncEvent asyncEvent) throws IOException {
+				    onComplete(asyncEvent);
+
+				}
+
+				@Override
+				public void onStartAsync(AsyncEvent asyncEvent) throws IOException {
+
+				}
+			});
+
+		}else{
+
+			try {
+				resp.writeJsonData("status", result.getPayResult());
+			}catch (Exception e){
+				e.printStackTrace();
+				hanleError(AppConstant.SERVICE_EXCEPTION);
 			}
-
-			@Override
-			public void onTimeout(AsyncEvent asyncEvent) throws IOException {
-
-			}
-
-			@Override
-			public void onError(AsyncEvent asyncEvent) throws IOException {
-
-			}
-
-			@Override
-			public void onStartAsync(AsyncEvent asyncEvent) throws IOException {
-
-			}
-		});
+		}
 	}
 
 	private void handleCreateOrders(HttpRequest req,HttpResponse resp){
@@ -88,7 +115,7 @@ public class OrderServlet extends BaserServlet{
 			JSONArray array = obj.optJSONArray("data");
 
 			if(array == null || array.length() <= 0){
-				resp.writeJsonBusiError(1001,"order parameter is empty ");
+				resp.setBusiError(1001,"order parameter is empty ");
 				return;
 			}
 
@@ -108,14 +135,14 @@ public class OrderServlet extends BaserServlet{
 			user = new User();
 			user.id = 1;
 			if(user == null){
-				resp.writeJsonBusiError(1004,"please check login");
+				resp.setBusiError(1004,"please check login");
 				return;
 			}
 
-			OrderResult result = service.createOrderGroup(user,datas);
+			OrderGroupPayResult result = service.createOrderGroup(user,datas);
 			if(result.success){
 				resp.writeJsonData("payLink",result.payLink);
-				resp.writeJsonData("orderId",result.orderID);
+				resp.writeJsonData("orderId",result.orderGroup.id);
 			}else{
 				if(result.errList != null && !result.errList.isEmpty()){
 					JSONArray errArray = new JSONArray();
@@ -128,7 +155,7 @@ public class OrderServlet extends BaserServlet{
 					}
 					resp.writeJsonData("failList",errArray);
 				}
-				resp.writeJsonBusiError(result.errCode,result.errMsg);
+				resp.setBusiError(result.errCode,result.errMsg);
 			}
 
 		}catch (Exception e){
@@ -152,7 +179,7 @@ public class OrderServlet extends BaserServlet{
 		try {
 
 			if(lotteryID == -1 ){
-				resp.writeJsonBusiError(1001, "parameter is not illegal");
+				resp.setBusiError(1001, "parameter is not illegal");
 				return;
 			}
 
@@ -174,7 +201,7 @@ public class OrderServlet extends BaserServlet{
 		}catch (Exception e){
 			e.printStackTrace();
 			try {
-				resp.writeJsonBusiError(1002, e.toString());
+				resp.setBusiError(1002, e.toString());
 			}catch (Exception e1){
 				e1.printStackTrace();
 			}
@@ -196,7 +223,7 @@ public class OrderServlet extends BaserServlet{
 			int lotteryID = YYGUtils.getIntFromReq(req, "product_id", -1);
 
 			if (lotteryID == -1) {
-				resp.writeJsonBusiError(-1, "parameter is error ! ");
+				resp.setBusiError(-1, "parameter is error ! ");
 				return;
 			}
 

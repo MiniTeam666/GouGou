@@ -103,4 +103,17 @@ public class AppConstant {
 
 	public static final String REQUEST_GET_PAY_RESULT = "/shopping_cart/payinfo"; //查询支付结果
 
+
+	/**---------------------------全局统一请求错误码-------------------*/
+
+	public static final int PARAMETER_ERROR = 1001; //参数错误
+
+	public static final int SERVICE_EXCEPTION = 1002; // 服务器错误
+
+	public static final int NO_LOGIN_ERROR = 1000; // 鉴权错误
+
+	public static final int NO_ERROR = 0; //成功
+
+
+
 }
