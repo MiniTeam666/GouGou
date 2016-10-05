@@ -71,13 +71,13 @@ public class OrderServlet extends BaserServlet{
 		}else if (result.getPayResult() == 2){
 
 			final AsyncContext ctx = req.startAsync(req, resp.getInnerResp());
-			ctx.setTimeout(60 * 1000); // 60s 超时
-			result.addStatusChangeListenner(ctx);
+			ctx.setTimeout(AppConstant.GET_PAY_RESULT_CONNECT_TIMEOUT); // 2min 超时
 			ctx.addListener(new AsyncListener() {
 
 				@Override
 				public void onComplete(AsyncEvent asyncEvent) throws IOException {
                     resp.writeJsonData("status",result.getPayResult());
+                    result.removeListenner(ctx);
 				}
 
 				@Override
@@ -97,10 +97,14 @@ public class OrderServlet extends BaserServlet{
 				}
 			});
 
+            result.addStatusChangeListenner(ctx);
+
 		}else{
 
 			try {
+
 				resp.writeJsonData("status", result.getPayResult());
+
 			}catch (Exception e){
 				e.printStackTrace();
 				hanleError(AppConstant.SERVICE_EXCEPTION);

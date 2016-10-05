@@ -32,6 +32,10 @@ public class OrderGroupPayResult {
 	}
 
 
+	/**
+	 *
+	 * @return wait-pay(2), payFail(1),paySuccess(0),default 1
+	 */
 	public int getPayResult(){
 		if(orderGroup.statu == Order.OrderStatu.waitpay.getStatus())
 			return 2;
@@ -49,6 +53,11 @@ public class OrderGroupPayResult {
 			statusChangeListenners = new ArrayList<>();
 		}
 		statusChangeListenners.add(context);
+	}
+
+	public void removeListenner(AsyncContext context){
+		if(statusChangeListenners != null && statusChangeListenners.contains(context))
+			statusChangeListenners.remove(context);
 	}
 
 

@@ -136,7 +136,7 @@ public class ThirdPay {
 								try{
 									orderGroupID = Integer.valueOf(out_trade_no);
 									payResult = Integer.valueOf(pay_result);
-									service.handleOrderGroupPayResult(Integer.valueOf(out_trade_no),Integer.valueOf(pay_result));
+									service.handleOrderGroupPayResult(orderGroupID,payResult);
 								}catch (NumberFormatException e){
 									e.printStackTrace();
 								}

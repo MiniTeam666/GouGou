@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.yyg.CacheManager;
+import com.yyg.ServiceManager;
 import com.yyg.ThreadManager;
 import com.yyg.model.*;
 import com.yyg.utils.YYGUtils;
@@ -331,6 +332,58 @@ public class ProductService extends Observable implements Service{
 			e.printStackTrace();
 		}
 		return -1;
+	}
+
+	public void handleProductLottery(Lottery lottery){
+
+		int id = lottery.id;
+		int price = lottery.product.price;
+		int luckCnt = 0;
+		Order magicOrder = null;
+
+		OrderService orderService = (OrderService) ServiceManager.getService(ServiceManager.Order_Service);
+		List<Order> orders = orderService.getLatestOrder(id,100);
+
+		for(int i = 0 ; i < orders.size(); i ++ ){
+			Order order = orders.get(i);
+			if(order.magic == 1){
+				magicOrder = order;
+			}
+			luckCnt += YYGUtils.getLotteryCntNum(order.time);
+		}
+
+		if(magicOrder != null){
+			int preLuckyNum = luckCnt % price;
+			List<Integer> magicNums = YYGUtils.translateNumsStr2List(new String(magicOrder.luckNums));
+			Random random = new Random();
+			int randomIndex = random.nextInt(magicNums.size());
+			int readyLuckyNum = magicNums.get(randomIndex);
+			int offset = readyLuckyNum - preLuckyNum;
+			luckCnt += offset;
+			magicOrder.time = magicOrder.time + offset;
+			orderService.updateOrder(magicOrder);
+		}
+
+		int luckyNum = luckCnt % price;
+		Order luckyOrder = magicOrder != null ? magicOrder : orderService.getLuckyOrder(id,luckyNum);
+
+		if(luckyOrder == null){
+
+			LogManager.getLogger().error("lottery[" + id + "] has not find lucky order , luckyNum : " + luckyNum);
+
+		}else{
+			LogManager.getLogger().error("lottery[" + id + "] find lucky order , luckyNum : " + luckyNum + ", luckyOrder : " + luckyOrder.id);
+
+			lottery.status = Lottery.LotteryStatu.close.getStatus();
+			lottery.luckyNum = luckyNum;
+			lottery.luckUser = luckyOrder.user;
+			CacheManager.getInstance().cacheLottery(lottery);
+			updateLotteryAsync(lottery);
+
+			luckyOrder.state = Order.OrderStatu.winning.getStatus();
+			orderService.updateOrder(luckyOrder);
+		}
+
 	}
 
 }
