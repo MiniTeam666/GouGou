@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 
-@WebFilter("*")
+@WebFilter(value = "*",asyncSupported = true)
 public class CharacterFilter implements Filter{
 
 	@Override

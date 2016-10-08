@@ -161,7 +161,8 @@ public class LotteryBuyController implements Observer{
 						+ ", result : " + msg.result);
             }
 
-            orderService.updateOrder(order);
+            if(msg.result != Message.ERROR_CODE_ORDERE_CREATE_FAIL)
+            	orderService.updateOrder(order);
         }
     }
 }

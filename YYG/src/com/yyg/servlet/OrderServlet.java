@@ -114,6 +114,7 @@ public class OrderServlet extends BaserServlet{
 
 	private void handleCreateOrders(HttpRequest req,HttpResponse resp){
 		try {
+			
 			String jsonData = req.getParameter("json");
 			JSONObject obj = new JSONObject(jsonData);
 			JSONArray array = obj.optJSONArray("data");
@@ -136,8 +137,6 @@ public class OrderServlet extends BaserServlet{
 			}
 
 			User user = (User) req.getSession().getAttribute(AppConstant.USER);
-			user = new User();
-			user.id = 1;
 			if(user == null){
 				resp.setBusiError(1004,"please check login");
 				return;

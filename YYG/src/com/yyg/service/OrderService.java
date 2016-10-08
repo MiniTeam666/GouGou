@@ -60,7 +60,7 @@ public class OrderService extends Observable implements Service {
                     LogManager.getLogger().warn("create order fail , lottery stock not permit . lotteryID : "
                             + lotteryID + ", errCode : " + stockStatus);
                     hasNoStockLotteries.add(lottery);
-                    continue;
+                    break;
                 }
 
 				Order order = new Order();
@@ -78,7 +78,7 @@ public class OrderService extends Observable implements Service {
             result = new OrderGroupPayResult(null);
 
 
-			if(hasNoStockLotteries.size() == 0 && orders.size() <= 0){
+			if(hasNoStockLotteries.size() == 0 && orders.size() > 0){
 
                 final OrderGroup orderGroup = new OrderGroup();
                 orderGroup.price = totalPrice;
@@ -90,6 +90,8 @@ public class OrderService extends Observable implements Service {
                     LogManager.getLogger().error("create order group fail ! ");
                     return null;
                 }
+
+                result.orderGroup = orderGroup;
 
                 //持久化具体订单
                 for(int i = 0 ; i < orders.size(); i ++ ){
@@ -147,6 +149,14 @@ public class OrderService extends Observable implements Service {
 				result.errCode = OrderGroupPayResult.OrderResultCode.CreateOrder.CREATE_FAIL;
 				result.errMsg = "has some product stock not enough buy ! ";
 				result.errList = map;
+
+				for(int i = 0 ; i < orders.size(); i ++ ){
+					Order order = orders.get(i);
+					Message msg = Message.getUpdateStockMsg(order.lottery.id,Message.ERROR_CODE_ORDERE_CREATE_FAIL,order);
+					setChanged();
+					notifyObservers(msg);
+				}
+
 			}
 
 		}catch (Exception e){
@@ -343,12 +353,15 @@ public class OrderService extends Observable implements Service {
 	public JSONArray getUserLuckyNums(int userID,int lotteryID){
 		JSONArray data = new JSONArray();
 		try{
-			QueryBuilder<OrderGroup,Integer> groupBuilder = orderGroupDao.queryBuilder();
-			groupBuilder.where().eq("lottery_id",lotteryID);
 			QueryBuilder<Order,Integer> orderBuilder = orderDao.queryBuilder();
-			orderBuilder.where().eq("user_id",userID).eq("status", Order.OrderStatu.paySuccess.getStatus());
+			orderBuilder.where()
+					.eq("user_id",userID)
+					.and()
+					.eq("state", Order.OrderStatu.paySuccess.getStatus())
+					.and()
+					.eq("lottery_id",lotteryID);
 
-			List<Order> orders = orderBuilder.join(groupBuilder).query();
+			List<Order> orders = orderBuilder.query();
 			if(orders != null){
 				int n = orders.size();
 				for(int i = 0 ; i < n ; i ++ ){

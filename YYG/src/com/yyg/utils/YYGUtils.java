@@ -64,7 +64,14 @@ public class YYGUtils {
     	String value = req.getParameter(name);
 		if(isEmptyText(value))
 			return defaultValue;
-		return Integer.valueOf(value);
+		int ret = defaultValue;
+		try{
+			ret = Integer.valueOf(value);
+
+		}catch (NumberFormatException e){
+			e.printStackTrace();
+		}
+		return ret;
 	}
 
 	public static int getLotteryCntNum(long time){

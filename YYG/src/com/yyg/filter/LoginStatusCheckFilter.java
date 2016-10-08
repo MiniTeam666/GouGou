@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.yyg.model.User;
 import org.apache.logging.log4j.LogManager;
 
 import com.yyg.AppConstant;
 
-@WebFilter(urlPatterns={"/user/*"})
+@WebFilter(urlPatterns={"*"},asyncSupported = true)
 public class LoginStatusCheckFilter implements Filter{
 
 	@Override
@@ -38,8 +39,17 @@ public class LoginStatusCheckFilter implements Filter{
 				isLogin = (boolean)value;
 			}
 		}else{
-			httpReq.getSession();
+			session = httpReq.getSession();
 			LogManager.getLogger().info("first connect by client!");
+
+		}
+
+		if(AppConstant.isDebugVersion){
+			isLogin = true;
+			User user = new User();
+			user.id = 1;
+			user.name = "line";
+			session.setAttribute(AppConstant.USER,user);
 		}
 		
 		if(isLogin){
