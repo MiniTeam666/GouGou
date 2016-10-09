@@ -12,6 +12,7 @@ import com.yyg.model.vo.OrderVo;
 import com.yyg.utils.Message;
 import com.yyg.utils.OrderTimeoutRunnable;
 import com.yyg.utils.YYGUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 
@@ -28,7 +29,7 @@ public class OrderService extends Observable implements Service {
 
 	private Dao<Order,Integer> orderDao;
 
-	private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
+//	private ConcurrentHashMap<Integer,OrderTimeoutRunnable> mOrderTimeoutMap;
 
 	private ProductService productService;
 
@@ -37,8 +38,8 @@ public class OrderService extends Observable implements Service {
 	public OrderService(){
 		orderDao = DatabaseManager.getInstance().createDao(Order.class);
 		orderGroupDao = DatabaseManager.getInstance().createDao(OrderGroup.class);
-		productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
-		mOrderTimeoutMap = new ConcurrentHashMap<Integer, OrderTimeoutRunnable>();
+		productService = (ProductService) ServiceManager.getService(ServiceManager.Product_Service);
+//		mOrderTimeoutMap = new ConcurrentHashMap<>();
 		mPayingOrderGroups = new ConcurrentHashMap<>();
 	}
 
@@ -57,7 +58,7 @@ public class OrderService extends Observable implements Service {
                 Lottery lottery = productService.getLottery(lotteryID);
                 int stockStatus = lottery.lotteryBuyController.decrementStock(count);
                 if(stockStatus != 0) {
-                    LogManager.getLogger().warn("create order fail , lottery stock not permit . lotteryID : "
+                    YYGUtils.log(Level.ERROR,"create order fail , lottery stock not permit . lotteryID : "
                             + lotteryID + ", errCode : " + stockStatus);
                     hasNoStockLotteries.add(lottery);
                     break;
@@ -87,7 +88,7 @@ public class OrderService extends Observable implements Service {
                 orderGroup.user = user;
                 orderGroup.orders = orderGroupDao.getEmptyForeignCollection("orders");
                 if(orderGroupDao.create(orderGroup) != 1){
-                    LogManager.getLogger().error("create order group fail ! ");
+                    YYGUtils.log(Level.ERROR,"create order group fail ! ");
                     return null;
                 }
 
@@ -108,7 +109,7 @@ public class OrderService extends Observable implements Service {
 					result.errMsg = "create pay link error !";
 				}else {
 
-					LogManager.getLogger().info("create orderGroup successful ! id : " + orderGroup.id + " time : " + YYGUtils.getTimeStr(orderGroup.createTime));
+					YYGUtils.log(Level.INFO,"create orderGroup successful ! id : " + orderGroup.id + " time : " + YYGUtils.getTimeStr(orderGroup.createTime));
 
 //					OrderTimeoutRunnable runnable = new OrderTimeoutRunnable(orderGroup, AppConstant.ORDER_PAY_TIMEOUT, this);
 //					mOrderTimeoutMap.put(orderGroup.id, runnable);
@@ -391,8 +392,8 @@ public class OrderService extends Observable implements Service {
                 if(orderGroup == null)
                     return null;
 
+				result = new OrderGroupPayResult(orderGroup);
                 if(orderGroup.statu == Order.OrderStatu.waitpay.getStatus()) {
-                    result = new OrderGroupPayResult(orderGroup);
                     addOrderGroup2PayingList(orderGroup, result);
                 }
 
@@ -400,6 +401,7 @@ public class OrderService extends Observable implements Service {
                 e.printStackTrace();
             }
         }
+
 		return result;
 	}
 

@@ -2,11 +2,16 @@ package com.yyg.utils;
 
 import com.j256.ormlite.stmt.query.In;
 import com.yyg.AppConstant;
+import com.yyg.model.User;
 import javafx.util.Pair;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Order;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.DataInputStream;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +24,13 @@ public class YYGUtils {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	private static SimpleDateFormat lotterySDF = new SimpleDateFormat("HHmmssSSS");
+
+	private static ThreadLocal<String> mCurrentUser = new ThreadLocal<String>(){
+		@Override
+		protected String initialValue() {
+			return "unkonw";
+		}
+	};
 	
 	public static boolean isEmptyText(String str){
 		return str == null || str.trim().length() <= 0;
@@ -129,14 +141,41 @@ public class YYGUtils {
 	}
 
 	public static int[] hex2Int(String hexStr){
-		if(hexStr.length() % 4 != 0)
+		if(hexStr.length() % 8 != 0)
 			return null;
-		int[] data = new int[hexStr.length() / 4];
-		for(int i = 0 ,j = 0; i < data.length; i++,j = j + 4){
-			String hex = hexStr.substring(j,j + 4);
+		int[] data = new int[hexStr.length() / 8];
+		for(int i = 0 ,j = 0; i < data.length; i++,j = j + 8){
+			String hex = hexStr.substring(j,j + 8);
 			data[i] = Integer.valueOf(hex,16);
 		}
 		return data;
+	}
+
+	public static byte[] string2Byte(String str){
+		return str.getBytes(Charset.forName("UTF-8"));
+	}
+
+	public static String byte2String(byte[] data){
+		try{
+			return new String(data,"UTF-8");
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return new String(data);
+	}
+
+	public static String getExceptionMsg(Exception e){
+		StringBuilder sb = new StringBuilder(1024);
+		sb.append("ExceptionMsg : ").append(e.toString()).append("\n");
+		StackTraceElement[] elements = e.getStackTrace();
+		if(elements != null){
+			int len = elements.length;
+			for(int i = 0 ; i < len ; i ++ ){
+				StackTraceElement element = elements[i];
+				sb.append(element).append("\n");
+			}
+		}
+		return sb.toString();
 	}
 
 	public static String getLuckNum(int[] luckBimap,int maxNum,int cnt){
@@ -185,6 +224,22 @@ public class YYGUtils {
 				result += AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR;
 		}
 		return result;
+	}
+
+	public static void setCurrentUser(User user){
+		mCurrentUser.set(user.id + "-" + user.name);
+	}
+
+	public static String getCurrentUser(){
+		return mCurrentUser.get();
+	}
+
+	/**
+	 * 重要的日志打印,与个人相关
+	 * @param msg
+	 */
+	public static void log(Level level,String msg){
+		LogManager.getLogger().log(level,"[" + getCurrentUser() + "]" + msg);
 	}
 
 }

@@ -37,7 +37,7 @@ public class LotteryBuyController implements Observer{
         this.id = lottery.id;
         realStock = lottery.remainCountOfQulification;
         copyStock = lottery.remainCountOfQulification;
-		luckyNumBitmap = YYGUtils.hex2Int(new String(lottery.luckNumBitmap));
+		luckyNumBitmap = YYGUtils.hex2Int(YYGUtils.byte2String(lottery.luckNumBitmap));
 		price = lottery.product.price;
 
 		OrderService service = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Order_Service);
@@ -73,7 +73,7 @@ public class LotteryBuyController implements Observer{
         lottery.buyRecord = YYGUtils.getBuyRecord(lottery.buyRecord,count,lottery.lastJoinTime);
 
 		final String luckNum = YYGUtils.getLuckNum(luckyNumBitmap,price,count);
-		lottery.luckNumBitmap = YYGUtils.int2Hex(luckyNumBitmap).getBytes();
+		lottery.luckNumBitmap = YYGUtils.string2Byte(YYGUtils.int2Hex(luckyNumBitmap));
 
         if(lottery.remainCountOfQulification == 0){
 
@@ -87,6 +87,8 @@ public class LotteryBuyController implements Observer{
                     productService.handleProductLottery(lottery);
                 }
             },AppConstant.LOTTERY_DELAY_TIME_MILL);
+
+            LogManager.getLogger().info("lottery[" + id + "]" + " is sold finish ! next 2 min will find lucky user and number ! ");
 
         }
 

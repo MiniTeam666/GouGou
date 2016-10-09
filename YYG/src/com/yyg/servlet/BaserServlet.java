@@ -2,6 +2,7 @@ package com.yyg.servlet;
 
 import com.yyg.AppConstant;
 import com.yyg.utils.YYGUtils;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,14 +29,24 @@ public abstract class BaserServlet extends HttpServlet{
 	}
 
 	private void handleRequest(HttpServletRequest req,HttpServletResponse resp) throws ServletException, IOException {
+
 		reqWrapper = new HttpRequest(req);
 		respWrapper = new HttpResponse(resp);
-		doRequest(reqWrapper,respWrapper);
-		String callback = req.getParameter("callback");
-		if(AppConstant.NEED_AJAX_CROSS && !YYGUtils.isEmptyText(callback)){
-			respWrapper.setAjaxCross(true,callback);
+
+		try {
+			doRequest(reqWrapper, respWrapper);
+			String callback = req.getParameter("callback");
+			if (AppConstant.NEED_AJAX_CROSS && !YYGUtils.isEmptyText(callback)) {
+				respWrapper.setAjaxCross(true, callback);
+			}
+			respWrapper.flush();
+		}catch (Exception e){
+			e.printStackTrace();
+			String msg = YYGUtils.getExceptionMsg(e);
+			LogManager.getLogger().error(msg);
+			respWrapper.setBusiError(AppConstant.SERVICE_EXCEPTION,msg);
 		}
-		respWrapper.flush();
+
 	}
 
 	protected abstract void doRequest(HttpRequest req,HttpResponse resp) throws ServletException, IOException ;

@@ -1,5 +1,6 @@
 package com.yyg.service;
 
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +52,7 @@ public class ProductService extends Observable implements Service{
 			product.name = name;
 			product.price = price;
 			product.coverUrl = coverUrl;
-			product.describes = describes.getBytes();
+			product.describes = YYGUtils.string2Byte(describes);
 			product.category = categoryDao.queryForId(String.valueOf(categoryID));
 			product.creatTime = System.currentTimeMillis();
 			
@@ -135,7 +136,7 @@ public class ProductService extends Observable implements Service{
 
 			int bitmapSize = (int)Math.ceil(product.price / 32.0);
 			int[] bitmap = new int[bitmapSize];
-			lottery.luckNumBitmap = YYGUtils.int2Hex(bitmap).getBytes();
+			lottery.luckNumBitmap = YYGUtils.string2Byte(YYGUtils.int2Hex(bitmap));
 
 			if(lotteryDao.create(lottery) == 1)
 				return true;
@@ -372,7 +373,8 @@ public class ProductService extends Observable implements Service{
 			LogManager.getLogger().error("lottery[" + id + "] has not find lucky order , luckyNum : " + luckyNum);
 
 		}else{
-			LogManager.getLogger().error("lottery[" + id + "] find lucky order , luckyNum : " + luckyNum + ", luckyOrder : " + luckyOrder.id);
+
+			LogManager.getLogger().info("lottery[" + id + "] find lucky order , luckyNum : " + luckyNum + ", luckyOrder : " + luckyOrder.id);
 
 			lottery.status = Lottery.LotteryStatu.close.getStatus();
 			lottery.luckyNum = luckyNum;

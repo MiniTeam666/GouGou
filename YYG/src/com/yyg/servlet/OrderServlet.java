@@ -9,6 +9,7 @@ import com.yyg.model.vo.OrderVo;
 import com.yyg.service.OrderService;
 import com.yyg.utils.YYGUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.AsyncContext;
@@ -19,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.LogManager;
 
 /**
  * Created by line on 2016/9/14.
@@ -76,8 +78,22 @@ public class OrderServlet extends BaserServlet{
 
 				@Override
 				public void onComplete(AsyncEvent asyncEvent) throws IOException {
-                    resp.writeJsonData("status",result.getPayResult());
+					int status = result.getPayResult();
+					try {
+
+						JSONObject obj = new JSONObject();
+						JSONObject statusObj = new JSONObject();
+						statusObj.put("status",status);
+						obj.put("status",0);
+						obj.put("errMsg","");
+						obj.put("data",statusObj);
+						ctx.getResponse().getWriter().write(obj.toString());
+
+					}catch (JSONException e){
+						e.printStackTrace();
+					}
                     result.removeListenner(ctx);
+					org.apache.logging.log4j.LogManager.getLogger().info("async get pay result complete : " + status);
 				}
 
 				@Override

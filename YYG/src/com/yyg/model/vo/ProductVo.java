@@ -23,12 +23,12 @@ public class ProductVo {
     public JSONObject getData(){
         try {
             JSONObject object = new JSONObject();
-            object.put("name",mProduct.name);
-            object.put("price",mProduct.price);
-            object.put("id",mProduct.id);
+            object.put("name", mProduct.name);
+            object.put("price", mProduct.price);
+            object.put("id", mProduct.id);
 //            object.put("category",mProduct.category.name);
 //            object.put("category_id",mProduct.category.id);
-            object.put("describe",new String(mProduct.describes));
+            object.put("describe",YYGUtils.byte2String(mProduct.describes));
             object.put("coverUrl",mProduct.coverUrl);
             object.put("createTime", YYGUtils.getTimeStr(mProduct.creatTime));
             return object;

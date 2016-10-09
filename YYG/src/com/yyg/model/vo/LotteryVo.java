@@ -44,7 +44,7 @@ public class LotteryVo {
 		vo.name = lottery.product.name;
 		vo.price = lottery.product.price;
 		vo.remainCount = lottery.remainCountOfQulification;
-		vo.describes = new String(lottery.product.describes);
+		vo.describes = YYGUtils.byte2String(lottery.product.describes);
 		vo.coverUrl = lottery.product.coverUrl;
 		vo.remark = lottery.remark;
 		vo.luckyUser = luckyUser;
