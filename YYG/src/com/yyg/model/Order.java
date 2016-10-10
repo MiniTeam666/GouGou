@@ -16,7 +16,8 @@ public class Order {
 	
 	@DatabaseField(dataType = DataType.BYTE_ARRAY)
 	public byte[] luckNums;
-	
+
+	public static final String FIELD_STATUS = "state";
 	@DatabaseField
 	public int state;
 	

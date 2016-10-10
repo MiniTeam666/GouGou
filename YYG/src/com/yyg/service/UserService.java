@@ -22,6 +22,11 @@ public class UserService implements Service{
 		userDao = DatabaseManager.getInstance().createDao(User.class);
 		ulmDao = DatabaseManager.getInstance().createDao(UserLotteryMappingTable.class);
 	}
+
+	@Override
+	public void doInInit(){
+
+	}
 	
 	/**
 	 * 检查用户是否存在，如果不存在返回空，存在则返回用户对应的信息

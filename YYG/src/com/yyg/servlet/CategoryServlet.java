@@ -25,7 +25,7 @@ public class CategoryServlet extends BaserServlet{
 
 		String reqUrl = req.getRequestURI();
 		
-		ProductService service = (ProductService)ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+		ProductService service = (ProductService)ServiceManager.getService(ServiceManager.Product_Service);
 		
 		if(YYGUtils.getProjectURI(AppConstant.REQUEST_GET_CATEGORY).equals(reqUrl)) {
 			List<Category> categorys = service.getAllCategory();

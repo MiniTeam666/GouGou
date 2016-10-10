@@ -39,7 +39,7 @@ public class OrderServlet extends BaserServlet{
 
 	@Override
 	public void init() throws ServletException {
-		service = (OrderService) ServiceManager.getInstance().getService(ServiceManager.Order_Service);
+		service = (OrderService) ServiceManager.getService(ServiceManager.Order_Service);
 	}
 
 	@Override

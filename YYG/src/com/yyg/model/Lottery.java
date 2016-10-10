@@ -12,7 +12,8 @@ public class Lottery implements Cloneable{
 	
 	@DatabaseField(generatedId=true)
 	public int id;
-	
+
+	public static final String FIELD_STATUS = "status";
 	@DatabaseField
 	public int status;
 	
@@ -43,6 +44,7 @@ public class Lottery implements Cloneable{
 	@DatabaseField
 	public String buyRecord; //计算热度用
 
+	public static final String FOREIGN_PRODUCT = "product_id";
 	@DatabaseField(foreign=true,foreignAutoRefresh = true)
 	public Product product;
 	

@@ -26,7 +26,7 @@ public class HomeServlet extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductService service = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+        ProductService service = (ProductService) ServiceManager.getService(ServiceManager.Product_Service);
         List<LotteryVo> hotList = service.getLotterys(0,3,-1,
 				ProductSortUtils.LotterySortType.Hot.getType(),1, Lottery.LotteryStatu.waiting.getStatus());
         List<LotteryVo> latestList = service.getLotterys(0,3,-1,

@@ -4,6 +4,7 @@ import com.yyg.service.OrderService;
 import com.yyg.service.ProductService;
 import com.yyg.service.Service;
 import com.yyg.service.UserService;
+import org.apache.logging.log4j.LogManager;
 
 public class ServiceManager {
 	
@@ -18,9 +19,9 @@ public class ServiceManager {
 
 	private volatile static ServiceManager instance;
 	
-	private static Service[] services;
+	private Service[] services;
 	
-	private static Object[] serviceLocks;
+	private Object[] serviceLocks;
 	
 	private ServiceManager(){
 		services = new Service[Service_Count];
@@ -32,22 +33,25 @@ public class ServiceManager {
 	
 	public static ServiceManager getInstance(){
 		if(instance == null){
-			instance = new ServiceManager();
+			synchronized (ServiceManager.class) {
+				if(instance == null)
+					instance = new ServiceManager();
+			}
 		}
 		return instance;
 	}
 	
 	public static Service getService(int name){
 
-		getInstance();
+		instance = getInstance();
 
-		Service service = services[name];
+		Service service = instance.services[name];
 		if(service == null){
 			//lock
-			synchronized(serviceLocks[name]){
-				
+			synchronized(instance.serviceLocks[name]){
+
 				//double check
-				service = services[name];
+				service = instance.services[name];
 				if(service != null)
 					return service;
 				
@@ -65,9 +69,13 @@ public class ServiceManager {
 					default:
 						break;
 				}
-				
-				//add to cache
-				services[name] = service;
+
+                //add to cache
+                instance.services[name] = service;
+
+                LogManager.getLogger().error(ServiceManager.instance.toString());
+				service.doInInit();
+
 			}
 		}
 		return service;

@@ -1,10 +1,10 @@
 package com.yyg.service;
 
-import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.j256.ormlite.stmt.Where;
 import com.yyg.CacheManager;
 import com.yyg.ServiceManager;
 import com.yyg.ThreadManager;
@@ -44,6 +44,19 @@ public class ProductService extends Observable implements Service{
 		long start = System.currentTimeMillis();
 		getLotterys(0,1,-1,0,1,LotteryStatu.waiting.getStatus());
 		LogManager.getLogger().info("build lottery cache ! cost ：" + (System.currentTimeMillis() - start) + "ms");
+	}
+
+	//TODO
+    @Override
+	public void doInInit(){
+		//恢复异常状态
+        List<Lottery> lotteries = getLotteriesWithoutCache(false,LotteryStatu.inLottery.getStatus());
+        if(lotteries != null && lotteries.size() > 0 ){
+            LogManager.getLogger().info("recovery before exception lottery , reLottery in those lotteries! size : " + lotteries.size());
+            for(Lottery lottery : lotteries){
+                handleProductLottery(lottery);
+            }
+        }
 	}
 	
 	public boolean addProduct(String name,String describes,String coverUrl,int price,int categoryID){
@@ -221,10 +234,84 @@ public class ProductService extends Observable implements Service{
 		return null;
 	}
 
-	public List<Lottery> getLotteriesWithoutCache(){
+	/**
+	 * 设置首页需要展示的商品
+	 * @param products
+	 * @return
+	 */
+	public boolean setHomePageShowProduct(List<Integer> products){
+
 		try{
-			return lotteryDao.queryBuilder().where().eq("status", LotteryStatu.waiting.getStatus())
+			List<Product> settingProducts = productDao.queryBuilder().where()
+					.in("id",products.iterator())
+					.or()
+					.eq(Product.FIELD_ISSHOWINHOME,true)
 					.query();
+			if(settingProducts != null && settingProducts.size() != 0){
+
+				int len = settingProducts.size();
+
+				for(int i = 0 ; i < settingProducts.size() ; i ++ ){
+					Product product = settingProducts.get(i);
+					if(products.contains(product.id)){
+						product.isShowInHome = 1;
+					}else{
+						product.isShowInHome = 0;
+					}
+					int updateLine = productDao.update(product);
+					if(updateLine != 1)
+						break;
+				}
+				return true;
+			}
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public List<Lottery> getHomePageShowProduct(){
+
+		List<Product> homeProduct = CacheManager.getInstance().getHomePageProduct();
+
+		try {
+			if(homeProduct == null) {
+				homeProduct = productDao.queryBuilder().where().eq(Product.FIELD_ISSHOWINHOME, true).query();
+			}
+
+			if(homeProduct != null && homeProduct.size() > 0){
+
+				ArrayList<Integer> productsID = new ArrayList<>();
+				for(int i = 0 ; i < homeProduct.size(); i ++ ){
+					productsID.add(homeProduct.get(i).id);
+				}
+
+				List<Lottery> lotteries = lotteryDao.queryBuilder().where()
+						.in(Lottery.FOREIGN_PRODUCT,productsID.iterator())
+						.and()
+						.eq(Lottery.FIELD_STATUS,LotteryStatu.waiting.getStatus())
+						.query();
+
+				return lotteries;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public List<Lottery> getLotteriesWithoutCache(boolean cacheAfter,int status){
+		try{
+
+			Where<Lottery,String> where = lotteryDao.queryBuilder().where();
+			if(status != -1)
+				where = where.eq(Lottery.FIELD_STATUS,status);
+			List<Lottery> lotteries = where.query();
+			if(cacheAfter)
+				CacheManager.getInstance().cacheLotteries(lotteries);
+			return lotteries;
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -254,42 +341,6 @@ public class ProductService extends Observable implements Service{
         return LotteryVo.getVo(lottery);
 	}
 
-	public void updateLotteryStock(Lottery lottery){
-        int id = lottery.id;
-        List<Integer> targetList = mUpdateLotteryStockTaskList.get(id);
-        if(targetList == null){
-            targetList = new ArrayList<Integer>();
-            mUpdateLotteryStockTaskList.put(id, Collections.synchronizedList(targetList));
-        }
-        //必须重新获取，因为赋值可能重入.
-        targetList = mUpdateLotteryStockTaskList.get(id);
-        targetList.add(lottery.remainCountOfQulification);
-        LogManager.getLogger().warn("updateStock id " + id + ",taskList : " + targetList.toString());
-        CacheManager.getInstance().cacheLottery(lottery);
-    }
-
-    public synchronized void updateStockTask(){
-        String sql = "update lottery set remainCountOfQulification = remainCountOfQulification - ? where remainCountOfQulification - ? >= 0 and id = ? ";
-        for(Integer id : mUpdateLotteryStockTaskList.keySet()){
-            List<Integer> list = mUpdateLotteryStockTaskList.get(id);
-            int size = list.size();
-            int n = size;
-            while(n > 0 && list.size() > 0){
-                n--;
-                list.remove(0);
-            }
-            int offset = size - n;
-            try {
-                int ret = lotteryDao.updateRaw(sql, offset + "", offset + "", id + "");
-                if(ret != 0){
-                    throw new SQLException("affect line is  : " + ret);
-                }
-            }catch (SQLException e){
-                e.printStackTrace();
-                LogManager.getLogger().error("update lottery stock to db fail , id : " + id + ", offset : " + offset + ",error : " + e.toString());
-            }
-        }
-    }
 
 	public void updateLotteryAsync(Lottery lottery){
 		final Lottery updateLottery = lottery.clone();
@@ -306,9 +357,9 @@ public class ProductService extends Observable implements Service{
 			public void run() {
 				try{
 					if(lotteryDao.update(updateLottery) != 1){
-						LogManager.getLogger().error("update lottery async fail ! info : " + updateLottery);
+						LogManager.getLogger().error("write lottery to db async fail ! info : " + updateLottery);
 					}else{
-						LogManager.getLogger().info("update lottery async success ! info : " + updateLottery);
+						LogManager.getLogger().info("write lottery to db async success ! info : " + updateLottery);
 					}
 				}catch (SQLException e){
 					e.getErrorCode();
@@ -343,7 +394,7 @@ public class ProductService extends Observable implements Service{
 		Order magicOrder = null;
 
 		OrderService orderService = (OrderService) ServiceManager.getService(ServiceManager.Order_Service);
-		List<Order> orders = orderService.getLatestOrder(id,100);
+		List<Order> orders = orderService.getLatestSuccessOrder(id,100);
 
 		for(int i = 0 ; i < orders.size(); i ++ ){
 			Order order = orders.get(i);
@@ -355,7 +406,7 @@ public class ProductService extends Observable implements Service{
 
 		if(magicOrder != null){
 			int preLuckyNum = luckCnt % price;
-			List<Integer> magicNums = YYGUtils.translateNumsStr2List(new String(magicOrder.luckNums));
+			List<Integer> magicNums = YYGUtils.translateNumsStr2List(YYGUtils.byte2String(magicOrder.luckNums));
 			Random random = new Random();
 			int randomIndex = random.nextInt(magicNums.size());
 			int readyLuckyNum = magicNums.get(randomIndex);

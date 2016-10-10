@@ -28,7 +28,7 @@ public class YYGUtils {
 	private static ThreadLocal<String> mCurrentUser = new ThreadLocal<String>(){
 		@Override
 		protected String initialValue() {
-			return "unkonw";
+			return "unknow";
 		}
 	};
 	
@@ -146,7 +146,7 @@ public class YYGUtils {
 		int[] data = new int[hexStr.length() / 8];
 		for(int i = 0 ,j = 0; i < data.length; i++,j = j + 8){
 			String hex = hexStr.substring(j,j + 8);
-			data[i] = Integer.valueOf(hex,16);
+			data[i] = Long.valueOf(hex,16).intValue();
 		}
 		return data;
 	}

@@ -39,7 +39,7 @@ public class ProductManagerServlet extends HttpServlet{
 		
 		LogManager.getLogger().entry();
 		
-		ProductService service = (ProductService)ServiceManager.getInstance().getService(ServiceManager.Product_Service);
+		ProductService service = (ProductService)ServiceManager.getService(ServiceManager.Product_Service);
 		
 		String action = req.getParameter("action");
 		

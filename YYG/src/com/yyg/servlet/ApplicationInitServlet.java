@@ -12,8 +12,12 @@ public class ApplicationInitServlet extends HttpServlet{
 	
 	@Override
 	public void init(){
-		DatabaseManager.getInstance().init("mysql");
-		((ProductService)ServiceManager.getInstance().getService(ServiceManager.Product_Service)).buildCache();
+		try {
+			DatabaseManager.getInstance().init("mysql");
+			((ProductService) ServiceManager.getService(ServiceManager.Product_Service)).buildCache();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 }

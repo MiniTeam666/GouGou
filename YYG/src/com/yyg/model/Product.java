@@ -29,6 +29,10 @@ public class Product {
 
 	@DatabaseField(foreign=true)
 	public Category category;
+
+	public static final String FIELD_ISSHOWINHOME = "isShowInHome";
+	@DatabaseField
+	public int isShowInHome;
 	
 	@ForeignCollectionField(eager=false)
 	public ForeignCollection<Lottery> lotterys;

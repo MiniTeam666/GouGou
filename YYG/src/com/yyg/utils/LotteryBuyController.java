@@ -141,7 +141,7 @@ public class LotteryBuyController implements Observer{
                     return;
                 }else {
                     order.state = Order.OrderStatu.paySuccess.getStatus();
-					order.luckNums = luckNum.getBytes();
+					order.luckNums = YYGUtils.string2Byte(luckNum);
                 }
 
                 LogManager.getLogger().info("order is pay success ! order.id : " + order.id

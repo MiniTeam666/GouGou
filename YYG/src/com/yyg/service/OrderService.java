@@ -38,9 +38,15 @@ public class OrderService extends Observable implements Service {
 	public OrderService(){
 		orderDao = DatabaseManager.getInstance().createDao(Order.class);
 		orderGroupDao = DatabaseManager.getInstance().createDao(OrderGroup.class);
-		productService = (ProductService) ServiceManager.getService(ServiceManager.Product_Service);
 //		mOrderTimeoutMap = new ConcurrentHashMap<>();
 		mPayingOrderGroups = new ConcurrentHashMap<>();
+
+		productService = (ProductService) ServiceManager.getService(ServiceManager.Product_Service);
+	}
+
+	@Override
+	public void doInInit(){
+
 	}
 
 	public OrderGroupPayResult createOrderGroup(User user, HashMap<Integer,Integer> params){
@@ -171,10 +177,14 @@ public class OrderService extends Observable implements Service {
 		return result;
 	}
 
-	public List<Order> getLatestOrder(int lotteryID,int cnt){
+	public List<Order> getLatestSuccessOrder(int lotteryID, int cnt){
 		try{
 
-			List<Order> orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
+			List<Order> orderList = orderDao.queryBuilder().where()
+					.eq("lottery_id",lotteryID)
+					.and()
+					.eq(Order.FIELD_STATUS, Order.OrderStatu.paySuccess.getStatus())
+					.query();
 
 			if(orderList != null && !orderList.isEmpty()){
 
@@ -198,20 +208,15 @@ public class OrderService extends Observable implements Service {
 	}
 
 	public Order getLuckyOrder(int lotteryID,int luckyNum){
-		try{
-			List<Order> orderList = orderDao.queryBuilder().where().eq("lottery_id",lotteryID).query();
-			if(orderList != null && !orderList.isEmpty()){
-				int n = orderList.size();
-				for(int i = 0 ; i < n ; i ++){
-					Order order = orderList.get(i);
-					if(YYGUtils.hasLuckyNum(new String(order.luckNums),luckyNum)){
-						return order;
-					}
+		List<Order> orderList = getLatestSuccessOrder(lotteryID,Integer.MAX_VALUE);
+		if(orderList != null && !orderList.isEmpty()){
+			int n = orderList.size();
+			for(int i = 0 ; i < n ; i ++){
+				Order order = orderList.get(i);
+				if(YYGUtils.hasLuckyNum(YYGUtils.byte2String(order.luckNums),luckyNum)){
+					return order;
 				}
 			}
-
-		}catch (SQLException e){
-			e.printStackTrace();
 		}
 		return null;
 	}
@@ -367,7 +372,7 @@ public class OrderService extends Observable implements Service {
 				int n = orders.size();
 				for(int i = 0 ; i < n ; i ++ ){
 					Order order = orders.get(i);
-					String luckNums = new String(order.luckNums);
+					String luckNums = YYGUtils.byte2String(order.luckNums);
 					if(YYGUtils.isEmptyText(luckNums))
 						continue;
 					String[] luckNumArray = luckNums.split(AppConstant.PRODUCT_LUCKNUM_SPLIT_CHAR);

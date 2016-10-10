@@ -2,6 +2,7 @@ package com.yyg;
 
 import com.yyg.model.Lottery;
 import com.yyg.model.Order;
+import com.yyg.model.Product;
 import com.yyg.service.ProductService;
 import com.yyg.utils.LotteryBuyController;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +21,9 @@ public class CacheManager {
 
     private ConcurrentHashMap<Integer,List<Order>> mOrderCache;
 
-    private static volatile CacheManager instance;
+    private ArrayList<Product> mPageShowProduct;
 
+    private static volatile CacheManager instance;
 
     private CacheManager(){
         mOrderCache = new ConcurrentHashMap<>();
@@ -70,6 +72,13 @@ public class CacheManager {
 		}
     }
 
+    public void cacheHomePageProduct(ArrayList<Product> products){
+        mPageShowProduct = products;
+    }
+
+    public ArrayList<Product> getHomePageProduct(){
+        return mPageShowProduct;
+    }
 
     public Lottery getLottery(int lotteryID){
         if(mLotteriesCache == null)
@@ -108,9 +117,8 @@ public class CacheManager {
         mLotteriesCache = new CacheField<ConcurrentHashMap<Integer, Lottery>>(tmp){
             @Override
             public void update(){
-                ProductService productService = (ProductService) ServiceManager.getInstance().getService(ServiceManager.Product_Service);
-                List<Lottery> result = productService.getLotteriesWithoutCache();
-                cacheLotteries(result);
+                ProductService productService = (ProductService) ServiceManager.getService(ServiceManager.Product_Service);
+                productService.getLotteriesWithoutCache(true, Lottery.LotteryStatu.waiting.getStatus());
             }
         };
     }

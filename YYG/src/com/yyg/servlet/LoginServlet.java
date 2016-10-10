@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet{
 		String uri = req.getRequestURI();
 		String action = uri.split("/")[3];
 		
-		UserService userService = (UserService)ServiceManager.getInstance().getService(ServiceManager.User_Service);
+		UserService userService = (UserService)ServiceManager.getService(ServiceManager.User_Service);
 		PrintWriter out = resp.getWriter();
 		
 		switch(action){
